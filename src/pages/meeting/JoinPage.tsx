@@ -1,4 +1,4 @@
-export default function ParticipatePage() {
+export default function JoinPage() {
   return (
     <div>
       participate

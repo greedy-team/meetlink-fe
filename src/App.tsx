@@ -4,13 +4,13 @@ import StartPage from './pages/landing/StartPage';
 import CreatePage from './pages/create/CreatePage';
 import SharePage from './pages/create/SharePage';
 import MainPage from './pages/meeting/MainPage';
-import ParticipatePage from './pages/meeting/ParticipatePage';
+import JoinPage from './pages/meeting/JoinPage';
 import SettingPage from './pages/meeting/SettingPage';
 import TimeInputPage from './pages/meeting/input/TimeInputPage';
 import PlaceInputPage from './pages/meeting/input/PlaceInputPage';
-import MapInputPage from './pages/meeting/input/MapInputPage';
-import TimeResultPage from './pages/meeting/result/TimeResultPage';
-import PlaceResultPage from './pages/meeting/result/PlaceResultPage';
+import AddressSearchPage from './pages/meeting/input/AddressSearchPage';
+import TimeRecommendPage from './pages/meeting/recommend/TimeRecommendPage';
+import PlaceRecommendPage from './pages/meeting/recommend/PlaceRecommendPage';
 import MeetingLayout from './pages/meeting/MeetingLayout';
 
 function App() {
@@ -23,15 +23,15 @@ function App() {
 
       <Route path="/meeting/:code" element={<MeetingLayout />}>
         <Route index element={<MainPage />} /> 
-        <Route path="participate" element={<ParticipatePage />} /> 
+        <Route path="join" element={<JoinPage />} /> 
         <Route path="setting" element={<SettingPage />} /> 
         
         <Route path="input/time" element={<TimeInputPage />} />
         <Route path="input/place" element={<PlaceInputPage />} />
-        <Route path="input/place/map" element={<MapInputPage />} />
+        <Route path="input/place/search" element={<AddressSearchPage />} />
         
-        <Route path="result/time" element={<TimeResultPage />} />
-        <Route path="result/place" element={<PlaceResultPage />} />
+        <Route path="recommend/time" element={<TimeRecommendPage />} />
+        <Route path="recommend/place" element={<PlaceRecommendPage />} />
       </Route>
     </Routes>
   )

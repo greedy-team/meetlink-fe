@@ -1,4 +1,4 @@
-export default function TimeResultPage() {
+export default function TimeRecommendPage() {
   return (
     <div>
       timeresult
