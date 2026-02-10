@@ -21,6 +21,8 @@ jobs:
 
       - name: Install deps
         run: npm ci
+        env:
+    HUSKY: 0
 
       - name: Lint
         run: npm run lint
