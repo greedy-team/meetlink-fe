@@ -19,30 +19,30 @@ export const useCreateMeeting = () => {
   });
 };
 
-//모임 정보 조회 - 코드 입력과 페이지에서 불러오는 버전 둘다 가능
-export const useGetMeetingDetail = (manualCode?: string) => {
-  const { code: paramCode } = useParams<{ code: string }>();
-  const targetCode = manualCode || paramCode;
+//모임 정보 조회
+export const useGetMeetingDetail = () => {
+  const { code } = useParams<{ code: string }>();
 
   return useQuery({
-    queryKey: meetingKeys.detail(targetCode!),
-    queryFn: () => getMeetingDetail(targetCode!),
-    enabled: !!targetCode,
+    queryKey: meetingKeys.detail(code!),
+    queryFn: () => getMeetingDetail(code!),
+    enabled: !!code,
     staleTime: 1000 * 60 * 5,
   });
 };
 
-//모임 정보 수정
-export const useUpdateMeetingDetail = () => {
-  const { code } = useParams<{ code: string }>();
+//모임 정보 수정 - 코드 입력과 페이지에서 불러오는 버전 둘다 가능
+export const useUpdateMeetingDetail = (manualCode?: string) => {
+  const { code: paramCode } = useParams<{ code: string }>();
+  const targetCode = manualCode || paramCode;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: UpdateMeetingDetailRequest) => updateMeetingDetail(code!, body),
+    mutationFn: (body: UpdateMeetingDetailRequest) => updateMeetingDetail(targetCode!, body),
     onSuccess: () => {
       //성공시 데이터 리패치
       queryClient.invalidateQueries({
-        queryKey: meetingKeys.detail(code!),
+        queryKey: meetingKeys.detail(targetCode!),
       });
     },
     onError: () => {
