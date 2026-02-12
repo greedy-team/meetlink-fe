@@ -1,10 +1,8 @@
 import {
-  type GetMyStatusRequest,
   type GetMyStatusResponse,
   type GetParticipantListResponse,
   type JoinMeetingRequest,
   type JoinMeetingResponse,
-  type LeaveMeetingRequest,
   type LeaveMeetingResponse,
 } from '../../types/apiTypes';
 import { axiosInstance } from './axiosInstance';

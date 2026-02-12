@@ -59,10 +59,6 @@ export interface GetParticipantListResponse {
 }
 
 //내 참여 상태 확인
-export interface GetMyStatusRequest {
-  nickName: string;
-}
-
 export interface GetMyStatusResponse {
   code: string;
 
@@ -70,9 +66,6 @@ export interface GetMyStatusResponse {
 }
 
 //모임 나가기
-export interface LeaveMeetingRequest {
-  nickName: string;
-}
 
 export interface LeaveMeetingResponse {
   code: string;
@@ -121,6 +114,8 @@ export interface UpdateMyStartPlaceRequest {
 }
 
 export interface UpdateMyStartPlaceResponse {
+  code: string;
+
   success: boolean;
 }
 
