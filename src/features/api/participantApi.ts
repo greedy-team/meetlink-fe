@@ -20,35 +20,23 @@ export const joinMeeting = async (
   return data;
 };
 
-export const getMeetingDetail = async (code: string): Promise<GetParticipantListResponse> => {
+export const getParticipantList = async (code: string): Promise<GetParticipantListResponse> => {
   const { data } = await axiosInstance.get<GetParticipantListResponse>(
     `/meetings/${code}/participants`,
   );
   return data;
 };
 
-export const getMyStatus = async (
-  code: string,
-  body: GetMyStatusRequest,
-): Promise<GetMyStatusResponse> => {
+export const getMyStatus = async (code: string, id: string): Promise<GetMyStatusResponse> => {
   const { data } = await axiosInstance.get<GetMyStatusResponse>(
-    `/meetings/${code}/participants/me`,
-    {
-      params: body,
-    },
+    `/meetings/${code}/participants/${id}`,
   );
   return data;
 };
 
-export const leaveMeeting = async (
-  code: string,
-  body: LeaveMeetingRequest,
-): Promise<LeaveMeetingResponse> => {
+export const leaveMeeting = async (code: string, id: string): Promise<LeaveMeetingResponse> => {
   const { data } = await axiosInstance.delete<LeaveMeetingResponse>(
-    `/meetings/${code}/participants/me`,
-    {
-      data: body,
-    },
+    `/meetings/${code}/participants/${id}`,
   );
   return data;
 };
