@@ -76,15 +76,12 @@ export interface LeaveMeetingResponse {
 // 가능 시간 조회
 export interface GetMyAvailableTimeResponse {
   code: string;
-  nickName: string;
 
   myTimeList: SelectedTime[];
 }
 
 //가능 시간 등록
 export interface UpdateMyAvailableTimeRequest {
-  nickName: string;
-
   myTimeList: SelectedTime[];
 }
 
@@ -98,7 +95,6 @@ export interface UpdateMyAvailableTimeResponse {
 //출발지 조회
 export interface GetMyStartPlaceResponse {
   code: string;
-  nickName: string;
 
   address: string;
   latitude: string; //위도
@@ -106,8 +102,6 @@ export interface GetMyStartPlaceResponse {
 }
 //출발지 등록
 export interface UpdateMyStartPlaceRequest {
-  nickName: string;
-
   address: string;
   latitude: string; //위도
   longitude: string; //경도

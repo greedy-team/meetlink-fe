@@ -3,8 +3,14 @@ import { Outlet, useOutletContext } from 'react-router-dom';
 
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 import { useParticipantList } from '@/hooks/useParticipant';
+import { useRecommendPlace, useRecommendTime } from '@/hooks/useRecommend';
 
-import { type ParticipantList } from '@/types/meetingTypes';
+import {
+  type ParticipantList,
+  type RecommendPlace,
+  type RecommendTime,
+  type SelectedTime,
+} from '@/types/meetingTypes';
 
 export interface MeetingOutletContext {
   //서버
@@ -14,6 +20,9 @@ export interface MeetingOutletContext {
   dateType: string;
   timeRange: string;
   participantStatusList: ParticipantList | undefined;
+  commonTimeList: SelectedTime[] | undefined;
+  recommendTimeList: RecommendTime[] | undefined;
+  recommendPlaceList: RecommendPlace[] | undefined;
 
   //클라
   nickName: string;
@@ -28,6 +37,8 @@ export interface MeetingOutletContext {
 export default function MeetingLayout() {
   const { data: meetingData, isLoading: isMeetingLoading } = useGetMeetingDetail();
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
+  const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
+  const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
 
   const [nickName, setNickName] = useState('');
   const [id, setId] = useState('');
@@ -38,15 +49,17 @@ export default function MeetingLayout() {
     isPlaceRecommendEnabled: meetingData?.isPlaceRecommendEnabled || false,
     dateType: meetingData?.dateType || '',
     timeRange: meetingData?.timeRange || '',
-
     participantStatusList: participantData?.participantList,
+    commonTimeList: timeData?.commonTimeList,
+    recommendTimeList: timeData?.recommendTimeList,
+    recommendPlaceList: placeData?.recommendPlaceList,
 
     nickName,
     setNickName,
     id,
     setId,
 
-    isLoading: isMeetingLoading || isParticipantLoading,
+    isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
   };
 
   return (

@@ -19,14 +19,15 @@ export const useCreateMeeting = () => {
   });
 };
 
-//모임 정보 조회
-export const useGetMeetingDetail = () => {
-  const { code } = useParams<{ code: string }>();
+//모임 정보 조회 - 코드 입력과 페이지에서 불러오는 버전 둘다 가능
+export const useGetMeetingDetail = (manualCode?: string) => {
+  const { code: paramCode } = useParams<{ code: string }>();
+  const targetCode = manualCode || paramCode;
 
   return useQuery({
-    queryKey: meetingKeys.detail(code!),
-    queryFn: () => getMeetingDetail(code!),
-    enabled: !!code,
+    queryKey: meetingKeys.detail(targetCode!),
+    queryFn: () => getMeetingDetail(targetCode!),
+    enabled: !!targetCode,
     staleTime: 1000 * 60 * 5,
   });
 };
