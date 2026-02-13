@@ -20,6 +20,7 @@ export const useJoinMeeting = () => {
     mutationFn: (body: JoinMeetingRequest) => joinMeeting(code!, body),
 
     onSuccess: () => {
+      //참가자 목록 리패치
       queryClient.invalidateQueries({
         queryKey: participantKeys.list(code!),
       });
@@ -63,9 +64,11 @@ export const useLeaveMeeting = () => {
     mutationFn: (id: string) => leaveMeeting(code!, id),
 
     onSuccess: (_, targetId) => {
+      //참여자 리스크 리패치
       queryClient.invalidateQueries({
         queryKey: participantKeys.list(code!),
       });
+      //내 참가 상태 제거
       queryClient.removeQueries({
         queryKey: participantKeys.status(code!, targetId),
       });

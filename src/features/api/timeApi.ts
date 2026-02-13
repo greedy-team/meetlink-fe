@@ -5,6 +5,9 @@ import {
 } from '../../types/apiTypes';
 import { axiosInstance } from './axiosInstance';
 
+//내 가능 시간 조회
+//요청 X
+//반환 GetMyAvailableTimeResponse
 export const getMyAvailableTime = async (
   code: string,
   id: string,
@@ -15,6 +18,9 @@ export const getMyAvailableTime = async (
   return data;
 };
 
+//내 가능 시간 수정
+//요청 UpdateMyAvailableTimeRequest
+//반환 UpdateMyAvailableTImeResponse
 export const updateMyAvailableTime = async (
   code: string,
   id: string,

@@ -6,16 +6,25 @@ import {
 } from '../../types/apiTypes';
 import { axiosInstance } from './axiosInstance';
 
+//모임 생성
+//요청 X
+//반환 CreateMeetingResponse
 export const createMeeting = async (): Promise<CreateMeetingResponse> => {
   const { data } = await axiosInstance.post<CreateMeetingResponse>('/meetings');
   return data;
 };
 
+//모임 정보 조회
+//요청 X
+//반환 GetMeetingDetailResponse
 export const getMeetingDetail = async (code: string): Promise<GetMeetingDetailResponse> => {
   const { data } = await axiosInstance.get<GetMeetingDetailResponse>(`/meetings/${code}`);
   return data;
 };
 
+//모임 정보 업데이트
+//요청 UpdateMeetingDetailRequest
+//반환 UpdateMeetingDetailResponse
 export const updateMeetingDetail = async (
   code: string,
   body: UpdateMeetingDetailRequest,

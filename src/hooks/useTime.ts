@@ -26,7 +26,7 @@ export const useUpdateMyAvailableTime = (id: string) => {
   return useMutation({
     mutationFn: (body: UpdateMyAvailableTimeRequest) => updateMyAvailableTime(code!, id, body),
     onSuccess: () => {
-      // 성공시 데이터 리패치
+      // 내 가능 시간 리패치
       queryClient.invalidateQueries({
         queryKey: timeKeys.my(code!, id),
       });

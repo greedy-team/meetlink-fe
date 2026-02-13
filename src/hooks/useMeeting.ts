@@ -34,7 +34,7 @@ export const useGetMeetingDetail = () => {
 //모임 정보 수정 - 코드 입력과 페이지에서 불러오는 버전 둘다 가능
 export const useUpdateMeetingDetail = (manualCode?: string) => {
   const { code: paramCode } = useParams<{ code: string }>();
-  const targetCode = manualCode || paramCode;
+  const targetCode = manualCode || paramCode; // 직접 입력 코드 vs url 코드
   const queryClient = useQueryClient();
 
   return useMutation({

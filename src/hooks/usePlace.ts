@@ -26,7 +26,7 @@ export const useUpdateMyStartPlace = (id: string) => {
   return useMutation({
     mutationFn: (body: UpdateMyStartPlaceRequest) => updateMyStartPlace(code!, id, body),
     onSuccess: () => {
-      // 성공시 데이터 리패치
+      //내 출발지 리패치
       queryClient.invalidateQueries({
         queryKey: placeKeys.my(code!, id),
       });
