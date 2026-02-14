@@ -25,12 +25,12 @@ export default function StartPage() {
         </div>
       }
     >
-      <div className="mt-40 flex flex-col gap-5">
-        <div className="text-center text-4xl font-bold">
+      <div className="mt-40 flex flex-col gap-5 text-center">
+        <div className="text-4xl font-bold">
           결정 안되던 약속, <br />
           여기서 끝내세요
         </div>
-        <div className="text-center text-gray-400">
+        <div className="text-gray-500">
           모두의 시간과 위치를 고려해 <br />
           가장 납득이 되는 약속을 만들어 드릴게요
         </div>
