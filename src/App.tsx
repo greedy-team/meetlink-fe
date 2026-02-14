@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import CreatePage from './pages/create/CreatePage';
 import SharePage from './pages/create/SharePage';
+import LayoutPreviewPage from './pages/dev/LayoutPreviewPage';
 import StartPage from './pages/landing/StartPage';
 import AddressSearchPage from './pages/meeting/input/AddressSearchPage';
 import PlaceInputPage from './pages/meeting/input/PlaceInputPage';
@@ -18,6 +19,7 @@ import './App.css';
 function App() {
   return (
     <Routes>
+      <Route path="/preview/layout" element={<LayoutPreviewPage />} />
       <Route path="/" element={<StartPage />} />
       <Route path="/start" element={<StartPage />} />
       <Route path="/create" element={<CreatePage />} />
