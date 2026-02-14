@@ -1,8 +1,13 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
+
+/* 커스텀 */
+@theme inline {
+  --color-greedy: #008e4c;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
