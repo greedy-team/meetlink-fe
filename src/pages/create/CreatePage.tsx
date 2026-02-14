@@ -9,7 +9,7 @@ export default function CreatePage() {
   const [timeRange, setTimeRange] = useState('');
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(true);
 
-  const { mutate: createMeeting } = useCreateMeeting;
+  const { mutate: createMeeting } = useCreateMeeting();
   const [code, setCode] = useState('');
   const { mutate: updateMeetingDetail } = useUpdateMeetingDetail(code);
 
