@@ -35,7 +35,7 @@ export default function CreatePage() {
   return (
     <AppLayout
       header={
-        <div className="mx-8 my-6 flex flex-col gap-2 text-left">
+        <div className="mx-8 mt-8 mb-5 flex flex-col gap-2 text-left">
           <div className="text-3xl font-bold">모임 만들기</div>
           <div className="text-gray-500">모임을 만드는데 필요한 기본 정보를 설정해요</div>
         </div>
@@ -69,7 +69,7 @@ export default function CreatePage() {
           <div className="flex flex-col gap-5">
             <DateTypeSelector value={dateType} onChange={setDateType} />
             <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
-            <div className="h-3" />
+            <div className="h-1" />
           </div>
         )}
 
@@ -81,7 +81,7 @@ export default function CreatePage() {
           onCheckedChange={setIsPlaceRecommendEnabled}
         />
 
-        <NotifyBox>모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
+        <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
       </div>
     </AppLayout>
   );
