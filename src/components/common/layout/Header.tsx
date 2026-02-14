@@ -4,29 +4,35 @@ import { ChevronLeft } from 'lucide-react';
 
 type HeaderProps = {
   title: string;
-  onBack?: () => void;
+  showBackButton?: boolean;
+  showSettingButton?: boolean;
 };
 
-export function Header({ title, onBack }: HeaderProps) {
+export function Header({ title, showBackButton = true, showSettingButton = false }: HeaderProps) {
   const navigate = useNavigate();
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-      return;
-    }
-    navigate(-1);
-  };
 
   return (
-    <header className="flex h-16 shrink-0 items-center border-b bg-white px-4">
-      {/* 뒤로가기 + 제목 (왼쪽 정렬) */}
-      <button type="button" onClick={handleBack} className="flex items-center gap-2 text-gray-900">
-        {/* 아이콘 */}
-        <ChevronLeft className="h-6 w-6" />
+    <header className="flex h-16 items-center border-b bg-white px-4">
+      <div className="flex flex-1 items-center gap-2">
+        {showBackButton && (
+          <button type="button" onClick={() => navigate(-1)} className="flex items-center">
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+        )}
 
-        {/* 제목 */}
         <span className="text-lg font-bold">{title}</span>
-      </button>
+      </div>
+
+      {showSettingButton && (
+        <button
+          type="button"
+          onClick={() => navigate('/setting')}
+          className="inline-flex h-10 w-10 items-center justify-center"
+          aria-label="설정"
+        >
+          <img src="/icons/settings.svg" alt="" aria-hidden="true" className="h-6 w-6" />
+        </button>
+      )}
     </header>
   );
 }

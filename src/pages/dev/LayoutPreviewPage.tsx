@@ -6,7 +6,7 @@ import { Header } from '@/components/common/layout/Header';
 export default function LayoutPreviewPage() {
   return (
     <AppLayout
-      header={<Header title="레이아웃 프리뷰" />}
+      header={<Header title="레이아웃 프리뷰" showBackButton={false} showSettingButton />}
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
         <div className="space-y-3">
