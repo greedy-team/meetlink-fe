@@ -2,12 +2,15 @@ import { useState } from 'react';
 
 import { Clock } from 'lucide-react';
 import { MapPin } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { useUpdateMeetingDetail } from '@/hooks/useMeeting';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
@@ -98,6 +101,23 @@ export default function SettingPage() {
         <NotifyBox variant="emphasis" className="mt-3">
           변경 사항은 모두에게 적용됩니다.
         </NotifyBox>
+
+        <Button
+          variant="ghost"
+          className={cn(
+            'bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600',
+            'my-3 h-18 w-full rounded-2xl py-3 font-semibold transition-all',
+            'flex flex-row items-center justify-start gap-3',
+          )}
+        >
+          <div className="w-1" />
+          <LogOut
+            size={22}
+            strokeWidth={2.5}
+            className="h-auto! w-auto! shrink-0 transition-colors"
+          />
+          <span className="text-xl">모임 나가기</span>
+        </Button>
       </div>
     </AppLayout>
   );
