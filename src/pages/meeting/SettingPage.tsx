@@ -72,7 +72,7 @@ export default function SettingPage() {
       <div className="mx-3 flex flex-col gap-2">
         <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
         <div className="h-2" />
-        <Label htmlFor="meeting-name" className="ml-1 text-base font-semibold text-gray-700">
+        <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
           모임 설정
         </Label>
         <RecommendCheckBox

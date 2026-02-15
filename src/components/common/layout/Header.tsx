@@ -26,7 +26,7 @@ export function Header({ title, showBackButton = true, showSettingButton = false
       {showSettingButton && (
         <button
           type="button"
-          onClick={() => navigate('/setting')}
+          onClick={() => navigate('setting')}
           className="inline-flex h-10 w-10 items-center justify-center"
           aria-label="설정"
         >

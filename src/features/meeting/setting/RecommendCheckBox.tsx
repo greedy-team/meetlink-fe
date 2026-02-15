@@ -34,7 +34,7 @@ export function RecommendCheckBox({
       <div className="flex flex-col gap-2 text-left">
         <div className="flex items-center gap-2">
           <Icon
-            size={24}
+            size={20}
             className={cn(
               'h-auto! w-auto! transition-colors',
               checked ? 'text-greedy' : 'text-gray-900',
@@ -42,7 +42,7 @@ export function RecommendCheckBox({
           />
           <span
             className={cn(
-              'text-lg leading-tight font-bold transition-colors',
+              'text-base leading-tight font-bold transition-colors',
               checked ? 'text-greedy' : 'text-gray-900',
             )}
           >
