@@ -32,9 +32,9 @@ export function GoToButton({
       <div className="flex flex-col gap-1 text-left">
         <div className="flex items-center gap-2">
           <Icon size={24} className="h-auto! w-auto! text-gray-900 transition-colors" />
-          <span className="text-lg leading-tight font-bold text-gray-900">{title}</span>
+          <span className="text-base leading-tight font-bold text-gray-900">{title}</span>
         </div>
-        <span className="text-sm leading-relaxed font-medium text-gray-400">{description}</span>
+        <span className="text-xs leading-relaxed font-medium text-gray-400">{description}</span>
       </div>
 
       <div className="rounded-2x transition-color ml-4 flex h-11 w-11 shrink-0 items-center justify-center text-gray-500">

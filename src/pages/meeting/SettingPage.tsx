@@ -106,7 +106,7 @@ export default function SettingPage() {
           variant="ghost"
           className={cn(
             'bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600',
-            'my-3 h-18 w-full rounded-2xl py-3 font-semibold transition-all',
+            'my-3 h-14 w-full rounded-2xl py-3 font-semibold transition-all',
             'flex flex-row items-center justify-start gap-3',
           )}
         >
@@ -116,7 +116,7 @@ export default function SettingPage() {
             strokeWidth={2.5}
             className="h-auto! w-auto! shrink-0 transition-colors"
           />
-          <span className="text-xl">모임 나가기</span>
+          <span className="text-base">모임 나가기</span>
         </Button>
       </div>
     </AppLayout>

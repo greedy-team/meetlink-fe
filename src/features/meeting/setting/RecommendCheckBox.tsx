@@ -26,7 +26,7 @@ export function RecommendCheckBox({
       type="button"
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        'group flex w-full items-center justify-between rounded-3xl border-2 p-5 transition-all duration-200',
+        'group flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
         checked ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
         className,
       )}
@@ -49,7 +49,7 @@ export function RecommendCheckBox({
             {title}
           </span>
         </div>
-        <span className="text-sm leading-relaxed font-medium text-gray-400">{description}</span>
+        <span className="text-xs leading-relaxed font-medium text-gray-400">{description}</span>
       </div>
 
       <div

@@ -7,6 +7,37 @@ import { cn } from '@/lib/utils';
 
 import { RecommendItem } from './RecommendItem';
 
+//임시 지도
+interface LatLngMapProps {
+  lat: number;
+  lng: number;
+  zoom?: number;
+}
+
+const LatLngMap: React.FC<LatLngMapProps> = ({ lat, lng, zoom = 15 }) => {
+  // 2. URL 생성 (q 파라미터에 좌표를 넣어야 마커가 찍힙니다)
+  const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+
+  return (
+    <div style={{ width: '100%', height: '400px' }}>
+      <iframe
+        title="Google Map"
+        src={mapUrl}
+        width="100%"
+        height="100%"
+        style={{
+          border: 0,
+          pointerEvents: 'none',
+        }}
+        allowFullScreen
+        loading="lazy"
+      ></iframe>
+    </div>
+  );
+};
+
+export default LatLngMap;
+
 import { type RecommendPlace, type RecommendTime } from '@/types/meetingTypes';
 interface RecommendSummaryCardProps {
   isTimeRecommendEnabled: boolean;
@@ -40,7 +71,7 @@ export function RecommendSummaryCard({
       )}
     >
       <div className="flex flex-col gap-2 p-3">
-        {isPlaceRecommendEnabled && <div>지도 api</div>}
+        {isPlaceRecommendEnabled && <LatLngMap lat={37.5546} lng={126.9706} />}
 
         {isTimeRecommendEnabled && (
           <RecommendItem

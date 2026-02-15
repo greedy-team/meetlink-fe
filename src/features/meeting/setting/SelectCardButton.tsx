@@ -24,7 +24,7 @@ export function SelectCardButton({
       variant="outline"
       onClick={onClick}
       className={cn(
-        'flex aspect-square h-auto flex-1 flex-col items-center justify-center gap-3 rounded-[32px] border-2 p-0 transition-all',
+        'm-2 flex aspect-square h-auto flex-1 flex-col items-center justify-center gap-3 rounded-[32px] border-2 p-0 transition-all',
         isActive
           ? 'border-greedy bg-greedy/5 text-greedy hover:bg-greedy/10 hover:text-greedy'
           : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200',
@@ -33,7 +33,7 @@ export function SelectCardButton({
     >
       <div
         className={cn(
-          'flex h-16 w-16 items-center justify-center rounded-2xl transition-colors',
+          'flex h-14 w-14 items-center justify-center rounded-2xl transition-colors',
           isActive ? 'bg-greedy/10' : 'bg-gray-100',
         )}
       >
@@ -48,8 +48,8 @@ export function SelectCardButton({
       </div>
 
       <div className="flex flex-col items-center">
-        <span className="text-lg font-bold text-black">{title}</span>
-        <span className="text-mg font-normal text-gray-500">{description}</span>
+        <span className="text-base font-bold text-black">{title}</span>
+        <span className="text-xs font-normal text-gray-500">{description}</span>
       </div>
     </Button>
   );
