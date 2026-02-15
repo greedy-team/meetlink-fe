@@ -1,60 +1,19 @@
 import React, { useState } from 'react';
 
-import { ChevronDown, ChevronUp, Clock, MapPin } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-import { type ParticipantList, type ParticipantStatus } from '@/types/meetingTypes';
+import { ParticipantStatusItem } from './ParticipantStatusItem';
+
+import { type ParticipantList } from '@/types/meetingTypes';
 
 interface ParticipantStatusListProps {
   list: ParticipantList;
   className?: string;
 }
 
-const ParticipantItem = ({
-  nickName,
-  hasTimeInput,
-  hasPlaceInput,
-  isLast,
-}: ParticipantStatus & { isLast: boolean }) => {
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-between px-4 py-3',
-        !isLast && 'border-b-2 border-gray-100',
-      )}
-    >
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-600">
-          {nickName.charAt(0)}
-        </div>
-        <span className="text-base font-bold text-gray-800">{nickName}</span>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div
-          className={cn(
-            'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-            hasTimeInput ? 'bg-[#dcfce7] text-[#16a34a]' : 'bg-[#fee2e2] text-[#dc2626]',
-          )}
-        >
-          <Clock className="h-4 w-4" />
-        </div>
-
-        <div
-          className={cn(
-            'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-            hasPlaceInput ? 'bg-[#dcfce7] text-[#16a34a]' : 'bg-[#fee2e2] text-[#dc2626]',
-          )}
-        >
-          <MapPin className="h-4 w-4" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const ParticipantStatusList = ({ list, className }: ParticipantStatusListProps) => {
+export function ParticipantStatusList({ list, className }: ParticipantStatusListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const visibleList = isExpanded ? list : list.slice(0, 3);
@@ -65,7 +24,7 @@ export const ParticipantStatusList = ({ list, className }: ParticipantStatusList
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="flex flex-col">
           {visibleList.map((participant, index) => (
-            <ParticipantItem
+            <ParticipantStatusItem
               key={`${participant.nickName}-${index}`}
               {...participant}
               isLast={index === visibleList.length - 1 && !showExpandButton}
@@ -92,4 +51,4 @@ export const ParticipantStatusList = ({ list, className }: ParticipantStatusList
       </div>
     </div>
   );
-};
+}
