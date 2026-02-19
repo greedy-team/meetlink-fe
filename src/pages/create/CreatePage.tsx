@@ -43,10 +43,7 @@ export default function CreatePage() {
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton
-            className="bg-greedy hover:bg-greedy/50 mx-auto h-17 w-95/100 rounded-4xl text-xl"
-            onClick={handleCreateClick}
-          >
+          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleCreateClick}>
             모임 생성하기
           </FixedBottomButton>
         </div>

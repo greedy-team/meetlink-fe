@@ -57,14 +57,12 @@ export default function SettingPage() {
       bottom={
         <div className="mx-3 flex flex-row gap-3 pt-2">
           <div className="flex-1">
-            <FixedBottomButton className="h-17 rounded-4xl border-2 bg-white text-xl text-black hover:bg-gray-300">
+            <FixedBottomButton className="border-2 bg-white text-xl text-black hover:bg-gray-300">
               취소
             </FixedBottomButton>
           </div>
           <div className="flex-1">
-            <FixedBottomButton className="bg-greedy hover:bg-greedy/50 h-17 rounded-4xl text-xl">
-              완료
-            </FixedBottomButton>
+            <FixedBottomButton className="bg-greedy hover:bg-greedy/50">완료</FixedBottomButton>
           </div>
         </div>
       }

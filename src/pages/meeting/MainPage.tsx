@@ -49,7 +49,7 @@ export default function MainPage() {
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50 mx-auto h-17 w-95/100 rounded-4xl text-xl">
+          <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
             초대 링크 공유하기
           </FixedBottomButton>
         </div>

@@ -32,11 +32,11 @@ export function RecommendItem({
         className,
       )}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#dcfce7] text-[#16a34a]">
+      <div className="bg-greedy/10 text-greedy flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl">
         <Icon className="h-6 w-6" />
       </div>
       <div className="flex flex-col pt-0.5">
-        <span className="text-sm font-semibold text-[#16a34a]">{label}</span>
+        <span className="text-greedy text-sm font-semibold">{label}</span>
         <span
           className={cn(
             'text-lg leading-tight font-bold',

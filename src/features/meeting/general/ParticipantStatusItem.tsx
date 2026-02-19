@@ -28,7 +28,7 @@ export function ParticipantStatusItem({
         <div
           className={cn(
             'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-            hasTimeInput ? 'bg-[#dcfce7] text-[#16a34a]' : 'bg-[#fee2e2] text-[#dc2626]',
+            hasTimeInput ? 'bg-greedy/10 text-greedy' : 'bg-red-100 text-red-500',
           )}
         >
           <Clock className="h-4 w-4" />
@@ -37,7 +37,7 @@ export function ParticipantStatusItem({
         <div
           className={cn(
             'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-            hasPlaceInput ? 'bg-[#dcfce7] text-[#16a34a]' : 'bg-[#fee2e2] text-[#dc2626]',
+            hasPlaceInput ? 'bg-greedy/10 text-greedy' : 'bg-red-100 text-red-500',
           )}
         >
           <MapPin className="h-4 w-4" />
