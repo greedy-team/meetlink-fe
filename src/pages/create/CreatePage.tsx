@@ -8,7 +8,7 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Label } from '@/components/ui/label';
-import { useCreateMeeting } from '@/hooks/useMeeting';
+import { useCreateMeeting, useUpdateMeetingDetail } from '@/hooks/useMeeting';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
