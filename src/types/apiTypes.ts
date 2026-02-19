@@ -21,7 +21,7 @@ export interface GetMeetingDetailResponse {
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   dateType: string;
-  timeRange: string;
+  timeRange: [number, number];
 }
 
 //모임 정보 수정
@@ -30,7 +30,7 @@ export interface UpdateMeetingDetailRequest {
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   dateType: string;
-  timeRange: string;
+  timeRange: [number, number];
 }
 
 export interface UpdateMeetingDetailResponse {

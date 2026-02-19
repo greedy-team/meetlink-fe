@@ -18,7 +18,7 @@ export interface MeetingOutletContext {
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   dateType: string;
-  timeRange: string;
+  timeRange: [number, number];
   participantStatusList: ParticipantList | undefined;
   commonTimeList: SelectedTime[] | undefined;
   recommendTimeList: RecommendTime[] | undefined;
@@ -48,7 +48,7 @@ export default function MeetingLayout() {
     isTimeRecommendEnabled: meetingData?.isTimeRecommendEnabled || false,
     isPlaceRecommendEnabled: meetingData?.isPlaceRecommendEnabled || false,
     dateType: meetingData?.dateType || '',
-    timeRange: meetingData?.timeRange || '',
+    timeRange: meetingData?.timeRange || [6, 18],
     participantStatusList: participantData?.participantList,
     commonTimeList: timeData?.commonTimeList,
     recommendTimeList: timeData?.recommendTimeList,
