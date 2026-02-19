@@ -36,8 +36,6 @@ const LatLngMap: React.FC<LatLngMapProps> = ({ lat, lng, zoom = 15 }) => {
   );
 };
 
-export default LatLngMap;
-
 import { type RecommendPlace, type RecommendTime } from '@/types/meetingTypes';
 interface RecommendSummaryCardProps {
   isTimeRecommendEnabled: boolean;
@@ -71,7 +69,7 @@ export function RecommendSummaryCard({
       )}
     >
       <div className="flex flex-col gap-2 p-3">
-        {isPlaceRecommendEnabled && <LatLngMap lat={37.5546} lng={126.9706} />}
+        {isPlaceRecommendEnabled || <LatLngMap lat={37.5546} lng={126.9706} />}
 
         {isTimeRecommendEnabled && (
           <RecommendItem

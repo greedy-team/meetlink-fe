@@ -55,8 +55,8 @@ export default function MainPage() {
         </div>
       }
     >
-      <div className="mx-3 flex flex-col gap-4">
-        <div className="px-1">
+      <div className="flex flex-col gap-4">
+        <div className="">
           <RecommendSummaryCard
             isTimeRecommendEnabled={true}
             isPlaceRecommendEnabled={true}
@@ -82,6 +82,7 @@ export default function MainPage() {
             onClick={() => handleGoToButton('input/place')}
           />
         </div>
+
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between px-1">
             <Label
@@ -90,7 +91,7 @@ export default function MainPage() {
             >
               참여자 현황
             </Label>
-            <div className="flex items-center justify-center rounded-full bg-[#3e8e41] px-3 py-1 text-sm font-semibold text-white shadow-sm">
+            <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white shadow-sm">
               {completedCount}/{totalCount} 입력 완료
             </div>
           </div>
