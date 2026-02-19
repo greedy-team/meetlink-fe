@@ -58,7 +58,7 @@ export default function AddressSearchPage() {
 
         {isSearching &&
           (results.length > 0 ? (
-            <RecentPlaceList places={results} onSelect={handleSelect} />
+            <RecentPlaceList places={results} onSelect={handleSelect} title="검색 결과" />
           ) : (
             <SearchEmptyState />
           ))}
