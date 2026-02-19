@@ -8,7 +8,7 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Label } from '@/components/ui/label';
-import { useCreateMeeting, useUpdateMeetingDetail } from '@/hooks/useMeeting';
+import { useCreateMeeting } from '@/hooks/useMeeting';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
@@ -24,12 +24,39 @@ export default function CreatePage() {
 
   const { mutate: createMeeting } = useCreateMeeting();
   const [code, setCode] = useState('');
-  const { mutate: updateMeetingDetail } = useUpdateMeetingDetail(code);
 
   const navigate = useNavigate();
 
   const handleCreateClick = () => {
-    navigate('share');
+    if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
+      //하나는 선택해야 돼
+
+      return;
+    }
+    if (isTimeRecommendEnabled && !dateType) {
+      //dateType 선택해야 돼
+
+      return;
+    }
+
+    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
+    const requestData = {
+      name: meetingName,
+      enableTimeRecommendation: isTimeRecommendEnabled,
+      enablePlaceRecommendation: isPlaceRecommendEnabled,
+      timeAvailabilityType: dateType,
+      timeRangeStart: formatTime(timeRange[0]),
+      timeRangeEnd: formatTime(timeRange[1]),
+    };
+
+    createMeeting(requestData, {
+      onSuccess: (data) => {
+        if (data.status && data.result) {
+          navigate(`/share/${data.result.code}`);
+        }
+      },
+      onError: (error) => {},
+    });
   };
 
   return (

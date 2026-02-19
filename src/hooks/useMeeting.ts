@@ -10,12 +10,6 @@ import { type UpdateMeetingDetailRequest } from '@/types/apiTypes';
 export const useCreateMeeting = () => {
   return useMutation({
     mutationFn: createMeeting,
-    onSuccess: () => {
-      //성공 시
-    },
-    onError: () => {
-      //서버와 통신 실패
-    },
   });
 };
 

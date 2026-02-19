@@ -7,10 +7,34 @@ import {
 
 ////////////////////////////////////////////////////////////meeting
 //모임 생성
-export interface CreateMeetingResponse {
-  code: string;
 
-  success: boolean;
+export interface CreateMeetingRequest {
+  name: string;
+  enableTimeRecommendation: boolean;
+  enablePlaceRecommendation: boolean;
+  timeAvailabilityType: string;
+  timeRangeStart: string;
+  timeRangeEnd: string; // "18:00:00"
+}
+
+export interface CreateMeetingResponse {
+  status: boolean;
+
+  result?: {
+    id: number;
+    name: string;
+    code: string;
+    enableTimeRecommendation: boolean;
+    enablePlaceRecommendation: boolean;
+    timeAvailabilityType: string;
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  code?: string;
+  message?: string;
 }
 
 //모임 정보 요청
