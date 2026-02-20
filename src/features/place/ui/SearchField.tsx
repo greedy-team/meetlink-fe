@@ -37,8 +37,7 @@ export function SearchField({
     disabled ? 'opacity-60' : '',
   ].join(' ');
 
-  const focusRing =
-    'focus-within:border-[#0B5A2A] focus-within:ring-2 focus-within:ring-[#0B5A2A]/20';
+  const focusRing = 'focus-within:border-greedy focus-within:ring-2 focus-within:ring-greedy/20';
 
   if (mode === 'button') {
     return (
@@ -49,7 +48,7 @@ export function SearchField({
         className={[
           base,
           'text-left',
-          'focus:border-[#0B5A2A] focus:ring-2 focus:ring-[#0B5A2A]/20',
+          'focus:border-greedy focus:ring-greedy/20 focus:ring-2',
           !disabled ? 'hover:bg-gray-50' : '',
         ].join(' ')}
       >

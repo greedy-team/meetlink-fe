@@ -34,7 +34,7 @@ export function NickNameInput({
           className={[
             'bg-background h-12 w-full rounded-xl border px-4 text-base outline-none',
             'placeholder:text-muted-foreground',
-            'focus:border-[#0B5A2A] focus:ring-2 focus:ring-[#0B5A2A]/20',
+            'focus:border-greedy focus:ring-greedy/20 focus:ring-2',
             disabled ? 'opacity-60' : '',
             error ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : '',
           ].join(' ')}

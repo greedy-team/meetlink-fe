@@ -14,7 +14,7 @@ export function NotifyBox({ variant = 'default', children, className }: NotifyBo
   const baseClassName = 'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm leading-snug';
 
   const variantClassName =
-    variant === 'emphasis' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-700';
+    variant === 'emphasis' ? 'bg-greedy/10 text-greedy' : 'bg-gray-100 text-gray-700';
 
   return (
     <div

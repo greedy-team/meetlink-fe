@@ -31,7 +31,7 @@ export function PlaceConfirmSheet({
         <FixedBottomButton
           onClick={onConfirm}
           disabled={onConfirmDisabled}
-          className="bg-emerald-700 text-white hover:bg-emerald-800"
+          className="bg-greedy hover:bg-greedy/50 text-white"
         >
           이 위치로 주소 등록
         </FixedBottomButton>

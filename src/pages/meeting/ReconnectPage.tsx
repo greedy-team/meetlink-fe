@@ -61,7 +61,7 @@ export default function ReconnectPage() {
               <button
                 type="button"
                 onClick={onGoJoin}
-                className="font-semibold text-[#0B5A2A] underline underline-offset-4"
+                className="text-greedy-strong font-semibold underline underline-offset-4"
               >
                 새로 참여하기
               </button>
@@ -72,7 +72,7 @@ export default function ReconnectPage() {
           <FixedBottomButton
             disabled={!selectedId}
             onClick={onLogin}
-            className="bg-emerald-700 text-white hover:bg-emerald-800"
+            className="bg-greedy hover:bg-greedy/50 text-white"
           >
             선택한 닉네임으로 로그인
           </FixedBottomButton>

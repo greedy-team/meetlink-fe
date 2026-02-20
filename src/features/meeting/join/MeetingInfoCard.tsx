@@ -5,8 +5,8 @@ type MeetingInfoCardProps = {
 
 export function MeetingInfoCard({ title, participantSummary }: MeetingInfoCardProps) {
   return (
-    <div className="rounded-2xl bg-[#E7F3EC] px-6 py-6">
-      <div className="text-2xl font-extrabold text-[#0B5A2A]">{title}</div>
+    <div className="bg-greedy/10 rounded-2xl px-6 py-6">
+      <div className="text-greedy-strong text-2xl font-extrabold">{title}</div>
 
       {participantSummary && (
         <div className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">

@@ -72,7 +72,7 @@ export default function PlaceInputPage() {
               onClick={handleSave}
               disabled={!selected}
               loading={isPending}
-              className="bg-emerald-700 text-white hover:bg-emerald-800"
+              className="bg-greedy hover:bg-greedy/50 text-white"
             >
               저장하기
             </FixedBottomButton>

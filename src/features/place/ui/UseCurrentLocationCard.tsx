@@ -9,16 +9,16 @@ export function UseCurrentLocationCard({ onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center justify-between rounded-2xl bg-emerald-50 px-4 py-4"
+      className="bg-greedy/10 flex w-full items-center justify-between rounded-2xl px-4 py-4"
     >
       <div className="flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100">
-          <Navigation className="h-5 w-5 text-emerald-700" />
+        <div className="bg-greedy/20 grid h-10 w-10 place-items-center rounded-xl">
+          <Navigation className="text-greedy h-5 w-5" />
         </div>
-        <span className="text-base font-semibold text-emerald-800">현재 위치 사용</span>
+        <span className="text-greedy-strong text-base font-semibold">현재 위치 사용</span>
       </div>
 
-      <ChevronRight className="h-5 w-5 text-emerald-700/60" />
+      <ChevronRight className="text-greedy h-5 w-5" />
     </button>
   );
 }

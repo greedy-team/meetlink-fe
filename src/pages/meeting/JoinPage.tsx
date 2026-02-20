@@ -97,7 +97,7 @@ export default function JoinPage() {
           <button
             type="button"
             onClick={goReconnect}
-            className="w-full text-center text-sm font-semibold text-[#0B5A2A] underline underline-offset-4"
+            className="text-greedy-strong w-full text-center text-sm font-semibold underline underline-offset-4"
           >
             이미 참여하셨나요?
           </button>
@@ -106,7 +106,7 @@ export default function JoinPage() {
             disabled={!canSubmit || isPending}
             loading={isPending}
             onClick={onSubmit}
-            className="bg-emerald-700 text-white hover:bg-emerald-800"
+            className="bg-greedy hover:bg-greedy/50 text-white"
           >
             참여하기
           </FixedBottomButton>
