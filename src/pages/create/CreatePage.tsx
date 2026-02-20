@@ -8,7 +8,7 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Label } from '@/components/ui/label';
-import { useCreateMeeting, useUpdateMeetingDetail } from '@/hooks/useMeeting';
+import { useCreateMeeting } from '@/hooks/useMeeting';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
@@ -28,8 +28,6 @@ export default function CreatePage() {
   const navigate = useNavigate();
 
   const handleCreateClick = () => {
-    console.log('1. 클릭 이벤트 발생');
-
     if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
       console.log('2-1. 중단: 추천 옵션 미선택');
       return;
@@ -64,6 +62,11 @@ export default function CreatePage() {
     });
   };
 
+  const isFormValid =
+    meetingName.trim().length > 0 && // 이름 입력 필수
+    (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 하나는 선택
+    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType));
+
   return (
     <AppLayout
       header={
@@ -74,8 +77,12 @@ export default function CreatePage() {
       }
       pageBackgroundClassName="bg-white"
       bottom={
-        <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleCreateClick}>
+        <div className="flex flex-col items-center">
+          <FixedBottomButton
+            className="bg-greedy hover:bg-greedy/50"
+            onClick={handleCreateClick}
+            disabled={!isFormValid}
+          >
             모임 생성하기
           </FixedBottomButton>
         </div>

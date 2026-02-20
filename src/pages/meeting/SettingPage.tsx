@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Clock, LogOut, MapPin } from 'lucide-react';
 
@@ -6,6 +7,17 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -37,6 +49,8 @@ export default function SettingPage() {
   const [dateType, setDateType] = useState(initialDateType);
   const [timeRange, setTimeRange] = useState(initialTimeRange);
 
+  const navigate = useNavigate();
+
   const handleSave = () => {
     const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
     const requestData = {
@@ -51,23 +65,14 @@ export default function SettingPage() {
     // mutate 호출 시 콜백 추가
     updateMeeting(requestData, {
       onSuccess: (data) => {
-        // 여기서 반환값을 확인할 수 있습니다.
         console.log('수정 성공! 반환 데이터:', data);
-
-        if (data.status) {
-          alert('설정이 저장되었습니다.');
-          // 성공 후 페이지 이동 등을 처리할 수 있습니다.
-        }
+        navigate(-1);
       },
       onError: (error) => {
         console.error('수정 실패:', error);
       },
     });
   };
-
-  /**
-   * 로딩중일 떄 로직 추가
-   */
 
   return (
     <AppLayout
@@ -76,14 +81,47 @@ export default function SettingPage() {
       bottom={
         <div className="mx-3 flex flex-row gap-3 pt-2">
           <div className="flex-1">
-            <FixedBottomButton className="border-2 bg-white text-xl text-black hover:bg-gray-300">
+            <FixedBottomButton
+              className="border-2 bg-white text-xl text-black hover:bg-gray-300"
+              onClick={() => navigate(-1)}
+            >
               취소
             </FixedBottomButton>
           </div>
           <div className="flex-1">
-            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleSave}>
-              완료
-            </FixedBottomButton>
+            {meetingName.trim().length > 0 ? (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
+                    완료
+                  </FixedBottomButton>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="w-[90%] rounded-2xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>설정을 저장하시겠습니까?</AlertDialogTitle>
+
+                    <AlertDialogDescription>
+                      입력하신 정보는 모든 사용자에게 적용됩니다.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl">취소</AlertDialogCancel>
+
+                    <AlertDialogAction onClick={handleSave} className="bg-greedy rounded-xl">
+                      저장하기
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <FixedBottomButton
+                className="bg-greedy hover:bg-greedy/50 pointer-events-none"
+                disabled
+              >
+                완료
+              </FixedBottomButton>
+            )}
           </div>
         </div>
       }
