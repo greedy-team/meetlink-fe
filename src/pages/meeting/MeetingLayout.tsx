@@ -19,10 +19,10 @@ export interface MeetingOutletContext {
   isPlaceRecommendEnabled: boolean;
   dateType: string;
   timeRange: [number, number];
-  participantStatusList: ParticipantList | undefined;
-  commonTimeList: SelectedTime[] | undefined;
-  recommendTimeList: RecommendTime[] | undefined;
-  recommendPlaceList: RecommendPlace[] | undefined;
+  //participantStatusList: ParticipantList | undefined;
+  //commonTimeList: SelectedTime[] | undefined;
+  //recommendTimeList: RecommendTime[] | undefined;
+  //recommendPlaceList: RecommendPlace[] | undefined;
 
   //클라
   nickName: string;
@@ -31,35 +31,38 @@ export interface MeetingOutletContext {
   setId: React.Dispatch<React.SetStateAction<string>>;
 
   // 3. 로딩 상태
-  isLoading: boolean;
+  //isLoading: boolean;
 }
 
 export default function MeetingLayout() {
   const { data: meetingData, isLoading: isMeetingLoading } = useGetMeetingDetail();
-  const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
-  const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
-  const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
+  //const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
+  //const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
+  //const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
 
   const [nickName, setNickName] = useState('');
   const [id, setId] = useState('');
 
   const contextValue: MeetingOutletContext = {
-    meetingName: meetingData?.meetingName || '',
-    isTimeRecommendEnabled: meetingData?.isTimeRecommendEnabled || false,
-    isPlaceRecommendEnabled: meetingData?.isPlaceRecommendEnabled || false,
-    dateType: meetingData?.dateType || '',
-    timeRange: meetingData?.timeRange || [6, 18],
-    participantStatusList: participantData?.participantList,
-    commonTimeList: timeData?.commonTimeList,
-    recommendTimeList: timeData?.recommendTimeList,
-    recommendPlaceList: placeData?.recommendPlaceList,
+    meetingName: meetingData?.result?.name || '',
+    isTimeRecommendEnabled: meetingData?.result?.enableTimeRecommendation || false,
+    isPlaceRecommendEnabled: meetingData?.result?.enablePlaceRecommendation || false,
+    dateType: meetingData?.result?.timeAvailabilityType || '',
+    timeRange: [
+      parseInt(meetingData?.result?.timeRangeStart?.split(':')[0] || '6', 10),
+      parseInt(meetingData?.result?.timeRangeEnd?.split(':')[0] || '24', 10),
+    ],
+    //participantStatusList: participantData?.participantList,
+    //commonTimeList: timeData?.commonTimeList,
+    //recommendTimeList: timeData?.recommendTimeList,
+    //recommendPlaceList: placeData?.recommendPlaceList,
 
     nickName,
     setNickName,
     id,
     setId,
 
-    isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
+    //isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
   };
 
   return (

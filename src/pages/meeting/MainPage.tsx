@@ -20,13 +20,13 @@ export default function MainPage() {
     meetingName,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
-    participantStatusList,
-    recommendTimeList,
-    recommendPlaceList,
+    //participantStatusList,
+    //recommendTimeList,
+    //recommendPlaceList,
   } = useMeetingContext();
 
-  const bestRecommendedTime = recommendTimeList?.[0];
-  const bestRecommendedPlace = recommendPlaceList?.[0];
+  //const bestRecommendedTime = recommendTimeList?.[0];
+  //const bestRecommendedPlace = recommendPlaceList?.[0];
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -45,7 +45,7 @@ export default function MainPage() {
 
   return (
     <AppLayout
-      header={<Header title={'그리디'} showBackButton={false} showSettingButton={true} />}
+      header={<Header title={meetingName} showBackButton={false} showSettingButton={true} />}
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
@@ -58,10 +58,10 @@ export default function MainPage() {
       <div className="flex flex-col gap-4">
         <div className="">
           <RecommendSummaryCard
-            isTimeRecommendEnabled={true}
-            isPlaceRecommendEnabled={true}
-            bestTime={bestRecommendedTime}
-            bestPlace={bestRecommendedPlace}
+            isTimeRecommendEnabled={isTimeRecommendEnabled}
+            isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+            //bestTime={bestRecommendedTime}
+            //bestPlace={bestRecommendedPlace}
           />
         </div>
 
@@ -69,18 +69,22 @@ export default function MainPage() {
           <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold text-gray-700">
             내가 할 일
           </Label>
-          <GoToButton
-            icon={Clock}
-            title="가능한 시간 선택하기"
-            description="모임 만남 시간을 추천하는데 활용돼요."
-            onClick={() => handleGoToButton('input/time')}
-          />
-          <GoToButton
-            icon={MapPin}
-            title="출발지 입력하기"
-            description="모임 만남 장소를 추천하는데 활용돼요."
-            onClick={() => handleGoToButton('input/place')}
-          />
+          {isTimeRecommendEnabled && (
+            <GoToButton
+              icon={Clock}
+              title="가능한 시간 선택하기"
+              description="모임 만남 시간을 추천하는데 활용돼요."
+              onClick={() => handleGoToButton('input/time')}
+            />
+          )}
+          {isPlaceRecommendEnabled && (
+            <GoToButton
+              icon={MapPin}
+              title="출발지 입력하기"
+              description="모임 만남 장소를 추천하는데 활용돼요."
+              onClick={() => handleGoToButton('input/place')}
+            />
+          )}
         </div>
 
         <div className="flex flex-col gap-2">

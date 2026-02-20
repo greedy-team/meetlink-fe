@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import { Clock } from 'lucide-react';
-import { MapPin } from 'lucide-react';
-import { LogOut } from 'lucide-react';
+import { Clock, LogOut, MapPin } from 'lucide-react';
 
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
@@ -27,6 +25,7 @@ export default function SettingPage() {
     dateType: initialDateType,
     timeRange: initialTimeRange,
   } = useMeetingContext();
+  const { mutate: updateMeeting } = useUpdateMeetingDetail();
 
   const [meetingName, setMeetingName] = useState(initialMeetingName);
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(
@@ -38,17 +37,37 @@ export default function SettingPage() {
   const [dateType, setDateType] = useState(initialDateType);
   const [timeRange, setTimeRange] = useState(initialTimeRange);
 
-  const { mutate: updateMeeting } = useUpdateMeetingDetail();
-
   const handleSave = () => {
-    updateMeeting({
-      meetingName,
-      isTimeRecommendEnabled,
-      isPlaceRecommendEnabled,
-      dateType,
-      timeRange,
+    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
+    const requestData = {
+      name: meetingName,
+      enableTimeRecommendation: isTimeRecommendEnabled,
+      enablePlaceRecommendation: isPlaceRecommendEnabled,
+      timeAvailabilityType: dateType,
+      timeRangeStart: formatTime(timeRange[0]),
+      timeRangeEnd: formatTime(timeRange[1]),
+    };
+
+    // mutate 호출 시 콜백 추가
+    updateMeeting(requestData, {
+      onSuccess: (data) => {
+        // 여기서 반환값을 확인할 수 있습니다.
+        console.log('수정 성공! 반환 데이터:', data);
+
+        if (data.status) {
+          alert('설정이 저장되었습니다.');
+          // 성공 후 페이지 이동 등을 처리할 수 있습니다.
+        }
+      },
+      onError: (error) => {
+        console.error('수정 실패:', error);
+      },
     });
   };
+
+  /**
+   * 로딩중일 떄 로직 추가
+   */
 
   return (
     <AppLayout
@@ -62,7 +81,9 @@ export default function SettingPage() {
             </FixedBottomButton>
           </div>
           <div className="flex-1">
-            <FixedBottomButton className="bg-greedy hover:bg-greedy/50">완료</FixedBottomButton>
+            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleSave}>
+              완료
+            </FixedBottomButton>
           </div>
         </div>
       }

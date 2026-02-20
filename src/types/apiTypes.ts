@@ -37,30 +37,55 @@ export interface CreateMeetingResponse {
   message?: string;
 }
 
-//모임 정보 요청
+//모임 정보 조회
 export interface GetMeetingDetailResponse {
-  code: string;
+  status: boolean;
 
-  meetingName: string;
-  isTimeRecommendEnabled: boolean;
-  isPlaceRecommendEnabled: boolean;
-  dateType: string;
-  timeRange: [number, number];
+  result?: {
+    id: number;
+    name: string;
+    code: string;
+    enableTimeRecommendation: boolean;
+    enablePlaceRecommendation: boolean;
+    timeAvailabilityType: string;
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  code?: string;
+  message?: string;
 }
 
 //모임 정보 수정
 export interface UpdateMeetingDetailRequest {
-  meetingName: string;
-  isTimeRecommendEnabled: boolean;
-  isPlaceRecommendEnabled: boolean;
-  dateType: string;
-  timeRange: [number, number];
+  name: string;
+  enableTimeRecommendation: boolean;
+  enablePlaceRecommendation: boolean;
+  timeAvailabilityType: string;
+  timeRangeStart: string;
+  timeRangeEnd: string;
 }
 
 export interface UpdateMeetingDetailResponse {
-  code: string;
+  status: boolean;
 
-  success: boolean;
+  result?: {
+    id: number;
+    name: string;
+    code: string;
+    enableTimeRecommendation: boolean;
+    enablePlaceRecommendation: boolean;
+    timeAvailabilityType: string;
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  code?: string;
+  message?: string;
 }
 
 ////////////////////////////////////////////////////////////participant

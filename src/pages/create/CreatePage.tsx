@@ -28,14 +28,14 @@ export default function CreatePage() {
   const navigate = useNavigate();
 
   const handleCreateClick = () => {
-    if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
-      //하나는 선택해야 돼
+    console.log('1. 클릭 이벤트 발생');
 
+    if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
+      console.log('2-1. 중단: 추천 옵션 미선택');
       return;
     }
     if (isTimeRecommendEnabled && !dateType) {
-      //dateType 선택해야 돼
-
+      console.log('2-2. 중단: 날짜 타입(dateType) 미선택');
       return;
     }
 
@@ -49,13 +49,18 @@ export default function CreatePage() {
       timeRangeEnd: formatTime(timeRange[1]),
     };
 
+    console.log('3. 서버로 보낼 데이터:', requestData);
+
     createMeeting(requestData, {
       onSuccess: (data) => {
+        console.log('4. 성공 응답:', data);
         if (data.status && data.result) {
           navigate(`/share/${data.result.code}`);
         }
       },
-      onError: (error) => {},
+      onError: (error) => {
+        console.error('4. 에러 발생:', error);
+      },
     });
   };
 
