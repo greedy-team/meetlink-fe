@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Clock, MapPin } from 'lucide-react';
+
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { useJoinMeeting } from '@/hooks/useParticipant';
 
-import { JoinOptionCard } from '@/features/meeting/join/JoinOptionCard';
+import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { NickNameInput } from '@/features/meeting/join/NickNameInput';
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
@@ -124,8 +126,8 @@ export default function JoinPage() {
         </div>
         <div className="space-y-3">
           {isTimeRecommendEnabled && (
-            <JoinOptionCard
-              icon={<img src="/icons/time.svg" alt="" aria-hidden="true" className="h-5 w-5" />}
+            <GoToButton
+              icon={Clock}
               title="가능한 시간 선택"
               description="모임 만남 시간을 추천하는데 활용돼요"
               onClick={goTimeInput}
@@ -133,8 +135,8 @@ export default function JoinPage() {
           )}
 
           {isPlaceRecommendEnabled && (
-            <JoinOptionCard
-              icon={<img src="/icons/place.svg" alt="" aria-hidden="true" className="h-5 w-5" />}
+            <GoToButton
+              icon={MapPin}
               title="출발지 입력"
               description="모임 만남 장소를 추천하는데 활용돼요"
               onClick={goPlaceInput}
