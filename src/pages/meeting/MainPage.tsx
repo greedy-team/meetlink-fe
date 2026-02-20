@@ -43,13 +43,39 @@ export default function MainPage() {
   const completedCount = dummyList.filter((p) => p.hasTimeInput && p.hasPlaceInput).length;
   const totalCount = dummyList.length;
 
+  const handleShare = async () => {
+    // 공유할 데이터 설정
+    const shareData = {
+      title: `MeetLink 모임 초대 : ${meetingName}`,
+      text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
+      url: window.location.href + '/join',
+    };
+
+    try {
+      // 1. 브라우저가 Web Share API를 지원하고, 데이터 공유가 가능한지 확인
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        console.log('공유 성공!');
+      } else {
+        // 2. 지원하지 않는 브라우저(예: 일부 PC 브라우저)일 경우 클립보드 복사
+        await navigator.clipboard.writeText(shareData.url);
+        console.log('클립보드 복사 완료');
+      }
+    } catch (err) {
+      // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크
+      if ((err as Error).name !== 'AbortError') {
+        console.error('공유 중 에러 발생:', err);
+      }
+    }
+  };
+
   return (
     <AppLayout
       header={<Header title={meetingName} showBackButton={false} showSettingButton={true} />}
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
+          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
             초대 링크 공유하기
           </FixedBottomButton>
         </div>
