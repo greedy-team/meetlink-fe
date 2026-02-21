@@ -7,19 +7,20 @@ import { getMyAvailableTime, updateMyAvailableTime } from '@/features/api/timeAp
 import { type UpdateMyAvailableTimeRequest } from '@/types/apiTypes';
 
 //가능 시간 조회
-export const useGetMyAvailableTime = (id: string) => {
+export const useGetMyAvailableTime = () => {
   const { code } = useParams<{ code: string }>();
+  const token = localStorage.getItem('meeting_token');
 
   return useQuery({
-    queryKey: timeKeys.my(code!, id),
-    queryFn: () => getMyAvailableTime(code!, id),
-    enabled: !!code && !!id,
+    queryKey: timeKeys.my(code!, token),
+    queryFn: () => getMyAvailableTime(code!),
+    enabled: !!code && !!token,
     staleTime: 1000 * 60 * 5,
   });
 };
 
 //가능 시간 등록
-export const useUpdateMyAvailableTime = (id: string) => {
+export const useUpdateMyAvailableTime = () => {
   const { code } = useParams<{ code: string }>();
   const queryClient = useQueryClient();
   const token = localStorage.getItem('meeting_token'); // 토큰 가져오기

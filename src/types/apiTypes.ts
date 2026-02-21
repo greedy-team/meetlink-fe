@@ -138,8 +138,8 @@ export interface GetMyAvailableTimeResponse {
 //가능 시간 등록
 export interface UpdateMyAvailableTimeRequest {
   slots: {
-    date: string;
-    dayOfWeek: number;
+    date?: string;
+    dayOfWeek?: number;
     startTime: string;
   }[];
 }

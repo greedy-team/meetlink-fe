@@ -8,12 +8,9 @@ import { axiosInstance } from './axiosInstance';
 //내 가능 시간 조회
 //요청 X
 //반환 GetMyAvailableTimeResponse
-export const getMyAvailableTime = async (
-  code: string,
-  id: string,
-): Promise<GetMyAvailableTimeResponse> => {
+export const getMyAvailableTime = async (code: string): Promise<GetMyAvailableTimeResponse> => {
   const { data } = await axiosInstance.get<GetMyAvailableTimeResponse>(
-    `/meetings/${code}/time-availability/${id}`,
+    `/meetings/${code}/time-availabilities`,
   );
   return data;
 };
