@@ -10,23 +10,22 @@ export const meetingKeys = {
 //참가자 쿼리
 export const participantKeys = {
   all: ['participants'] as const,
-
-  list: (code: string) => [...participantKeys.all, 'list', code] as const,
-  status: (code: string) => [...participantKeys.all, 'status', code] as const,
+  list: (code: string, token: string | null) =>
+    [...participantKeys.all, 'list', code, token] as const,
+  status: (code: string, token: string | null) =>
+    [...participantKeys.all, 'status', code, token] as const,
 };
 
-//시간 쿼리
+//시간 쿼리 (토큰 추가)
 export const timeKeys = {
   all: ['times'] as const,
-
-  my: (code: string) => [...timeKeys.all, code] as const,
+  my: (code: string, token: string | null) => [...timeKeys.all, code, token] as const,
 };
 
-//장소 쿼리
+//장소 쿼리 (토큰 추가)
 export const placeKeys = {
   all: ['places'] as const,
-
-  my: (code: string) => [...placeKeys.all, code] as const,
+  my: (code: string, token: string | null) => [...placeKeys.all, code, token] as const,
 };
 
 //추천 쿼리

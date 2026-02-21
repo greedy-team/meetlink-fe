@@ -23,8 +23,6 @@ export default function JoinPage() {
     meetingName,
     participantStatusList,
     nickName,
-    setNickName,
-    // setId,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
   } = useMeetingContext();
@@ -63,10 +61,11 @@ export default function JoinPage() {
     join(
       { nickname: trimmed },
       {
-        onSuccess: () => {
-          setNickName(trimmed);
-          // TODO: 백엔드가 participantId/token을 주면 여기서 setId + storage 저장 로직 추가
-          navigate(`/meeting/${code}`, { replace: true });
+        onSuccess: (data) => {
+          if (data.status) {
+            // 참여 성공 시에만 이동
+            navigate(`/meeting/${code}`, { replace: true });
+          }
         },
       },
     );

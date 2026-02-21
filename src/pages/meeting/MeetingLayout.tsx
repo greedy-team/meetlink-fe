@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Outlet, useOutletContext } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
-import { useParticipantList } from '@/hooks/useParticipant';
+import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
 import { useRecommendPlace, useRecommendTime } from '@/hooks/useRecommend';
 
 import {
@@ -25,11 +26,8 @@ export interface MeetingOutletContext {
   //recommendTimeList: RecommendTime[] | undefined;
   //recommendPlaceList: RecommendPlace[] | undefined;
 
-  //클라
   nickName: string;
-  setNickName: React.Dispatch<React.SetStateAction<string>>;
   id: string;
-  setId: React.Dispatch<React.SetStateAction<string>>;
 
   // 3. 로딩 상태
   //isLoading: boolean;
@@ -43,13 +41,56 @@ interface RawParticipantStatus {
 }
 
 export default function MeetingLayout() {
+  const { code } = useParams<{ code: string }>();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   const { data: meetingData, isLoading: isMeetingLoading } = useGetMeetingDetail();
+  const {
+    data: myStatusData,
+    isLoading: isMyStatusLoading,
+    isFetching: isMyStatusFetching,
+    isError: isMyStatusError,
+  } = useMyStatus();
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
+
   //const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
   //const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
 
-  const [nickName, setNickName] = useState('');
-  const [id, setId] = useState('');
+  const token = localStorage.getItem('meeting_token');
+
+  // 2. 가드 로직 설정
+  const isPublicPage = pathname.endsWith('/join') || pathname.endsWith('/reconnect');
+
+  useEffect(() => {
+    // 토큰이 아예 없으면 로딩을 기다릴 필요 없이 즉시 join으로
+    if (!isPublicPage && !token) {
+      navigate(`/meeting/${code}/join`, { replace: true });
+      return;
+    }
+
+    // 서버 요청 중일 때는 대기
+    if (isMyStatusLoading || isMyStatusFetching) return;
+
+    // 토큰은 있으나 서버에서 권한 없다고 한 경우 (예: 잘못된 토큰)
+    if (!isPublicPage && (isMyStatusError || !myStatusData?.status)) {
+      navigate(`/meeting/${code}/join`, { replace: true });
+    }
+
+    // 이미 참여했는데 '참여' 페이지로 접근하는 경우 메인으로
+    if (isPublicPage && token && myStatusData?.status) {
+      navigate(`/meeting/${code}`, { replace: true });
+    }
+  }, [
+    isPublicPage,
+    myStatusData,
+    isMyStatusError,
+    isMyStatusLoading,
+    isMyStatusFetching,
+    token,
+    navigate,
+    code,
+  ]);
 
   const contextValue: MeetingOutletContext = {
     meetingName: meetingData?.result?.name || '',
@@ -72,13 +113,19 @@ export default function MeetingLayout() {
     //recommendTimeList: timeData?.recommendTimeList,
     //recommendPlaceList: placeData?.recommendPlaceList,
 
-    nickName,
-    setNickName,
-    id,
-    setId,
+    nickName: myStatusData?.result?.nickname || '',
+    id: myStatusData?.result?.id?.toString() || '',
 
     //isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
   };
+
+  if (!isPublicPage && (!token || isMyStatusLoading || isMyStatusFetching)) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <span className="font-medium text-gray-500">참여 정보 확인 중...</span>
+      </div>
+    );
+  }
 
   return (
     <div>

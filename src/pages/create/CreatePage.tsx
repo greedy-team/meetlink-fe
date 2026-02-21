@@ -18,7 +18,7 @@ import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
 export default function CreatePage() {
   const [meetingName, setMeetingName] = useState('');
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(false);
-  const [dateType, setDateType] = useState('');
+  const [dateType, setDateType] = useState('WEEKLY');
   const [timeRange, setTimeRange] = useState<[number, number]>([6, 18]);
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
 
