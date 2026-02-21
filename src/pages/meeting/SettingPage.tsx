@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Clock, LogOut, MapPin } from 'lucide-react';
 
@@ -22,14 +22,17 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useUpdateMeetingDetail } from '@/hooks/useMeeting';
+import { useLeaveMeeting } from '@/hooks/useParticipant';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
+import { LeaveButton } from '@/features/meeting/setting/LeaveButton';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
 import { RecommendCheckBox } from '@/features/meeting/setting/RecommendCheckBox';
 import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function SettingPage() {
+  const { code } = useParams<{ code: string }>();
   const {
     meetingName: initialMeetingName,
     isTimeRecommendEnabled: initialIsTimeRecommendEnabled,
@@ -38,6 +41,7 @@ export default function SettingPage() {
     timeRange: initialTimeRange,
   } = useMeetingContext();
   const { mutate: updateMeeting } = useUpdateMeetingDetail();
+  const { mutate: leaveMeeting } = useLeaveMeeting();
 
   const [meetingName, setMeetingName] = useState(initialMeetingName);
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(
@@ -50,6 +54,19 @@ export default function SettingPage() {
   const [timeRange, setTimeRange] = useState(initialTimeRange);
 
   const navigate = useNavigate();
+
+  const handleLeave = () => {
+    leaveMeeting(undefined, {
+      onSuccess: (data) => {
+        console.log('회의 나가기 성공!', data);
+        navigate(`/meeting/${code}/join`);
+      },
+      onError: (error) => {
+        console.error('회의 나가기 실패:', error);
+        // 사용자에게 에러 알리기
+      },
+    });
+  };
 
   const handleSave = () => {
     const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
@@ -147,10 +164,13 @@ export default function SettingPage() {
     >
       <div className="flex flex-col gap-2">
         <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
+
         <div className="h-2" />
+
         <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
           모임 설정
         </Label>
+
         <RecommendCheckBox
           icon={Clock}
           title="시간 추천 받기"
@@ -158,6 +178,7 @@ export default function SettingPage() {
           checked={isTimeRecommendEnabled}
           onCheckedChange={setIsTimeRecommendEnabled}
         />
+
         {isTimeRecommendEnabled && (
           <div className="flex flex-col gap-5">
             <DateTypeSelector value={dateType} onChange={setDateType} />
@@ -178,22 +199,7 @@ export default function SettingPage() {
           변경 사항은 모두에게 적용됩니다.
         </NotifyBox>
 
-        <Button
-          variant="ghost"
-          className={cn(
-            'bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600',
-            'my-3 h-14 w-full rounded-2xl py-3 font-semibold transition-all',
-            'flex flex-row items-center justify-start gap-3',
-          )}
-        >
-          <div className="w-1" />
-          <LogOut
-            size={22}
-            strokeWidth={2.5}
-            className="h-auto! w-auto! shrink-0 transition-colors"
-          />
-          <span className="text-base">모임 나가기</span>
-        </Button>
+        <LeaveButton onLeave={handleLeave} />
       </div>
     </AppLayout>
   );
