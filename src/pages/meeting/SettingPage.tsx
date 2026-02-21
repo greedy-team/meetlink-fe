@@ -76,7 +76,7 @@ export default function SettingPage() {
       enablePlaceRecommendation: isPlaceRecommendEnabled,
       timeAvailabilityType: dateType,
       timeRangeStart: formatTime(timeRange[0]),
-      timeRangeEnd: formatTime(timeRange[1]),
+      timeRangeEnd: timeRange[1] === 24 ? '23:59:59' : formatTime(timeRange[1]),
     };
 
     // mutate 호출 시 콜백 추가

@@ -19,7 +19,7 @@ export default function CreatePage() {
   const [meetingName, setMeetingName] = useState('');
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(false);
   const [dateType, setDateType] = useState('WEEKLY');
-  const [timeRange, setTimeRange] = useState<[number, number]>([6, 18]);
+  const [timeRange, setTimeRange] = useState<[number, number]>([12, 18]);
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
 
   const { mutate: createMeeting } = useCreateMeeting();
