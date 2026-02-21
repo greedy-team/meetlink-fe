@@ -4,13 +4,15 @@ import { addDays, format, startOfWeek } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 
-import { type SelectedTime, type TimeInfo } from '@/types/meetingTypes';
+import { type SelectedTime } from '@/types/meetingTypes';
 
 // 히트맵 간격을 결정하는 스태틱 변수
 const SLOT_HEIGHT = 36;
 const HOUR_HEIGHT = SLOT_HEIGHT * 2;
 
 interface TimeHeatMapProps {
+  mode: 'INPUT' | 'OUTPUT';
+  participantsNum?: number;
   timeRange: [number, number];
   dateType: string;
   selectedDate: Date;
@@ -19,6 +21,8 @@ interface TimeHeatMapProps {
 }
 
 export default function TimeHeatMap({
+  mode,
+  participantsNum = 1,
   timeRange,
   dateType,
   selectedDate,
@@ -63,29 +67,30 @@ export default function TimeHeatMap({
     return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
   }, [selectedDate]);
 
-  // 🚨 수정: dateType에 따라 검색 기준 분리
-  const isSelected = (dayIndex: number, dateStr: string, timeStr: string) => {
+  const getCellData = (dayIndex: number, dateStr: string, timeStr: string) => {
     const targetDay = selectedTimeList.find((item) =>
       dateType === 'WEEKLY' ? item.dayOfWeek === dayIndex : item.date === dateStr,
     );
-    return targetDay?.startTimeList.some((t) => t.startTime === timeStr) ?? false;
+    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === timeStr);
+    return timeInfo ? timeInfo.availableNumber : 0;
   };
 
-  // 🚨 수정: dateType에 따라 데이터 생성 로직 분리
   const toggleTimeBlock = (
     dayIndex: number,
     dateStr: string,
     timeStr: string,
     forceMode?: 'SELECT' | 'DESELECT',
   ) => {
-    const currentlySelected = isSelected(dayIndex, dateStr, timeStr);
+    if (mode === 'OUTPUT') return;
+
+    const availableNum = getCellData(dayIndex, dateStr, timeStr);
+    const currentlySelected = availableNum > 0;
 
     if (forceMode === 'SELECT' && currentlySelected) return;
     if (forceMode === 'DESELECT' && !currentlySelected) return;
 
     setSelectedTimeList((prev) => {
       const newList = [...prev];
-      // 검색 기준: WEEKLY는 요일, SPECIFIC_DATE는 날짜
       const targetIndex = newList.findIndex((item) =>
         dateType === 'WEEKLY' ? item.dayOfWeek === dayIndex : item.date === dateStr,
       );
@@ -106,10 +111,9 @@ export default function TimeHeatMap({
           newList[targetIndex] = target;
         }
       } else if (forceMode !== 'DESELECT') {
-        // 🚨 새 데이터 생성 시 dateType에 따라 값 제어
         newList.push({
-          date: dateType === 'WEEKLY' ? '' : dateStr, // 주간이면 날짜 없음
-          dayOfWeek: dateType === 'WEEKLY' ? dayIndex : -1, // 특정날짜면 요일값 없음(-1)
+          date: dateType === 'WEEKLY' ? '' : dateStr,
+          dayOfWeek: dateType === 'WEEKLY' ? dayIndex : -1,
           startTimeList: [{ startTime: timeStr, availableNumber: 1 }],
         });
       }
@@ -118,15 +122,16 @@ export default function TimeHeatMap({
   };
 
   const handlePointerDown = (dayIndex: number, dateStr: string, timeStr: string) => {
+    if (mode === 'OUTPUT') return;
     setIsDragging(true);
-    const action = isSelected(dayIndex, dateStr, timeStr) ? 'DESELECT' : 'SELECT';
+    const action = getCellData(dayIndex, dateStr, timeStr) > 0 ? 'DESELECT' : 'SELECT';
     setDragAction(action);
     lastToggledCell.current = `${dayIndex}-${timeStr}`;
     toggleTimeBlock(dayIndex, dateStr, timeStr, action);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !dragAction || e.pointerType !== 'touch') return;
+    if (mode === 'OUTPUT' || !isDragging || !dragAction || e.pointerType !== 'touch') return;
 
     const target = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
 
@@ -145,7 +150,6 @@ export default function TimeHeatMap({
 
   return (
     <div className="flex w-full font-sans select-none">
-      {/* 1. 좌측 시간 라벨 영역 */}
       <div className="w-6 shrink-0 border-r border-gray-200 pr-2">
         {hours.map((hour, idx) => (
           <div
@@ -158,9 +162,8 @@ export default function TimeHeatMap({
         ))}
       </div>
 
-      {/* 2. 우측 히트맵 영역 */}
       <div
-        className="grid flex-1 touch-none grid-cols-7 bg-white"
+        className={cn('grid flex-1 grid-cols-7 bg-white', mode === 'INPUT' && 'touch-none')}
         onPointerMove={handlePointerMove}
       >
         {weekDates.map((date, dayIndex) => {
@@ -169,8 +172,10 @@ export default function TimeHeatMap({
           return (
             <div key={dayIndex} className="flex flex-col border-r border-gray-200 last:border-r-0">
               {timeSlots.map((timeStr, slotIdx) => {
-                const selected = isSelected(dayIndex, dateStr, timeStr);
+                const availableNum = getCellData(dayIndex, dateStr, timeStr);
                 const isTopHour = timeStr.endsWith(':00:00');
+
+                const opacityValue = availableNum > 0 ? availableNum / participantsNum : 0;
 
                 return (
                   <div
@@ -180,17 +185,22 @@ export default function TimeHeatMap({
                     data-timestr={timeStr}
                     onPointerDown={() => handlePointerDown(dayIndex, dateStr, timeStr)}
                     onPointerEnter={() =>
+                      mode === 'INPUT' &&
                       isDragging &&
                       dragAction &&
                       toggleTimeBlock(dayIndex, dateStr, timeStr, dragAction)
                     }
-                    style={{ height: SLOT_HEIGHT }}
+                    style={{
+                      height: SLOT_HEIGHT,
+                      opacity: mode === 'OUTPUT' ? opacityValue : availableNum > 0 ? 1 : 0,
+                    }}
                     className={cn(
-                      'cursor-pointer transition-colors duration-100',
+                      'transition-colors duration-100',
+                      mode === 'INPUT' && 'cursor-pointer',
                       isTopHour
                         ? 'border-t border-gray-200'
                         : 'border-t border-dashed border-gray-100',
-                      selected ? 'bg-greedy' : 'hover:bg-gray-50',
+                      availableNum > 0 ? 'bg-greedy' : mode === 'INPUT' ? 'hover:bg-gray-50' : '',
                     )}
                   />
                 );

@@ -20,15 +20,6 @@ export default function TimeInputPage() {
 
   const { mutate: saveTime } = useUpdateMyAvailableTime(id);
 
-  const firstDate: string | number = useMemo(() => {
-    if (dateType === 'WEEKLY') {
-      return 0;
-    } else {
-      const sunday = startOfWeek(selectedDate, { weekStartsOn: 0 }); // 0: 일요일 시작
-      return format(sunday, 'yyyy-MM-dd');
-    }
-  }, [dateType, selectedDate]);
-
   // const handleSave = () => {
   //   saveTime({
   //     //myTimeList: selectedTimeList,
@@ -56,11 +47,12 @@ export default function TimeInputPage() {
     >
       <div className="space-y-4">
         <TimeHeatMap
+          mode="INPUT"
           dateType={dateType}
+          timeRange={timeRange}
           selectedDate={selectedDate}
           selectedTimeList={selectedTimeList}
           setSelectedTimeList={setSelectedTimeList}
-          timeRange={timeRange}
         />
       </div>
     </AppLayout>
