@@ -258,7 +258,10 @@ export default function TimeHeader({
         {dateType === 'SPECIFIC_DATE' && (
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="relative z-45 flex w-full items-center justify-center bg-white text-gray-400 transition-colors hover:bg-gray-50"
+            className={cn(
+              'relative z-45 flex w-full items-center justify-center bg-white text-gray-400 transition-colors hover:bg-gray-50',
+              isOpen ? '' : '',
+            )}
           >
             <ChevronDown
               size={24}
