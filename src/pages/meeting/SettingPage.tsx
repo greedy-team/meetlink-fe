@@ -74,7 +74,11 @@ export default function SettingPage() {
     });
   };
 
-  const isFormValid = meetingName.trim().length > 0;
+  const isFormValid =
+    meetingName.trim().length > 0 && // 이름 입력 필수
+    (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 하나는 선택
+    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType));
+
   const hasChanges =
     meetingName !== initialMeetingName ||
     isTimeRecommendEnabled !== initialIsTimeRecommendEnabled ||
