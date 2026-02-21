@@ -17,6 +17,7 @@ export interface TimeInfo {
 //시간 정보 리스트
 export interface SelectedTime {
   date: string;
+  dayOfWeek: number;
   startTimeList: TimeInfo[];
 }
 

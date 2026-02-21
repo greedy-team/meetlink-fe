@@ -176,7 +176,7 @@ export default function TimeHeader({
         {/* 2. 요일 헤더 */}
         <div
           className={cn(
-            'relative z-45 grid grid-cols-7 bg-white pt-2 pl-10 text-center',
+            'relative z-45 grid grid-cols-7 bg-white px-4 pt-2 pl-10 text-center',
             dateType === 'WEEKLY' && 'border-b-0 pb-2',
           )}
         >
@@ -195,7 +195,7 @@ export default function TimeHeader({
         </div>
 
         {dateType === 'SPECIFIC_DATE' && (
-          <div className="relative flex flex-col pl-10">
+          <div className="relative flex flex-col px-4 pl-10">
             <div
               className="relative z-40 transition-all duration-300 ease-in-out"
               style={{
