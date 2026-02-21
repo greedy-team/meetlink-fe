@@ -26,7 +26,7 @@ export const useGetMeetingDetail = () => {
 };
 
 //모임 정보 수정
-export const useUpdateMeetingDetail = (manualCode?: string) => {
+export const useUpdateMeetingDetail = () => {
   const { code } = useParams<{ code: string }>();
   const queryClient = useQueryClient();
 

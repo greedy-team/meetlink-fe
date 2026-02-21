@@ -10,3 +10,12 @@ export const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+//토큰
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('meeting_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});

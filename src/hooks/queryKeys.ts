@@ -12,21 +12,21 @@ export const participantKeys = {
   all: ['participants'] as const,
 
   list: (code: string) => [...participantKeys.all, 'list', code] as const,
-  status: (code: string, id: string) => [...participantKeys.all, 'status', code, id] as const,
+  status: (code: string) => [...participantKeys.all, 'status', code] as const,
 };
 
 //시간 쿼리
 export const timeKeys = {
   all: ['times'] as const,
 
-  my: (code: string, id: string) => [...timeKeys.all, code, id] as const,
+  my: (code: string) => [...timeKeys.all, code] as const,
 };
 
 //장소 쿼리
 export const placeKeys = {
   all: ['places'] as const,
 
-  my: (code: string, id: string) => [...placeKeys.all, code, id] as const,
+  my: (code: string) => [...placeKeys.all, code] as const,
 };
 
 //추천 쿼리

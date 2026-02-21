@@ -19,11 +19,16 @@ export const useJoinMeeting = () => {
   return useMutation({
     mutationFn: (body: JoinMeetingRequest) => joinMeeting(code!, body),
 
-    onSuccess: () => {
-      //참가자 목록 리패치
-      queryClient.invalidateQueries({
-        queryKey: participantKeys.list(code!),
-      });
+    onSuccess: (data) => {
+      if (data.status) {
+        if (data.result?.token) {
+          localStorage.setItem('meeting_token', data.result.token);
+
+          queryClient.invalidateQueries({
+            queryKey: participantKeys.list(code!),
+          });
+        }
+      }
     },
     onError: () => {
       //실패시
@@ -44,13 +49,13 @@ export const useParticipantList = () => {
 };
 
 //내 참여 상태 조회
-export const useMyStatus = (id: string) => {
+export const useMyStatus = () => {
   const { code } = useParams<{ code: string }>();
 
   return useQuery({
-    queryKey: participantKeys.status(code!, id),
-    queryFn: () => getMyStatus(code!, id),
-    enabled: !!code && !!id,
+    queryKey: participantKeys.status(code!),
+    queryFn: () => getMyStatus(code!),
+    enabled: !!code,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -61,16 +66,12 @@ export const useLeaveMeeting = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => leaveMeeting(code!, id),
+    mutationFn: () => leaveMeeting(code!),
 
-    onSuccess: (_, targetId) => {
-      //참여자 리스크 리패치
-      queryClient.invalidateQueries({
-        queryKey: participantKeys.list(code!),
-      });
-      //내 참가 상태 제거
+    onSuccess: () => {
+      localStorage.removeItem('meeting_token');
       queryClient.removeQueries({
-        queryKey: participantKeys.status(code!, targetId),
+        queryKey: participantKeys.all,
       });
     },
     onError: () => {
