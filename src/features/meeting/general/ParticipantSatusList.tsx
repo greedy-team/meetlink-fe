@@ -34,6 +34,8 @@ export function ParticipantStatusList({
             <ParticipantStatusItem
               key={`${participant.nickName}-${index}`}
               {...participant}
+              hasTimeInput={participant.hasTimeInput}
+              hasPlaceInput={participant.hasPlaceInput}
               isLast={index === visibleList.length - 1 && !showExpandButton}
               isTimeRecommendEnabled={isTimeRecommendEnabled}
               isPlaceRecommendEnabled={isPlaceRecommendEnabled}

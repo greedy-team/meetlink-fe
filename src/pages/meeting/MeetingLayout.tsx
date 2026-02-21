@@ -119,10 +119,13 @@ export default function MeetingLayout() {
     //isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
   };
 
-  if (!isPublicPage && (!token || isMyStatusLoading || isMyStatusFetching)) {
+  if (
+    !isPublicPage &&
+    (!token || isMyStatusLoading || isMyStatusFetching || isMeetingLoading || isParticipantLoading)
+  ) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-white">
-        <span className="font-medium text-gray-500">참여 정보 확인 중...</span>
+        <span className="font-medium text-gray-500">데이터를 불러오는 중입니다...</span>
       </div>
     );
   }
