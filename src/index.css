@@ -7,6 +7,7 @@
 /* 커스텀 */
 @theme inline {
   --color-greedy: #008e4c;
+  --color-greedy-strong: #0b5a2a;
 }
 
 @theme inline {

@@ -5,6 +5,7 @@ import SharePage from './pages/create/SharePage';
 import LayoutPreviewPage from './pages/dev/LayoutPreviewPage';
 import StartPage from './pages/landing/StartPage';
 import AddressSearchPage from './pages/meeting/input/AddressSearchPage';
+import ConfirmOnMapPage from './pages/meeting/input/ConfirmOnMapPage';
 import PlaceInputPage from './pages/meeting/input/PlaceInputPage';
 import TimeInputPage from './pages/meeting/input/TimeInputPage';
 import JoinPage from './pages/meeting/JoinPage';
@@ -12,6 +13,7 @@ import MainPage from './pages/meeting/MainPage';
 import MeetingLayout from './pages/meeting/MeetingLayout';
 import PlaceRecommendPage from './pages/meeting/recommend/PlaceRecommendPage';
 import TimeRecommendPage from './pages/meeting/recommend/TimeRecommendPage';
+import ReconnectPage from './pages/meeting/ReconnectPage';
 import SettingPage from './pages/meeting/SettingPage';
 
 import './App.css';
@@ -28,11 +30,13 @@ function App() {
       <Route path="/meeting/:code" element={<MeetingLayout />}>
         <Route index element={<MainPage />} />
         <Route path="join" element={<JoinPage />} />
+        <Route path="reconnect" element={<ReconnectPage />} />
         <Route path="setting" element={<SettingPage />} />
 
         <Route path="input/time" element={<TimeInputPage />} />
         <Route path="input/place" element={<PlaceInputPage />} />
         <Route path="input/place/search" element={<AddressSearchPage />} />
+        <Route path="input/place/confirm" element={<ConfirmOnMapPage />} />
 
         <Route path="recommend/time" element={<TimeRecommendPage />} />
         <Route path="recommend/place" element={<PlaceRecommendPage />} />
