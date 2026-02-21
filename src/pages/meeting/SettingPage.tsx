@@ -74,6 +74,15 @@ export default function SettingPage() {
     });
   };
 
+  const isFormValid = meetingName.trim().length > 0;
+  const hasChanges =
+    meetingName !== initialMeetingName ||
+    isTimeRecommendEnabled !== initialIsTimeRecommendEnabled ||
+    isPlaceRecommendEnabled !== initialIsPlaceRecommendEnabled ||
+    dateType !== initialDateType ||
+    timeRange[0] !== initialTimeRange[0] ||
+    timeRange[1] !== initialTimeRange[1];
+
   return (
     <AppLayout
       header={<Header title="모임 설정" showBackButton={true} showSettingButton={false} />}
@@ -89,7 +98,18 @@ export default function SettingPage() {
             </FixedBottomButton>
           </div>
           <div className="flex-1">
-            {meetingName.trim().length > 0 ? (
+            {!isFormValid ? (
+              <FixedBottomButton className="pointer-events-none bg-gray-300 opacity-50" disabled>
+                완료
+              </FixedBottomButton>
+            ) : !hasChanges ? (
+              <FixedBottomButton
+                className="bg-greedy hover:bg-greedy/50"
+                onClick={() => navigate(-1)}
+              >
+                완료
+              </FixedBottomButton>
+            ) : (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
@@ -99,28 +119,23 @@ export default function SettingPage() {
                 <AlertDialogContent className="w-[90%] rounded-2xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>설정을 저장하시겠습니까?</AlertDialogTitle>
-
                     <AlertDialogDescription>
                       입력하신 정보는 모든 사용자에게 적용됩니다.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl">취소</AlertDialogCancel>
-
-                    <AlertDialogAction onClick={handleSave} className="bg-greedy rounded-xl">
+                    <AlertDialogCancel className="rounded-xl border-none bg-gray-100 hover:bg-gray-200">
+                      취소
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleSave}
+                      className="bg-greedy hover:bg-greedy/80 rounded-xl text-white"
+                    >
                       저장하기
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            ) : (
-              <FixedBottomButton
-                className="bg-greedy hover:bg-greedy/50 pointer-events-none"
-                disabled
-              >
-                완료
-              </FixedBottomButton>
             )}
           </div>
         </div>
