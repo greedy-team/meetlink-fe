@@ -20,7 +20,7 @@ export default function MainPage() {
     meetingName,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
-    //participantStatusList,
+    participantStatusList,
     //recommendTimeList,
     //recommendPlaceList,
   } = useMeetingContext();
@@ -33,15 +33,10 @@ export default function MainPage() {
     navigate(url);
   };
 
-  const dummyList: ParticipantList = [
-    { nickName: '강건', hasTimeInput: true, hasPlaceInput: true },
-    { nickName: '민지', hasTimeInput: true, hasPlaceInput: false },
-    { nickName: '민주', hasTimeInput: false, hasPlaceInput: false },
-    { nickName: '철수', hasTimeInput: true, hasPlaceInput: true },
-    { nickName: '영희', hasTimeInput: false, hasPlaceInput: true },
-  ];
-  const completedCount = dummyList.filter((p) => p.hasTimeInput && p.hasPlaceInput).length;
-  const totalCount = dummyList.length;
+  const completedCount = participantStatusList.filter(
+    (p) => p.hasTimeInput && p.hasPlaceInput,
+  ).length;
+  const totalCount = participantStatusList.length;
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -125,7 +120,7 @@ export default function MainPage() {
               {completedCount}/{totalCount} 입력 완료
             </div>
           </div>
-          <ParticipantStatusList list={dummyList || []} />
+          <ParticipantStatusList list={participantStatusList || []} />
         </div>
       </div>
     </AppLayout>

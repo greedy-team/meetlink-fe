@@ -7,6 +7,7 @@ import { useRecommendPlace, useRecommendTime } from '@/hooks/useRecommend';
 
 import {
   type ParticipantList,
+  type ParticipantStatus,
   type RecommendPlace,
   type RecommendTime,
   type SelectedTime,
@@ -19,7 +20,7 @@ export interface MeetingOutletContext {
   isPlaceRecommendEnabled: boolean;
   dateType: string;
   timeRange: [number, number];
-  //participantStatusList: ParticipantList | undefined;
+  participantStatusList: ParticipantList;
   //commonTimeList: SelectedTime[] | undefined;
   //recommendTimeList: RecommendTime[] | undefined;
   //recommendPlaceList: RecommendPlace[] | undefined;
@@ -34,9 +35,16 @@ export interface MeetingOutletContext {
   //isLoading: boolean;
 }
 
+interface RawParticipantStatus {
+  id: number;
+  nickname: string;
+  placeSubmitted: boolean;
+  timeSubmitted: boolean;
+}
+
 export default function MeetingLayout() {
   const { data: meetingData, isLoading: isMeetingLoading } = useGetMeetingDetail();
-  //const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
+  const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
   //const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
   //const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
 
@@ -52,7 +60,14 @@ export default function MeetingLayout() {
       parseInt(meetingData?.result?.timeRangeStart?.split(':')[0] || '6', 10),
       parseInt(meetingData?.result?.timeRangeEnd?.split(':')[0] || '24', 10),
     ],
-    //participantStatusList: participantData?.participantList,
+    participantStatusList: (participantData?.result || []).map(
+      (p: RawParticipantStatus): ParticipantStatus => ({
+        id: p.id,
+        nickName: p.nickname, // nickname -> nickName
+        hasPlaceInput: p.placeSubmitted, // placeSubmitted -> hasPlaceInput
+        hasTimeInput: p.timeSubmitted, // timeSubmitted -> hasTimeInput
+      }),
+    ),
     //commonTimeList: timeData?.commonTimeList,
     //recommendTimeList: timeData?.recommendTimeList,
     //recommendPlaceList: placeData?.recommendPlaceList,

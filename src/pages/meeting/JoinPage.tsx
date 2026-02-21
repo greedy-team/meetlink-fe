@@ -14,7 +14,6 @@ import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { NickNameInput } from '@/features/meeting/join/NickNameInput';
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
-import type { ParticipantStatus } from '@/types/meetingTypes';
 
 export default function JoinPage() {
   const navigate = useNavigate();
@@ -32,25 +31,9 @@ export default function JoinPage() {
 
   const [inputNickName, setInputNickName] = useState(nickName ?? '');
 
-  // UI 확인용 목데이터
-  const mockParticipantStatusList = useMemo<ParticipantStatus[]>(
-    () => [
-      { nickName: '민수', hasTimeInput: false, hasPlaceInput: false },
-      { nickName: '지현', hasTimeInput: false, hasPlaceInput: false },
-      { nickName: '도윤', hasTimeInput: false, hasPlaceInput: false },
-      { nickName: '서연', hasTimeInput: false, hasPlaceInput: false },
-    ],
-    [],
-  );
-
-  const effectiveParticipantStatusList =
-    participantStatusList && participantStatusList.length > 0
-      ? participantStatusList
-      : mockParticipantStatusList;
-
   const participantSummary = useMemo(
-    () => buildParticipantSummary(effectiveParticipantStatusList),
-    [effectiveParticipantStatusList],
+    () => buildParticipantSummary(participantStatusList || []),
+    [participantStatusList],
   );
 
   const canSubmit = inputNickName.trim().length > 0;
@@ -78,7 +61,7 @@ export default function JoinPage() {
     if (!trimmed) return;
 
     join(
-      { nickName: trimmed },
+      { nickname: trimmed },
       {
         onSuccess: () => {
           setNickName(trimmed);

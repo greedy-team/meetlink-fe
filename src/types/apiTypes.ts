@@ -108,7 +108,12 @@ export interface JoinMeetingResponse {
 //모임 참여자 목록 조회
 export interface GetParticipantListResponse {
   status: boolean;
-  result?: ParticipantStatus[];
+  result?: {
+    id: number;
+    nickname: string;
+    placeSubmitted: boolean;
+    timeSubmitted: boolean;
+  }[];
 }
 
 //내 참여 상태 확인
