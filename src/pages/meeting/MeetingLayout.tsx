@@ -45,8 +45,9 @@ export default function MeetingLayout() {
 
   const contextValue: MeetingOutletContext = {
     meetingName: meetingData?.meetingName || '',
-    isTimeRecommendEnabled: meetingData?.isTimeRecommendEnabled || false,
-    isPlaceRecommendEnabled: meetingData?.isPlaceRecommendEnabled || false,
+    // TODO: 초기 UI 확인을 위해 meetingData 없을 때 기본값을 true로 둠. (API 연결 후 필요하면 제거)
+    isTimeRecommendEnabled: meetingData?.isTimeRecommendEnabled ?? true,
+    isPlaceRecommendEnabled: meetingData?.isPlaceRecommendEnabled ?? true,
     dateType: meetingData?.dateType || '',
     timeRange: meetingData?.timeRange || [6, 18],
     participantStatusList: participantData?.participantList,
