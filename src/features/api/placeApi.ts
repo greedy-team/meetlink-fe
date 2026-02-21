@@ -23,11 +23,10 @@ export const getMyStartPlace = async (
 //반환 UpdateMyStartPlaceResponse
 export const updateMyStartPlace = async (
   code: string,
-  id: string,
   body: UpdateMyStartPlaceRequest,
 ): Promise<UpdateMyStartPlaceResponse> => {
   const { data } = await axiosInstance.post<UpdateMyStartPlaceResponse>(
-    `/meetings/${code}/my-places/${id}`,
+    `/meetings/${code}/location-availabilities`,
     body,
   );
   return data;

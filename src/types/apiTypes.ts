@@ -1,10 +1,4 @@
-import {
-  type ParticipantList,
-  type ParticipantStatus,
-  type RecommendPlace,
-  type RecommendTime,
-  type SelectedTime,
-} from '@/types/meetingTypes';
+import { type RecommendPlace, type RecommendTime, type SelectedTime } from '@/types/meetingTypes';
 
 ////////////////////////////////////////////////////////////meeting
 //모임 생성
@@ -143,13 +137,17 @@ export interface GetMyAvailableTimeResponse {
 
 //가능 시간 등록
 export interface UpdateMyAvailableTimeRequest {
-  myTimeList: SelectedTime[];
+  slots: {
+    date: string;
+    dayOfWeek: number;
+    startTime: string;
+  }[];
 }
 
 export interface UpdateMyAvailableTimeResponse {
-  code: string;
-
-  success: boolean;
+  status: boolean;
+  code?: string;
+  message?: string;
 }
 
 ////////////////////////////////////////////////////////////place
@@ -169,9 +167,12 @@ export interface UpdateMyStartPlaceRequest {
 }
 
 export interface UpdateMyStartPlaceResponse {
-  code: string;
-
-  success: boolean;
+  status: false;
+  code?: string;
+  message?: string;
+  result?: {
+    latitude: string;
+  };
 }
 
 ////////////////////////////////////////////////////////////recommend
