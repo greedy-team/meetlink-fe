@@ -34,4 +34,5 @@ export const recommendKeys = {
 
   time: (code: string) => [...recommendKeys.all, 'time', code] as const,
   place: (code: string) => [...recommendKeys.all, 'place', code] as const,
+  result: (code: string) => [...recommendKeys.all, 'result', code] as const,
 };

@@ -1,5 +1,6 @@
 import {
   type GetRecommendPlaceResponse,
+  type GetRecommendResultResponse,
   type GetRecommendTimeResponse,
 } from '../../types/apiTypes';
 import { axiosInstance } from './axiosInstance';
@@ -21,5 +22,11 @@ export const getRecommendPlace = async (code: string): Promise<GetRecommendPlace
   const { data } = await axiosInstance.get<GetRecommendPlaceResponse>(
     `/meetings/${code}/place-recommendations`,
   );
+  return data;
+};
+
+//추천 결과 조회
+export const getRecommendResult = async (code: string): Promise<GetRecommendResultResponse> => {
+  const { data } = await axiosInstance.get<GetRecommendResultResponse>(`/meetings/${code}/result`);
   return data;
 };
