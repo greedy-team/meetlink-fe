@@ -120,7 +120,11 @@ export default function MainPage() {
               {completedCount}/{totalCount} 입력 완료
             </div>
           </div>
-          <ParticipantStatusList list={participantStatusList || []} />
+          <ParticipantStatusList
+            list={participantStatusList || []}
+            isTimeRecommendEnabled={isTimeRecommendEnabled}
+            isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+          />
         </div>
       </div>
     </AppLayout>

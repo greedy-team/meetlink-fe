@@ -11,9 +11,16 @@ import { type ParticipantList } from '@/types/meetingTypes';
 interface ParticipantStatusListProps {
   list: ParticipantList;
   className?: string;
+  isTimeRecommendEnabled: boolean;
+  isPlaceRecommendEnabled: boolean;
 }
 
-export function ParticipantStatusList({ list, className }: ParticipantStatusListProps) {
+export function ParticipantStatusList({
+  list,
+  className,
+  isTimeRecommendEnabled,
+  isPlaceRecommendEnabled,
+}: ParticipantStatusListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const visibleList = isExpanded ? list : list.slice(0, 3);
@@ -28,6 +35,8 @@ export function ParticipantStatusList({ list, className }: ParticipantStatusList
               key={`${participant.nickName}-${index}`}
               {...participant}
               isLast={index === visibleList.length - 1 && !showExpandButton}
+              isTimeRecommendEnabled={isTimeRecommendEnabled}
+              isPlaceRecommendEnabled={isPlaceRecommendEnabled}
             />
           ))}
         </div>
