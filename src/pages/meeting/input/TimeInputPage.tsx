@@ -7,7 +7,7 @@ import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton'
 import { Header } from '@/components/common/layout/Header';
 import { useUpdateMyAvailableTime } from '@/hooks/useTime';
 
-import TimeHeader from '@/features/Time/Header/TimeHeader';
+import TimeHeader from '@/features/Time/TimeHeader';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 import { type SelectedTime } from '@/types/meetingTypes';
 
@@ -21,10 +21,8 @@ export default function TimeInputPage() {
 
   const firstDate: string | number = useMemo(() => {
     if (dateType === 'WEEKLY') {
-      // 주간 반복일 경우 첫 번째 날의 인덱스(정수 0)를 반환
       return 0;
     } else {
-      // 특정 날짜일 경우, 현재 선택된 날짜가 속한 주의 시작일(일요일)을 "yyyy-MM-dd" 형식으로 반환
       const sunday = startOfWeek(selectedDate, { weekStartsOn: 0 }); // 0: 일요일 시작
       return format(sunday, 'yyyy-MM-dd');
     }
