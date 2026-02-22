@@ -34,6 +34,8 @@ export interface ParticipantMovement {
   nickName: string;
   takenTime: number;
   movementData: string;
+  // 프론트 렌더링용 (polyline 그리기)
+  movementPath?: { lat: number; lng: number }[];
 }
 
 //추천 장소
