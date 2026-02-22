@@ -24,7 +24,7 @@ export interface MeetingOutletContext {
   participantStatusList: ParticipantList;
   //commonTimeList: SelectedTime[] | undefined;
   //recommendTimeList: RecommendTime[] | undefined;
-  //recommendPlaceList: RecommendPlace[] | undefined;
+  recommendPlaceList: RecommendPlace[] | undefined;
 
   nickName: string;
   id: string;
@@ -111,6 +111,7 @@ export default function MeetingLayout() {
     ),
     //commonTimeList: timeData?.commonTimeList,
     //recommendTimeList: timeData?.recommendTimeList,
+    recommendPlaceList: undefined,
     //recommendPlaceList: placeData?.recommendPlaceList,
 
     nickName: myStatusData?.result?.nickname || '',

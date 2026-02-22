@@ -22,11 +22,11 @@ export default function MainPage() {
     isPlaceRecommendEnabled,
     participantStatusList,
     //recommendTimeList,
-    //recommendPlaceList,
+    recommendPlaceList,
   } = useMeetingContext();
 
   //const bestRecommendedTime = recommendTimeList?.[0];
-  //const bestRecommendedPlace = recommendPlaceList?.[0];
+  const bestRecommendedPlace = recommendPlaceList?.[0];
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -82,7 +82,7 @@ export default function MainPage() {
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
             //bestTime={bestRecommendedTime}
-            //bestPlace={bestRecommendedPlace}
+            bestPlace={bestRecommendedPlace}
           />
         </div>
 
