@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Calendar, type LucideIcon, MapPin } from 'lucide-react';
+import { Clock, type LucideIcon, MapPin } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,28 @@ interface LatLngMapProps {
   lat: number;
   lng: number;
   zoom?: number;
+}
+
+interface BestTime {
+  id: number;
+  date: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  availableCount: number;
+  rank: number;
+}
+
+interface BestPlace {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  avgTravelTime: number;
+  maxTravelTime: number;
+  calculationType: string;
+  rank: number;
 }
 
 const LatLngMap: React.FC<LatLngMapProps> = ({ lat, lng, zoom = 15 }) => {
@@ -36,12 +58,42 @@ const LatLngMap: React.FC<LatLngMapProps> = ({ lat, lng, zoom = 15 }) => {
   );
 };
 
-import { type RecommendPlace, type RecommendTime } from '@/types/meetingTypes';
+const makeTimeDescription = (bestTime: BestTime | undefined): string => {
+  if (!bestTime) return '시간 정보가 없습니다';
+  const { date, dayOfWeek, startTime, endTime } = bestTime;
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  let datePart = '';
+  if (date && date !== '') {
+    const dateObj = new Date(date);
+    const dayName = dayNames[dateObj.getDay()];
+    datePart = `${date} (${dayName})`;
+  } else if (dayOfWeek !== -1) {
+    datePart = `${dayNames[dayOfWeek]}요일`;
+  }
+
+  const formatTime = (timeStr: string) => {
+    const [hourStr, minuteStr] = timeStr.split(':');
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour < 12 ? '오전' : '오후';
+
+    if (hour > 12) hour -= 12;
+    if (hour === 0) hour = 12;
+
+    return `${ampm} ${hour}:${minuteStr}`;
+  };
+
+  const startFormatted = formatTime(startTime);
+  const endFormatted = formatTime(endTime);
+
+  return `${datePart} ${startFormatted} ~ ${endFormatted}`;
+};
+
 interface RecommendSummaryCardProps {
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
-  bestTime?: RecommendTime;
-  bestPlace?: RecommendPlace;
+  bestTime: BestTime | undefined;
+  bestPlace: BestPlace | undefined;
   className?: string;
 }
 
@@ -56,6 +108,9 @@ export function RecommendSummaryCard({
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
+
+  const timeValue = makeTimeDescription(bestTime);
+  const placeValue = bestPlace?.address || '장소 정보가 없습니다';
 
   if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
     return null; // 혹시나 방지
@@ -73,9 +128,9 @@ export function RecommendSummaryCard({
 
         {isTimeRecommendEnabled && (
           <RecommendItem
-            icon={Calendar}
+            icon={Clock}
             label="추천 시간"
-            value="1"
+            value={timeValue}
             onClick={() => handleGoToButton('recommend/time')}
           />
         )}
@@ -88,7 +143,7 @@ export function RecommendSummaryCard({
           <RecommendItem
             icon={MapPin}
             label="추천 장소"
-            value="세종대학교ㅌ"
+            value={placeValue}
             onClick={() => handleGoToButton('recommend/place')}
           />
         )}

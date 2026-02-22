@@ -72,7 +72,7 @@ export default function SharePage() {
         </div>
       }
     >
-      <div className="mx-6 mt-4 flex flex-col gap-4">
+      <div className="mx-3 mt-0 flex flex-col gap-4">
         {/* 모임 요약 카드 */}
         <div className="flex flex-col gap-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           {/* 모임 이름 */}
@@ -85,43 +85,20 @@ export default function SharePage() {
 
           {/* 설정 정보 리스트 */}
           <div className="flex flex-col gap-6">
-            {/* 장소 추천 설정 */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-500">
-                  <MapPin className="h-5 w-5" />
-                </div>
-                <span className="text-base font-semibold text-gray-800">중간 장소 추천</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                {isPlaceRecommendEnabled ? (
-                  <>
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    <span className="text-sm font-medium text-green-600">사용</span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="h-5 w-5 text-gray-300" />
-                    <span className="text-sm font-medium text-gray-400">사용 안 함</span>
-                  </>
-                )}
-              </div>
-            </div>
-
             {/* 시간 추천 설정 */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50 text-orange-500">
+                  <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
                     <Clock className="h-5 w-5" />
                   </div>
-                  <span className="text-base font-semibold text-gray-800">되는 시간 추천</span>
+                  <span className="text-base font-semibold text-gray-800">시간 추천</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {isTimeRecommendEnabled ? (
                     <>
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      <span className="text-sm font-medium text-green-600">사용</span>
+                      <CheckCircle2 className="text-greedy/70 h-5 w-5" />
+                      <span className="text-greedy/70 text-sm font-medium">사용</span>
                     </>
                   ) : (
                     <>
@@ -134,7 +111,7 @@ export default function SharePage() {
 
               {/* 시간 추천을 사용할 경우 상세 정보 표시 */}
               {isTimeRecommendEnabled && (
-                <div className="ml-[52px] flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <CalendarDays className="h-4 w-4 text-gray-400" />
                     <span className="font-medium">{dateType}</span>
@@ -147,6 +124,28 @@ export default function SharePage() {
                   </div>
                 </div>
               )}
+            </div>
+            {/* 장소 추천 설정 */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <span className="text-base font-semibold text-gray-800">장소 추천</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {isPlaceRecommendEnabled ? (
+                  <>
+                    <CheckCircle2 className="text-greedy/70 h-5 w-5" />
+                    <span className="text-greedy/70 text-sm font-medium">사용</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-5 w-5 text-gray-300" />
+                    <span className="text-sm font-medium text-gray-400">사용 안 함</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

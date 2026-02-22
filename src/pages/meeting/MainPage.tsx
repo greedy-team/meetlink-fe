@@ -7,6 +7,7 @@ import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
+import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
@@ -16,12 +17,16 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 export default function MainPage() {
   const { meetingName, isTimeRecommendEnabled, isPlaceRecommendEnabled, participantStatusList } =
     useMeetingContext();
+  const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
+
+  const bestRecommendedTime = resultData?.result.timeCandidate;
+  const bestRecommendedPlace = resultData?.result.placeCandidate;
 
   const completedCount = participantStatusList.filter(
     (p) => p.hasTimeInput && p.hasPlaceInput,
@@ -72,8 +77,8 @@ export default function MainPage() {
           <RecommendSummaryCard
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
-            //bestTime={bestRecommendedTime}
-            //bestPlace={bestRecommendedPlace}
+            bestTime={bestRecommendedTime}
+            bestPlace={bestRecommendedPlace}
           />
         </div>
 
