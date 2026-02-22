@@ -14,7 +14,7 @@ const mockCandidateList = [
   {
     id: 1,
     rank: 1,
-    date: '2026-02-05',
+    date: '2026-03-05',
     dayOfWeek: 4, // 목요일
     startTime: '08:00',
     endTime: '10:00',
@@ -23,7 +23,7 @@ const mockCandidateList = [
   {
     id: 2,
     rank: 2,
-    date: '2026-02-02',
+    date: '2026-03-02',
     dayOfWeek: 1, // 월요일
     startTime: '08:00',
     endTime: '10:00',
@@ -32,7 +32,7 @@ const mockCandidateList = [
   {
     id: 3,
     rank: 3,
-    date: '2026-02-06',
+    date: '2026-03-06',
     dayOfWeek: 5, // 금요일
     startTime: '14:00',
     endTime: '16:00',
@@ -41,7 +41,7 @@ const mockCandidateList = [
   {
     id: 4,
     rank: 4,
-    date: '2026-02-07',
+    date: '2026-03-07',
     dayOfWeek: 6, // 토요일
     startTime: '19:00',
     endTime: '21:00',
@@ -50,7 +50,7 @@ const mockCandidateList = [
   {
     id: 5,
     rank: 5,
-    date: '2026-02-08',
+    date: '2026-03-08',
     dayOfWeek: 0, // 일요일
     startTime: '13:00',
     endTime: '15:00',
@@ -59,7 +59,7 @@ const mockCandidateList = [
   {
     id: 4,
     rank: 4,
-    date: '2026-02-07',
+    date: '2026-03-07',
     dayOfWeek: 6, // 토요일
     startTime: '19:00',
     endTime: '21:00',
@@ -68,7 +68,7 @@ const mockCandidateList = [
   {
     id: 5,
     rank: 5,
-    date: '2026-02-08',
+    date: '2026-03-08',
     dayOfWeek: 0, // 일요일
     startTime: '13:00',
     endTime: '15:00',
@@ -79,8 +79,6 @@ export default function TimeRecommendPage() {
   const { dateType, timeRange, selectedTimeList, setSelectedTimeList } = useMeetingContext();
   const { data: timeData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
-  const [selectedWeek, setSelectedWeek] = useState('');
 
   const commonTimeList = convertToCommonTimeList(timeData?.result.heatmaps);
   const candidateList = timeData?.result.candidates;
@@ -100,7 +98,7 @@ export default function TimeRecommendPage() {
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
         <div className="space-y-3">
-          <TimeRecommendModal candidateList={mockCandidateList} />
+          <TimeRecommendModal candidateList={mockCandidateList} setSelectedDate={setSelectedDate} />
         </div>
       }
     >

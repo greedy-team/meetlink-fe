@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { motion, type PanInfo, useAnimation } from 'framer-motion';
+
+import { TimeRecommendCard } from './TimeRecommendCard';
 
 // --- ⚙️ 바텀 시트 멈춤 높이 설정 ---
 const SHEET_CONFIG = {
   FULL_VH: 90,
-  HALF_VH: 55,
-  PEEK_PX: 60,
+  HALF_VH: 50,
+  PEEK_PX: 20,
 };
 // ------------------------------------
 
@@ -22,22 +24,14 @@ export interface Candidate {
 
 interface TimeRecommendModalProps {
   candidateList: Candidate[] | undefined;
+  setSelectedDate: (date: Date) => void;
 }
 
-const getDayText = (day: number) => {
-  const days = ['일', '월', '화', '수', '목', '금', '토'];
-  return days[day] ?? '';
-};
-
-const formatTime = (timeStr: string) => {
-  const [hour] = timeStr.split(':');
-  const h = parseInt(hour, 10);
-  if (h < 12) return `오전 ${h}시`;
-  if (h === 12) return `오후 12시`;
-  return `오후 ${h - 12}시`;
-};
-
-export default function TimeRecommendModal({ candidateList }: TimeRecommendModalProps) {
+// 💡 2. 메인 모달 컴포넌트
+export default function TimeRecommendModal({
+  candidateList,
+  setSelectedDate,
+}: TimeRecommendModalProps) {
   const [sheetState, setSheetState] = useState<'peek' | 'half' | 'full'>('peek');
   const controls = useAnimation();
 
@@ -55,19 +49,16 @@ export default function TimeRecommendModal({ candidateList }: TimeRecommendModal
     controls.start(sheetState);
   }, [sheetState, windowHeight, controls]);
 
-  // 💡 [추가된 부분] 배경 스크롤 방지 로직 (Scroll Lock)
+  // 배경 스크롤 방지 로직 (Scroll Lock)
   useEffect(() => {
-    // 모달이 위로 올라와 있을 때(half, full)만 배경 스크롤을 막습니다.
     if (sheetState === 'half' || sheetState === 'full') {
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none'; // 모바일 브라우저의 기본 스와이프 액션 방지
+      document.body.style.touchAction = 'none';
     } else {
-      // 바닥에 내려가 있을 때(peek)는 다시 배경 스크롤을 허용합니다.
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     }
 
-    // 컴포넌트가 언마운트(삭제)될 때 원래대로 복구하는 클린업 함수
     return () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
@@ -112,6 +103,12 @@ export default function TimeRecommendModal({ candidateList }: TimeRecommendModal
 
     setSheetState(nextState);
     controls.start(nextState);
+  };
+
+  const handleCardClick = (dateString: string) => {
+    setSelectedDate(new Date(dateString));
+    setSheetState('peek');
+    controls.start('peek');
   };
 
   return (
@@ -159,51 +156,15 @@ export default function TimeRecommendModal({ candidateList }: TimeRecommendModal
           <div className="flex flex-col gap-4">
             {candidateList.map((candidate, index) => {
               const isTopRank = candidate.rank === 1 || index === 0;
-              const dateObj = new Date(candidate.date);
-              const month = dateObj.getMonth() + 1;
-              const day = dateObj.getDate();
 
               return (
-                <div
+                // 💡 3. 분리한 카드를 가져와서 사용합니다.
+                <TimeRecommendCard
                   key={candidate.id}
-                  className={`relative flex flex-col gap-4 rounded-2xl border p-5 ${
-                    isTopRank ? 'border-green-600 bg-green-50/30' : 'border-gray-200 bg-white'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-gray-900">
-                          {month}월 {day}일 ({getDayText(candidate.dayOfWeek)})
-                        </span>
-                        {isTopRank && (
-                          <span className="rounded bg-green-600 px-2 py-0.5 text-xs font-medium text-white">
-                            추천
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-1 text-sm font-medium text-gray-600">
-                        {formatTime(candidate.startTime)} ~ {formatTime(candidate.endTime)}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm font-medium text-gray-500">
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                        />
-                      </svg>
-                      {candidate.availableCount}명
-                    </div>
-                  </div>
-                </div>
+                  candidate={candidate}
+                  isTopRank={isTopRank}
+                  onClick={handleCardClick}
+                />
               );
             })}
           </div>
