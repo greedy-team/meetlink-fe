@@ -107,9 +107,9 @@ export default function MeetingLayout() {
     participantStatusList: (participantData?.result || []).map(
       (p: RawParticipantStatus): ParticipantStatus => ({
         id: p.id,
-        nickName: p.nickname, // nickname -> nickName
-        hasPlaceInput: p.placeSubmitted, // placeSubmitted -> hasPlaceInput
-        hasTimeInput: p.timeSubmitted, // timeSubmitted -> hasTimeInput
+        nickName: p.nickname,
+        hasPlaceInput: p.placeSubmitted,
+        hasTimeInput: p.timeSubmitted,
       }),
     ),
     selectedTimeList,

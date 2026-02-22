@@ -9,7 +9,7 @@ import TimeHeader from '@/features/Time/TimeHeader';
 import TimeHeatMap from '@/features/Time/TimeHeapMap';
 import TimeRecommendModal from '@/features/Time/TimeRecommendModal';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
-import { type RecommendTime, type SelectedTime } from '@/types/meetingTypes';
+
 const mockCandidateList = [
   {
     id: 1,
@@ -76,10 +76,12 @@ const mockCandidateList = [
   },
 ];
 export default function TimeRecommendPage() {
-  const { dateType, timeRange, selectedTimeList, setSelectedTimeList } = useMeetingContext();
+  const { dateType, timeRange, selectedTimeList, setSelectedTimeList, participantStatusList } =
+    useMeetingContext();
   const { data: timeData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
+  const participantsNum = participantStatusList.length;
   const commonTimeList = convertToCommonTimeList(timeData?.result.heatmaps);
   const candidateList = timeData?.result.candidates;
 
@@ -98,7 +100,11 @@ export default function TimeRecommendPage() {
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
         <div className="space-y-3">
-          <TimeRecommendModal candidateList={mockCandidateList} setSelectedDate={setSelectedDate} />
+          <TimeRecommendModal
+            candidateList={mockCandidateList}
+            participantsNum={participantsNum}
+            setSelectedDate={setSelectedDate}
+          />
         </div>
       }
     >

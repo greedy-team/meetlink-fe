@@ -24,12 +24,14 @@ export interface Candidate {
 
 interface TimeRecommendModalProps {
   candidateList: Candidate[] | undefined;
+  participantsNum: number;
   setSelectedDate: (date: Date) => void;
 }
 
 // 💡 2. 메인 모달 컴포넌트
 export default function TimeRecommendModal({
   candidateList,
+  participantsNum,
   setSelectedDate,
 }: TimeRecommendModalProps) {
   const [sheetState, setSheetState] = useState<'peek' | 'half' | 'full'>('peek');
@@ -162,6 +164,7 @@ export default function TimeRecommendModal({
                 <TimeRecommendCard
                   key={candidate.id}
                   candidate={candidate}
+                  participantsNum={participantsNum}
                   isTopRank={isTopRank}
                   onClick={handleCardClick}
                 />

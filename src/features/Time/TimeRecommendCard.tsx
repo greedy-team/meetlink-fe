@@ -24,11 +24,17 @@ const formatTime = (timeStr: string) => {
 // 💡 1. 분리된 TimeRecommendCard 컴포넌트
 interface TimeRecommendCardProps {
   candidate: Candidate;
+  participantsNum: number;
   isTopRank: boolean;
   onClick: (dateString: string) => void;
 }
 
-export function TimeRecommendCard({ candidate, isTopRank, onClick }: TimeRecommendCardProps) {
+export function TimeRecommendCard({
+  candidate,
+  participantsNum,
+  isTopRank,
+  onClick,
+}: TimeRecommendCardProps) {
   const dateObj = new Date(candidate.date);
   const month = dateObj.getMonth() + 1;
   const day = dateObj.getDate();
@@ -65,7 +71,7 @@ export function TimeRecommendCard({ candidate, isTopRank, onClick }: TimeRecomme
               d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
             />
           </svg>
-          {candidate.availableCount}명
+          {candidate.availableCount}/{participantsNum}
         </div>
       </div>
     </div>
