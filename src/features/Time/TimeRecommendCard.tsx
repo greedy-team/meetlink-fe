@@ -9,7 +9,7 @@ export interface Candidate {
   endTime: string;
   id: number;
   rank: number;
-  startTime: string; // 데이터에 따라 null이 들어올 수도 있음
+  startTime: string;
 }
 
 const getDayText = (day: number) => {
@@ -17,15 +17,12 @@ const getDayText = (day: number) => {
   return days[day] ?? '';
 };
 
-// 🚨 에러 원인 해결: 시간 포맷팅 헬퍼 함수에 null 방어 코드 추가
 const formatTime = (timeStr?: string | null) => {
-  // timeStr이 null, undefined, 또는 빈 문자열("")일 경우 안전하게 빈 문자열 반환
   if (!timeStr) return '';
 
   const [hour] = timeStr.split(':');
   const h = parseInt(hour, 10);
 
-  // 혹시라도 'HH' 부분이 숫자가 아닐 경우를 대비한 방어 코드
   if (isNaN(h)) return '';
 
   if (h < 12) return `오전 ${h}시`;
@@ -33,7 +30,6 @@ const formatTime = (timeStr?: string | null) => {
   return `오후 ${h - 12}시`;
 };
 
-// date-fns를 활용한 안전한 요일 추출 헬퍼 함수
 const getSafeDayOfWeek = (dateStr?: string | null, fallbackDay?: number) => {
   if (dateStr && dateStr.trim() !== '') {
     const parsedDate = parseISO(dateStr);
@@ -63,14 +59,12 @@ export function TimeRecommendCard({
   commonTimeList,
   dateType,
 }: TimeRecommendCardProps) {
-  // 혹시 모를 candidate.date null 에러를 방지하기 위한 안전한 파싱
   const parsedCandidateDate = candidate.date ? parseISO(candidate.date) : new Date();
   const isValidDate = isValid(parsedCandidateDate);
 
   const month = isValidDate ? getMonth(parsedCandidateDate) + 1 : 1;
   const day = isValidDate ? getDate(parsedCandidateDate) : 1;
 
-  // candidate의 정확한 요일 계산
   const candidateDay = getSafeDayOfWeek(candidate.date, candidate.dayOfWeek);
 
   const titleText =
@@ -78,7 +72,6 @@ export function TimeRecommendCard({
       ? `${month}월 ${day}일 (${getDayText(candidateDay)})`
       : `${getDayText(candidateDay)}요일`;
 
-  // 히트맵을 위한 30분 단위 시간 슬롯 배열 생성
   const timeSlots: string[] = [];
   const [startHour, endHour] = timeRange;
   for (let h = startHour; h < endHour; h++) {
@@ -87,7 +80,6 @@ export function TimeRecommendCard({
     timeSlots.push(`${hourStr}:30`);
   }
 
-  // commonTimeList에서 현재 카드와 일치하는 데이터 찾기
   const matchedTimeData = commonTimeList.find((item) => {
     if (dateType === 'SPECIFIC_DATE') {
       return item.date?.trim() === candidate.date?.trim();
@@ -96,7 +88,6 @@ export function TimeRecommendCard({
     return itemDay === candidateDay;
   });
 
-  // 찾은 데이터의 startTimeList를 이용해 빠른 조회를 위한 해시맵 생성
   const countMap: Record<string, number> = {};
   if (matchedTimeData && matchedTimeData.startTimeList) {
     matchedTimeData.startTimeList.forEach((info) => {

@@ -6,13 +6,11 @@ import { TimeRecommendCard } from './TimeRecommendCard';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
-// --- ⚙️ 바텀 시트 멈춤 높이 설정 ---
 const SHEET_CONFIG = {
   FULL_VH: 90,
   HALF_VH: 50,
   PEEK_PX: 20,
 };
-// ------------------------------------
 
 export interface Candidate {
   availableCount: number;
@@ -33,7 +31,7 @@ interface TimeRecommendModalProps {
   dateType: string;
 }
 
-// 💡 2. 메인 모달 컴포넌트
+// 메인 모달 컴포넌트
 export default function TimeRecommendModal({
   candidateList,
   participantsNum,
@@ -168,7 +166,7 @@ export default function TimeRecommendModal({
               const isTopRank = candidate.rank === 1 || index === 0;
 
               return (
-                // 💡 3. 분리한 카드를 가져와서 사용합니다.
+                //  분리한 카드를 가져와서 사용합니다.
                 <TimeRecommendCard
                   key={candidate.id}
                   candidate={candidate}

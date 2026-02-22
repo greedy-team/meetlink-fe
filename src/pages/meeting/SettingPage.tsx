@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock, LogOut, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
@@ -18,9 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { useUpdateMeetingDetail } from '@/hooks/useMeeting';
 import { useLeaveMeeting } from '@/hooks/useParticipant';
 

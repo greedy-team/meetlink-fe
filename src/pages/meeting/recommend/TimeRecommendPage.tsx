@@ -27,9 +27,6 @@ export default function TimeRecommendPage() {
   useEffect(() => {
     // 페이지 진입 시 및 새로고침 시 실행
     calculateRecommendTime();
-
-    // 만약 특정 인자(body)가 필요하다면 아래와 같이 전달
-    // calculateRecommendTime({ someData: 'value' });
   }, [calculateRecommendTime]);
 
   return (

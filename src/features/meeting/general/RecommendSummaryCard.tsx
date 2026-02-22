@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Clock, type LucideIcon, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 

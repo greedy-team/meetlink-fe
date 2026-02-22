@@ -10,7 +10,7 @@ import {
   isSameMonth,
   startOfMonth,
   startOfWeek,
-  subDays, // 🚨 주 단위 빼기를 위해 추가
+  subDays,
   subMonths,
 } from 'date-fns';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -57,18 +57,15 @@ export default function TimeHeader({
 }: TimeHeaderProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // 전체 달력을 감싸는 ref (높이 계산 및 애니메이션 용)
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<number>(0);
 
   const weeksInMonth = useMemo<Date[][]>(() => getWeeksInMonth(selectedDate), [selectedDate]);
 
-  // 선택된 날짜가 몇 번째 주(행)에 있는지 계산 (0부터 시작)
   const selectedWeekIndex = useMemo(() => {
     return weeksInMonth.findIndex((week) => week.some((d) => isSameDay(d, selectedDate)));
   }, [weeksInMonth, selectedDate]);
 
-  // 달력 전체 높이를 계산하여 state에 저장 (최초 1회 및 달이 바뀔 때)
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
@@ -86,23 +83,19 @@ export default function TimeHeader({
     return 'text-gray-900';
   };
 
-  // 한 행(week)의 대략적인 높이 (패딩/마진 포함. 필요시 CSS에 맞게 조절)
   const ROW_HEIGHT = 44;
 
-  const today = new Date(); // 오늘 날짜 기준점
+  const today = new Date();
   const currentWeekStart = startOfWeek(today);
 
-  // 🚨 수정: 열려있을 때는 월 기준, 닫혀있을 때는 주 기준으로 이전 버튼 비활성화 여부 결정
   const isPrevDisabled = isOpen
     ? !isBefore(startOfMonth(today), startOfMonth(selectedDate))
     : !isBefore(currentWeekStart, startOfWeek(selectedDate));
 
-  // 🚨 수정: 이전 버튼 클릭 시 상태(isOpen)에 따라 월 단위 또는 주 단위 이동
   const handlePrevClick = () => {
     if (isPrevDisabled) return;
 
     if (isOpen) {
-      // 월 단위 이동 (기존 로직)
       const targetMonth = subMonths(selectedDate, 1);
       if (isSameMonth(targetMonth, today)) {
         setSelectedDate(today);
@@ -110,28 +103,25 @@ export default function TimeHeader({
         setSelectedDate(startOfMonth(targetMonth));
       }
     } else {
-      // 주 단위 이동 (추가된 로직)
       const targetDate = subDays(selectedDate, 7);
       if (isSameDay(startOfWeek(targetDate), currentWeekStart)) {
-        setSelectedDate(today); // 이번 주로 돌아왔을 땐 오늘 날짜 선택
+        setSelectedDate(today);
       } else {
         setSelectedDate(targetDate);
       }
     }
   };
 
-  // 🚨 수정: 다음 버튼 클릭 시 상태에 따라 월 단위 또는 주 단위 이동
   const handleNextClick = () => {
     if (isOpen) {
       setSelectedDate(startOfMonth(addMonths(selectedDate, 1)));
     } else {
-      setSelectedDate(addDays(selectedDate, 7)); // 주 단위 이동
+      setSelectedDate(addDays(selectedDate, 7));
     }
   };
 
   return (
     <div className="relative z-50 w-full font-sans">
-      {/* 달력이 열려있을 때 배경을 덮는 투명 오버레이 */}
       {isOpen && (
         <button
           type="button"
@@ -141,9 +131,7 @@ export default function TimeHeader({
         />
       )}
 
-      {/* 기존 최상단 div의 배경색 유지 */}
       <div className="w-full bg-white">
-        {/* 상단 월 표시 */}
         {dateType === 'SPECIFIC_DATE' && (
           <div className="relative z-45 flex items-center justify-between px-26 pt-4 pb-2 text-lg font-bold text-gray-800">
             {/* 이전 버튼 */}
@@ -179,7 +167,6 @@ export default function TimeHeader({
           className={cn(
             'relative z-45 grid grid-cols-7 px-4 pt-2 pl-10 text-center',
             dateType === 'WEEKLY' && 'border-b-0 pb-2',
-            // SPECIFIC_DATE가 아닐 경우에만 여기에 밑줄을 그어줌 (기존 구조 호환용)
             dateType !== 'SPECIFIC_DATE' && 'border-b border-gray-200 pb-2',
           )}
         >
@@ -200,9 +187,7 @@ export default function TimeHeader({
         {/* 달력 본문 + 토글 영역 (SPECIFIC_DATE 일 때만 렌더링) */}
         {dateType === 'SPECIFIC_DATE' && (
           <div className="relative w-full" style={{ height: `${ROW_HEIGHT + 24}px` }}>
-            {/* absolute로 띄워서 main 영역 덮기 (여기에 테두리 유지) */}
             <div className="absolute top-0 left-0 z-40 w-full border-b border-gray-200 bg-white">
-              {/* 날짜 컨텐츠 (기존 로직 및 스타일 동일, overflow-hidden만 여기에 적용하여 내용이 넘치지 않게 가둠) */}
               <div className="relative flex flex-col overflow-hidden px-4 pl-10">
                 <div
                   className="relative z-40 transition-all duration-300 ease-in-out"
