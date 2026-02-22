@@ -130,7 +130,7 @@ export default function TimeHeader({
   };
 
   return (
-    <div>
+    <div className="relative z-50 w-full font-sans">
       {/* 달력이 열려있을 때 배경을 덮는 투명 오버레이 */}
       {isOpen && (
         <button
@@ -141,10 +141,11 @@ export default function TimeHeader({
         />
       )}
 
-      <div className="w-full overflow-hidden border-b border-gray-200 bg-white font-sans">
+      {/* 기존 최상단 div의 배경색 유지 */}
+      <div className="w-full bg-white">
         {/* 상단 월 표시 */}
         {dateType === 'SPECIFIC_DATE' && (
-          <div className="relative z-45 flex items-center justify-between bg-white px-26 pt-4 pb-2 text-lg font-bold text-gray-800">
+          <div className="relative z-45 flex items-center justify-between px-26 pt-4 pb-2 text-lg font-bold text-gray-800">
             {/* 이전 버튼 */}
             <button
               onClick={handlePrevClick}
@@ -173,11 +174,13 @@ export default function TimeHeader({
           </div>
         )}
 
-        {/* 2. 요일 헤더 */}
+        {/* 요일 헤더 */}
         <div
           className={cn(
-            'relative z-45 grid grid-cols-7 bg-white px-4 pt-2 pl-10 text-center',
+            'relative z-45 grid grid-cols-7 px-4 pt-2 pl-10 text-center',
             dateType === 'WEEKLY' && 'border-b-0 pb-2',
+            // SPECIFIC_DATE가 아닐 경우에만 여기에 밑줄을 그어줌 (기존 구조 호환용)
+            dateType !== 'SPECIFIC_DATE' && 'border-b border-gray-200 pb-2',
           )}
         >
           {DAYS.map((day, idx) => (
@@ -194,83 +197,85 @@ export default function TimeHeader({
           ))}
         </div>
 
+        {/* 달력 본문 + 토글 영역 (SPECIFIC_DATE 일 때만 렌더링) */}
         {dateType === 'SPECIFIC_DATE' && (
-          <div className="relative flex flex-col px-4 pl-10">
-            <div
-              className="relative z-40 transition-all duration-300 ease-in-out"
-              style={{
-                height: isOpen ? `${contentHeight}px` : `${ROW_HEIGHT}px`,
-              }}
-            >
-              <div
-                ref={contentRef}
-                className="absolute w-full transition-transform duration-300 ease-in-out"
-                style={{
-                  transform: isOpen
-                    ? 'translateY(0)'
-                    : `translateY(-${selectedWeekIndex * ROW_HEIGHT}px)`,
-                }}
-              >
-                <div className="flex flex-col">
-                  {weeksInMonth.map((week, weekIdx) => {
-                    const isSelectedWeek = weekIdx === selectedWeekIndex;
+          <div className="relative w-full" style={{ height: `${ROW_HEIGHT + 24}px` }}>
+            {/* absolute로 띄워서 main 영역 덮기 (여기에 테두리 유지) */}
+            <div className="absolute top-0 left-0 z-40 w-full border-b border-gray-200 bg-white">
+              {/* 날짜 컨텐츠 (기존 로직 및 스타일 동일, overflow-hidden만 여기에 적용하여 내용이 넘치지 않게 가둠) */}
+              <div className="relative flex flex-col overflow-hidden px-4 pl-10">
+                <div
+                  className="relative z-40 transition-all duration-300 ease-in-out"
+                  style={{ height: isOpen ? `${contentHeight}px` : `${ROW_HEIGHT}px` }}
+                >
+                  <div
+                    ref={contentRef}
+                    className="absolute w-full transition-transform duration-300 ease-in-out"
+                    style={{
+                      transform: isOpen
+                        ? 'translateY(0)'
+                        : `translateY(-${selectedWeekIndex * ROW_HEIGHT}px)`,
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      {weeksInMonth.map((week, weekIdx) => {
+                        const isSelectedWeek = weekIdx === selectedWeekIndex;
 
-                    return (
-                      <div
-                        key={weekIdx}
-                        className={cn(
-                          'grid cursor-pointer grid-cols-7 py-2 text-center transition-colors duration-200',
-                          isSelectedWeek && !isOpen && 'bg-transparent',
-                          isSelectedWeek && isOpen
-                            ? 'bg-greedy/10 rounded-xl'
-                            : 'rounded-xl hover:bg-gray-50',
-                        )}
-                        style={{ height: `${ROW_HEIGHT}px` }} // 각 행의 높이 고정
-                      >
-                        {week.map((date, dateIdx) => {
-                          const isDisabled = isBefore(date, currentWeekStart);
+                        return (
+                          <div
+                            key={weekIdx}
+                            className={cn(
+                              'grid cursor-pointer grid-cols-7 py-2 text-center transition-colors duration-200',
+                              isSelectedWeek && !isOpen && 'bg-transparent',
+                              isSelectedWeek && isOpen
+                                ? 'bg-greedy/10 rounded-xl'
+                                : 'rounded-xl hover:bg-gray-50',
+                            )}
+                            style={{ height: `${ROW_HEIGHT}px` }}
+                          >
+                            {week.map((date, dateIdx) => {
+                              const isDisabled = isBefore(date, currentWeekStart);
 
-                          return (
-                            <div
-                              key={dateIdx}
-                              onClick={() => !isDisabled && handleDateClick(date)}
-                              className={cn(
-                                'flex items-center justify-center text-lg font-bold',
-                                getDayColor(date.getDay()),
-                                !isSameMonth(date, selectedDate) && 'opacity-40',
-                                isDisabled && 'cursor-not-allowed opacity-30',
-                              )}
-                            >
-                              {date.getDate()}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
+                              return (
+                                <div
+                                  key={dateIdx}
+                                  onClick={() => !isDisabled && handleDateClick(date)}
+                                  className={cn(
+                                    'flex items-center justify-center text-lg font-bold',
+                                    getDayColor(date.getDay()),
+                                    !isSameMonth(date, selectedDate) && 'opacity-40',
+                                    isDisabled && 'cursor-not-allowed opacity-30',
+                                  )}
+                                >
+                                  {date.getDate()}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* 토글 버튼 (Spacer 높이 계산을 위해 h-[24px] 명시 추가) */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={cn(
+                  'relative z-45 flex h-[24px] w-full items-center justify-center bg-white text-gray-400 transition-colors hover:bg-gray-50',
+                )}
+              >
+                <ChevronDown
+                  size={24}
+                  className={cn(
+                    'transition-transform duration-300',
+                    isOpen ? 'rotate-180' : 'rotate-0',
+                  )}
+                />
+              </button>
             </div>
           </div>
-        )}
-
-        {/* 토글 버튼 */}
-        {dateType === 'SPECIFIC_DATE' && (
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={cn(
-              'relative z-45 flex w-full items-center justify-center bg-white text-gray-400 transition-colors hover:bg-gray-50',
-              isOpen ? '' : '',
-            )}
-          >
-            <ChevronDown
-              size={24}
-              className={cn(
-                'transition-transform duration-300',
-                isOpen ? 'rotate-180' : 'rotate-0',
-              )}
-            />
-          </button>
         )}
       </div>
     </div>
