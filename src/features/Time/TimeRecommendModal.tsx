@@ -4,6 +4,8 @@ import { motion, type PanInfo, useAnimation } from 'framer-motion';
 
 import { TimeRecommendCard } from './TimeRecommendCard';
 
+import { type SelectedTime } from '@/types/meetingTypes';
+
 // --- ⚙️ 바텀 시트 멈춤 높이 설정 ---
 const SHEET_CONFIG = {
   FULL_VH: 90,
@@ -26,6 +28,9 @@ interface TimeRecommendModalProps {
   candidateList: Candidate[] | undefined;
   participantsNum: number;
   setSelectedDate: (date: Date) => void;
+  timeRange: [number, number];
+  commonTimeList: SelectedTime[];
+  dateType: string;
 }
 
 // 💡 2. 메인 모달 컴포넌트
@@ -33,6 +38,9 @@ export default function TimeRecommendModal({
   candidateList,
   participantsNum,
   setSelectedDate,
+  timeRange,
+  commonTimeList,
+  dateType,
 }: TimeRecommendModalProps) {
   const [sheetState, setSheetState] = useState<'peek' | 'half' | 'full'>('peek');
   const controls = useAnimation();
@@ -167,6 +175,9 @@ export default function TimeRecommendModal({
                   participantsNum={participantsNum}
                   isTopRank={isTopRank}
                   onClick={handleCardClick}
+                  commonTimeList={commonTimeList}
+                  dateType={dateType}
+                  timeRange={timeRange}
                 />
               );
             })}

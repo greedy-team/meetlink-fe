@@ -22,7 +22,7 @@ export default function TimeRecommendPage() {
   const commonTimeList = convertToCommonTimeList(commonTimeData?.result.heatmaps);
   const candidateList = timeData?.result;
 
-  //console.log(candidateList);
+  console.log(commonTimeList);
   console.log(candidateList);
   useEffect(() => {
     // 페이지 진입 시 및 새로고침 시 실행
@@ -51,6 +51,9 @@ export default function TimeRecommendPage() {
             candidateList={candidateList}
             participantsNum={participantsNum}
             setSelectedDate={setSelectedDate}
+            commonTimeList={commonTimeList}
+            dateType={dateType}
+            timeRange={timeRange}
           />
         </div>
       }

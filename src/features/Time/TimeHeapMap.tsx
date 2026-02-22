@@ -192,11 +192,9 @@ export default function TimeHeatMap({
                     }
                     style={{
                       height: SLOT_HEIGHT,
-                      // 기존: 여기서 전체 셀에 opacity를 줘서 테두리까지 사라지거나 흐려지는 문제가 있었습니다.
-                      // 수정: 바깥 래퍼는 높이만 잡아줍니다.
                     }}
                     className={cn(
-                      'relative transition-colors duration-100', // 배경 div를 절대 배치하기 위해 relative 추가
+                      'relative transition-colors duration-100',
                       mode === 'INPUT' && 'cursor-pointer',
                       isTopHour
                         ? 'border-t border-gray-200'
