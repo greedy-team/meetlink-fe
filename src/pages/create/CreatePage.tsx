@@ -37,7 +37,11 @@ export default function CreatePage() {
       return;
     }
 
-    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
+    const formatTime = (hour: number) => {
+      const adjustedHour = hour >= 24 ? 23 : hour;
+      return `${String(adjustedHour).padStart(2, '0')}:00:00`;
+    };
+
     const requestData = {
       name: meetingName,
       enableTimeRecommendation: isTimeRecommendEnabled,
