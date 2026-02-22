@@ -38,6 +38,8 @@ export default function TimeRecommendPage() {
             dateType={dateType}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            selectedTimeList={commonTimeList}
+            participantsNum={participantsNum}
           />
         </div>
       }

@@ -53,6 +53,8 @@ export default function TimeInputPage() {
             dateType={dateType}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            selectedTimeList={selectedTimeList}
+            participantsNum={1}
           />
         </div>
       }

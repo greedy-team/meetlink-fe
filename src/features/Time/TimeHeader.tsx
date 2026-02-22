@@ -8,6 +8,7 @@ import {
   isBefore,
   isSameDay,
   isSameMonth,
+  parseISO,
   startOfMonth,
   startOfWeek,
   subDays,
@@ -17,11 +18,15 @@ import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
+import { type SelectedTime } from '@/types/meetingTypes';
+
 // Props 타입 정의
 interface TimeHeaderProps {
-  dateType?: string;
+  dateType: string;
   selectedDate: Date;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+  selectedTimeList: SelectedTime[];
+  participantsNum: number;
 }
 
 const DAYS: string[] = ['일', '월', '화', '수', '목', '금', '토'];
@@ -54,6 +59,8 @@ export default function TimeHeader({
   dateType = 'SPECIFIC_DATE',
   selectedDate,
   setSelectedDate,
+  selectedTimeList = [],
+  participantsNum = 0,
 }: TimeHeaderProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -162,7 +169,7 @@ export default function TimeHeader({
           </div>
         )}
 
-        {/* 요일 헤더 */}
+        {/* 요일 헤더 (WEEKLY일 경우 히트맵 배경 처리 포함) */}
         <div
           className={cn(
             'relative z-45 grid grid-cols-7 px-4 pt-2 pl-10 text-center',
@@ -170,18 +177,37 @@ export default function TimeHeader({
             dateType !== 'SPECIFIC_DATE' && 'border-b border-gray-200 pb-2',
           )}
         >
-          {DAYS.map((day, idx) => (
-            <div
-              key={day}
-              className={cn(
-                'font-semibold',
-                getDayColor(idx),
-                dateType === 'WEEKLY' ? 'text-lg' : 'text-xs',
-              )}
-            >
-              {day}
-            </div>
-          ))}
+          {DAYS.map((day, idx) => {
+            // WEEKLY 모드일 경우 해당 요일의 가장 큰 인원수 찾기
+            let maxCount = 0;
+            if (dateType === 'WEEKLY' && selectedTimeList.length > 0) {
+              const matched = selectedTimeList.find((item) => Number(item.dayOfWeek) === idx);
+              if (matched && matched.startTimeList && matched.startTimeList.length > 0) {
+                maxCount = Math.max(...matched.startTimeList.map((st) => st.availableNumber));
+              }
+            }
+            const ratio = participantsNum > 0 ? maxCount / participantsNum : 0;
+
+            return (
+              <div
+                key={day}
+                className={cn(
+                  'relative flex items-center justify-center font-semibold',
+                  getDayColor(idx),
+                  dateType === 'WEEKLY' ? 'h-10 text-lg' : 'text-xs', // WEEKLY일 땐 원형 배경을 위해 높이 할당
+                )}
+              >
+                {dateType === 'WEEKLY' && maxCount > 0 && (
+                  <div
+                    className="bg-greedy absolute h-9 w-9 rounded-lg"
+                    style={{ opacity: Math.max(0.15, ratio) }}
+                  />
+                )}
+                {/* 배경이 글자를 덮지 않도록 z-index를 올림 */}
+                <span className="relative z-10">{day}</span>
+              </div>
+            );
+          })}
         </div>
 
         {/* 달력 본문 + 토글 영역 (SPECIFIC_DATE 일 때만 렌더링) */}
@@ -213,7 +239,7 @@ export default function TimeHeader({
                               'grid cursor-pointer grid-cols-7 py-2 text-center transition-colors duration-200',
                               isSelectedWeek && !isOpen && 'bg-transparent',
                               isSelectedWeek && isOpen
-                                ? 'bg-greedy/10 rounded-xl'
+                                ? 'rounded-xl bg-gray-400/10'
                                 : 'rounded-xl hover:bg-gray-50',
                             )}
                             style={{ height: `${ROW_HEIGHT}px` }}
@@ -221,18 +247,51 @@ export default function TimeHeader({
                             {week.map((date, dateIdx) => {
                               const isDisabled = isBefore(date, currentWeekStart);
 
+                              // SPECIFIC_DATE 모드일 경우 해당 날짜의 가장 큰 인원수 찾기
+                              let maxCount = 0;
+                              if (selectedTimeList.length > 0) {
+                                const matched = selectedTimeList.find((item) => {
+                                  if (!item.date) return false;
+                                  try {
+                                    return isSameDay(parseISO(item.date), date);
+                                  } catch {
+                                    return false;
+                                  }
+                                });
+                                if (
+                                  matched &&
+                                  matched.startTimeList &&
+                                  matched.startTimeList.length > 0
+                                ) {
+                                  maxCount = Math.max(
+                                    ...matched.startTimeList.map((st) => st.availableNumber),
+                                  );
+                                }
+                              }
+                              const ratio = participantsNum > 0 ? maxCount / participantsNum : 0;
+
                               return (
                                 <div
                                   key={dateIdx}
                                   onClick={() => !isDisabled && handleDateClick(date)}
                                   className={cn(
-                                    'flex items-center justify-center text-lg font-bold',
+                                    'relative flex items-center justify-center text-lg font-bold',
                                     getDayColor(date.getDay()),
                                     !isSameMonth(date, selectedDate) && 'opacity-40',
                                     isDisabled && 'cursor-not-allowed opacity-30',
                                   )}
                                 >
-                                  {date.getDate()}
+                                  {/* 투명도를 가진 원형 배경 */}
+                                  {maxCount > 0 &&
+                                    !isDisabled &&
+                                    isSameMonth(date, selectedDate) && (
+                                      <div
+                                        className="bg-greedy absolute top-1/2 left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-lg"
+                                        style={{ opacity: Math.max(0.15, ratio / 2) }}
+                                      />
+                                    )}
+                                  {/* 글자는 투명해지지 않게 위로 띄움 */}
+                                  <span className="relative z-10">{date.getDate()}</span>
                                 </div>
                               );
                             })}
@@ -244,7 +303,7 @@ export default function TimeHeader({
                 </div>
               </div>
 
-              {/* 토글 버튼 (Spacer 높이 계산을 위해 h-[24px] 명시 추가) */}
+              {/* 토글 버튼 */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
