@@ -3,7 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { timeKeys } from './queryKeys';
 
-import { getMyAvailableTime, updateMyAvailableTime } from '@/features/api/timeApi';
+import {
+  getCommonAvailableTime,
+  getMyAvailableTime,
+  updateMyAvailableTime,
+} from '@/features/api/timeApi';
 import { type UpdateMyAvailableTimeRequest } from '@/types/apiTypes';
 
 //가능 시간 조회
@@ -15,6 +19,18 @@ export const useGetMyAvailableTime = () => {
     queryKey: timeKeys.my(code!, token),
     queryFn: () => getMyAvailableTime(code!),
     enabled: !!code && !!token,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+//가능 시간 조회
+export const useGetCommonAvailableTime = () => {
+  const { code } = useParams<{ code: string }>();
+
+  return useQuery({
+    queryKey: timeKeys.common(code!),
+    queryFn: () => getCommonAvailableTime(code!),
+    enabled: !!code,
     staleTime: 1000 * 60 * 5,
   });
 };

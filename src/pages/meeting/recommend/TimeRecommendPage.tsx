@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
 import { useCalculateRecommendTime, useRecommendTime } from '@/hooks/useRecommend';
+import { useGetCommonAvailableTime } from '@/hooks/useTime';
 
 import { convertToCommonTimeList } from '@/features/Time/timeConverter';
 import TimeHeader from '@/features/Time/TimeHeader';
@@ -10,84 +11,19 @@ import TimeHeatMap from '@/features/Time/TimeHeapMap';
 import TimeRecommendModal from '@/features/Time/TimeRecommendModal';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
-const mockCandidateList = [
-  {
-    id: 1,
-    rank: 1,
-    date: '2026-03-05',
-    dayOfWeek: 4, // 목요일
-    startTime: '08:00',
-    endTime: '10:00',
-    availableCount: 4,
-  },
-  {
-    id: 2,
-    rank: 2,
-    date: '2026-03-02',
-    dayOfWeek: 1, // 월요일
-    startTime: '08:00',
-    endTime: '10:00',
-    availableCount: 3,
-  },
-  {
-    id: 3,
-    rank: 3,
-    date: '2026-03-06',
-    dayOfWeek: 5, // 금요일
-    startTime: '14:00',
-    endTime: '16:00',
-    availableCount: 2,
-  },
-  {
-    id: 4,
-    rank: 4,
-    date: '2026-03-07',
-    dayOfWeek: 6, // 토요일
-    startTime: '19:00',
-    endTime: '21:00',
-    availableCount: 4,
-  },
-  {
-    id: 5,
-    rank: 5,
-    date: '2026-03-08',
-    dayOfWeek: 0, // 일요일
-    startTime: '13:00',
-    endTime: '15:00',
-    availableCount: 1,
-  },
-  {
-    id: 4,
-    rank: 4,
-    date: '2026-03-07',
-    dayOfWeek: 6, // 토요일
-    startTime: '19:00',
-    endTime: '21:00',
-    availableCount: 4,
-  },
-  {
-    id: 5,
-    rank: 5,
-    date: '2026-03-08',
-    dayOfWeek: 0, // 일요일
-    startTime: '13:00',
-    endTime: '15:00',
-    availableCount: 1,
-  },
-];
 export default function TimeRecommendPage() {
-  const { dateType, timeRange, selectedTimeList, setSelectedTimeList, participantStatusList } =
-    useMeetingContext();
+  const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
+  const { data: commonTimeData } = useGetCommonAvailableTime();
   const { data: timeData } = useRecommendTime();
   const { mutate: calculateRecommendTime } = useCalculateRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const participantsNum = participantStatusList.length;
-  const commonTimeList = convertToCommonTimeList(timeData?.result.heatmaps);
-  const candidateList = timeData?.result.candidates;
+  const commonTimeList = convertToCommonTimeList(commonTimeData?.result.heatmaps);
+  const candidateList = timeData?.result;
 
   //console.log(candidateList);
-  console.log(commonTimeList);
+  console.log(candidateList);
   useEffect(() => {
     // 페이지 진입 시 및 새로고침 시 실행
     calculateRecommendTime();

@@ -1,73 +1,40 @@
-import { type SelectedTime } from '@/types/meetingTypes';
+import { type SelectedTime, type TimeInfo } from '@/types/meetingTypes';
 
-export type Slot =
-  | { dayOfWeek: number; startTime: string } // WEEKLY 모드일 때
-  | { date: string; startTime: string };
+export interface Availability {
+  date?: string;
+  dayOfWeek?: number;
+  startTimes: string[];
+}
 
-export const convertToSlots = (selectedTimeList: SelectedTime[], dateType: string): Slot[] => {
-  return selectedTimeList
+export const convertToAvailabilities = (
+  selectedTimes: SelectedTime[],
+  dateType: string,
+): Availability[] => {
+  return selectedTimes
     .filter((item) => {
-      // 1. dateType에 맞는 데이터만 필터링
       if (dateType === 'WEEKLY') {
-        return item.dayOfWeek !== -1; // 주간이면 요일 값이 있는 것만
-      }
-      return item.date !== ''; // 특정 날짜면 날짜 값이 있는 것만
-    })
-    .flatMap((item) =>
-      item.startTimeList.map((timeInfo) => {
-        // 2. dateType에 맞춰 필요한 필드만 포함하여 반환
-        if (dateType === 'WEEKLY') {
-          return {
-            dayOfWeek: item.dayOfWeek,
-            startTime: timeInfo.startTime,
-          };
-        }
-
-        // SPECIFIC_DATE 모드
-        return {
-          date: item.date,
-          startTime: timeInfo.startTime,
-        };
-      }),
-    );
-};
-
-export const convertToSelectedTimeList = (slots: Slot[]): SelectedTime[] => {
-  const grouped = slots.reduce((acc: Record<string, SelectedTime>, slot) => {
-    // 1. 타입 가드: 'date' 속성이 있는지 확인
-    const isDateSlot = 'date' in slot;
-    const key = isDateSlot ? slot.date : `day-${slot.dayOfWeek}`;
-
-    if (!acc[key]) {
-      if (isDateSlot) {
-        // 상황 A: 특정 날짜 기반 슬롯
-        acc[key] = {
-          date: slot.date,
-          dayOfWeek: new Date(slot.date).getDay(), // 날짜로부터 요일 계산
-          startTimeList: [],
-        };
+        // 주간 반복일 경우: 날짜는 없고 요일 정보가 있는 것만 필터링
+        return item.date === '' && item.dayOfWeek !== -1;
       } else {
-        // 상황 B: 주간 반복 기반 슬롯
-        acc[key] = {
-          date: '',
-          dayOfWeek: slot.dayOfWeek,
-          startTimeList: [],
-        };
+        // 특정 날짜일 경우: 날짜 정보가 있는 것만 필터링
+        return item.date !== '';
       }
-    }
+    })
+    .map((item) => {
+      const availability: Availability = {
+        startTimes: item.startTimeList.map((info) => info.startTime),
+      };
 
-    acc[key].startTimeList.push({
-      startTime: slot.startTime,
-      availableNumber: 0,
+      if (dateType === 'SPECIFIC_DATE') {
+        availability.date = item.date;
+      } else {
+        availability.dayOfWeek = item.dayOfWeek;
+      }
+
+      return availability;
     });
-
-    return acc;
-  }, {});
-
-  return Object.values(grouped);
 };
 
-// 입력받을 원본 데이터의 타입 (편의상 Heatmap으로 지정)
 export interface Heatmap {
   date?: string;
   dayOfWeek?: number;
@@ -77,17 +44,43 @@ export interface Heatmap {
   }[];
 }
 
-export function convertToCommonTimeList(heatmaps: Heatmap | Heatmap[] | undefined): SelectedTime[] {
+export const convertToSelectedTimeList = (
+  availabilities: Availability[] | undefined,
+): SelectedTime[] => {
+  if (!availabilities) return [];
+
+  return availabilities.map((item) => {
+    // 1. startTimes 문자열 배열을 TimeInfo 객체 배열로 변환
+    const startTimeList: TimeInfo[] = item.startTimes.map((time) => ({
+      startTime: time,
+      availableNumber: 1, // 1로 고정
+    }));
+
+    // 2. 데이터 존재 여부에 따른 조건부 할당
+    // item.date가 존재하면 SPECIFIC_DATE 케이스, 아니면 WEEKLY 케이스로 간주
+    const isSpecificDate = !!item.date && item.date !== '';
+
+    return {
+      date: isSpecificDate ? item.date! : '',
+      dayOfWeek: isSpecificDate ? -1 : (item.dayOfWeek ?? -1),
+      startTimeList,
+    };
+  });
+};
+
+export const convertToCommonTimeList = (heatmaps: Heatmap[] | undefined): SelectedTime[] => {
   if (!heatmaps) return [];
 
-  const dataArray = Array.isArray(heatmaps) ? heatmaps : [heatmaps];
+  return heatmaps.map((item) => {
+    const hasDate = !!item.date && item.date !== '';
 
-  return dataArray.map((heatmap) => ({
-    date: heatmap.date ?? '',
-    dayOfWeek: heatmap.dayOfWeek ?? -1,
-    startTimeList: heatmap.slots.map((slot) => ({
-      startTime: slot.startTime,
-      availableNumber: slot.availableCount,
-    })),
-  }));
-}
+    return {
+      date: hasDate ? item.date! : '',
+      dayOfWeek: hasDate ? -1 : (item.dayOfWeek ?? -1),
+      startTimeList: item.slots.map((slot) => ({
+        startTime: slot.startTime,
+        availableNumber: slot.availableCount,
+      })),
+    };
+  });
+};

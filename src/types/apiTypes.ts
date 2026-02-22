@@ -124,23 +124,47 @@ export interface GetMyStatusResponse {
 //모임 나가기
 
 export interface LeaveMeetingResponse {
-  status: true;
+  status: boolean;
 }
 
 ////////////////////////////////////////////////////////////time
-// 가능 시간 조회
+// 내 가능 시간 조회
 export interface GetMyAvailableTimeResponse {
+  status: boolean;
+  result: {
+    availabilities: {
+      dayOfWeek: number;
+      date: string;
+      startTimes: string[];
+    }[];
+  };
   code: string;
+  message: string;
+}
 
-  myTimeList: SelectedTime[];
+//공통 시간 조회
+export interface GetCommonAvailableTimeResponse {
+  status: boolean;
+  result: {
+    heatmaps: {
+      date: string;
+      dayOfWeek: number;
+      slots: {
+        startTime: string;
+        availableCount: number;
+      }[];
+    }[];
+  };
+  code: string;
+  message: string;
 }
 
 //가능 시간 등록
 export interface UpdateMyAvailableTimeRequest {
-  slots: {
+  availabilities: {
     date?: string;
     dayOfWeek?: number;
-    startTime: string;
+    startTimes: string[];
   }[];
 }
 
@@ -176,28 +200,21 @@ export interface UpdateMyStartPlaceResponse {
 }
 
 ////////////////////////////////////////////////////////////recommend
-//추천 시간 조회
+//추천 시간 후보 조회
 export interface GetRecommendTimeResponse {
   status: true;
   result: {
-    heatmaps: {
-      date: string;
-      dayOfWeek: number;
-      slots: {
-        startTime: string;
-        availableCount: number;
-      }[];
-    };
-    candidates: {
-      availableCount: number;
-      date: string;
-      dayOfWeek: number;
-      endTime: string;
-      id: number;
-      rank: number;
-      startTime: string;
-    }[];
-  };
+    id: number;
+    date: string;
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+    availableCount: number;
+    rank: number;
+  }[];
+
+  code: string;
+  message: string;
 }
 
 //추천 장소 조회

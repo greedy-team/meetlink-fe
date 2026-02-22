@@ -7,7 +7,7 @@ import { Header } from '@/components/common/layout/Header';
 import { useUpdateMyAvailableTime } from '@/hooks/useTime';
 import { useGetMyAvailableTime } from '@/hooks/useTime';
 
-import { convertToSelectedTimeList, convertToSlots } from '@/features/Time/timeConverter';
+import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeConverter';
 import TimeHeader from '@/features/Time/TimeHeader';
 import TimeHeatMap from '@/features/Time/TimeHeapMap';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
@@ -15,35 +15,28 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 export default function TimeInputPage() {
   const { dateType, timeRange, selectedTimeList, setSelectedTimeList } = useMeetingContext();
 
-  //const { data: myAvailableTime, isSuccess } = useGetMyAvailableTime();
+  const { data: myTimeList, isSuccess } = useGetMyAvailableTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const { mutate: saveTime, isPending } = useUpdateMyAvailableTime();
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   // 1. 토큰이 있고, 데이터 패칭이 성공했으며, 데이터가 실제로 존재할 때
-  //   if (token && isSuccess && myAvailableTime?.myTimeList) {
-  //     // 2. 서버 데이터를 프론트 형식으로 변환
-  //     const converted = convertToSelectedTimeList(myAvailableTime.slots);
-
-  //     // 3. 상태에 저장
-  //     setSelectedTimeList(converted);
-  //   }
-  //   // 의존성 배열에 isSuccess와 데이터를 넣어 로딩 완료 시점에 실행되도록 함
-  // }, [isSuccess, myAvailableTime, token, dateType]);
+  useEffect(() => {
+    const token = localStorage.getItem('meeting_token');
+    if (token && isSuccess && myTimeList.result.availabilities) {
+      const converted = convertToSelectedTimeList(myTimeList.result.availabilities);
+      setSelectedTimeList(converted);
+    }
+  }, [isSuccess, myTimeList, setSelectedTimeList]);
 
   const handleSave = () => {
     const token = localStorage.getItem('meeting_token');
-    const convertedData = convertToSlots(selectedTimeList, dateType);
+    const convertedData = convertToAvailabilities(selectedTimeList, dateType);
     if (token) {
       saveTime(
-        { slots: convertedData },
+        { availabilities: convertedData },
         {
-          onSuccess: (data) => {
-            console.log(data.message);
-            console.log('a');
-          },
+          onSuccess: (data) => {},
           onError: (error) => {},
         },
       );
