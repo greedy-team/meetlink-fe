@@ -22,13 +22,14 @@ export const useGetMyAvailableTime = (id: string) => {
 export const useUpdateMyAvailableTime = (id: string) => {
   const { code } = useParams<{ code: string }>();
   const queryClient = useQueryClient();
+  const token = localStorage.getItem('meeting_token'); // 토큰 가져오기
 
   return useMutation({
-    mutationFn: (body: UpdateMyAvailableTimeRequest) => updateMyAvailableTime(code!, id, body),
+    mutationFn: (body: UpdateMyAvailableTimeRequest) => updateMyAvailableTime(code!, body),
     onSuccess: () => {
       // 내 가능 시간 리패치
       queryClient.invalidateQueries({
-        queryKey: timeKeys.my(code!, id),
+        queryKey: timeKeys.my(code!, token),
       });
     },
     onError: () => {

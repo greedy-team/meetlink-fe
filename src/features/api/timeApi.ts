@@ -23,11 +23,10 @@ export const getMyAvailableTime = async (
 //반환 UpdateMyAvailableTImeResponse
 export const updateMyAvailableTime = async (
   code: string,
-  id: string,
   body: UpdateMyAvailableTimeRequest,
 ): Promise<UpdateMyAvailableTimeResponse> => {
   const { data } = await axiosInstance.post<UpdateMyAvailableTimeResponse>(
-    `/meetings/${code}/time-availability/${id}`,
+    `/meetings/${code}/time-availabilities`,
     body,
   );
   return data;

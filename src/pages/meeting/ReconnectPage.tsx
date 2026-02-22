@@ -11,21 +11,12 @@ import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { ParticipantSelectedList } from '@/features/meeting/join/ParticipantSelectedList';
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
-import type { ParticipantStatus } from '@/types/meetingTypes';
-
-// TODO: 우선 목데이터로 처리, 추후 API 연결 예정
-const MOCK_PARTICIPANTS: ParticipantStatus[] = [
-  { nickName: '민수', hasTimeInput: false, hasPlaceInput: false },
-  { nickName: '지현', hasTimeInput: false, hasPlaceInput: false },
-  { nickName: '도윤', hasTimeInput: false, hasPlaceInput: false },
-  { nickName: '서연', hasTimeInput: false, hasPlaceInput: false },
-];
 
 export default function ReconnectPage() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
 
-  const { meetingName } = useMeetingContext();
+  const { meetingName, participantStatusList } = useMeetingContext();
 
   useEffect(() => {
     if (!code) navigate('/start', { replace: true });
@@ -34,7 +25,7 @@ export default function ReconnectPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // 일단 mock 데이터 사용
-  const participants = useMemo(() => MOCK_PARTICIPANTS, []);
+  const participants = useMemo(() => participantStatusList, []);
   const participantSummary = useMemo(() => buildParticipantSummary(participants), [participants]);
 
   const onGoJoin = () => {

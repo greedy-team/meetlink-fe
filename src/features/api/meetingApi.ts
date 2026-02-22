@@ -1,4 +1,5 @@
 import {
+  type CreateMeetingRequest,
   type CreateMeetingResponse,
   type GetMeetingDetailResponse,
   type UpdateMeetingDetailRequest,
@@ -9,8 +10,9 @@ import { axiosInstance } from './axiosInstance';
 //모임 생성
 //요청 X
 //반환 CreateMeetingResponse
-export const createMeeting = async (): Promise<CreateMeetingResponse> => {
-  const { data } = await axiosInstance.post<CreateMeetingResponse>('/meetings');
+
+export const createMeeting = async (body: CreateMeetingRequest): Promise<CreateMeetingResponse> => {
+  const { data } = await axiosInstance.post<CreateMeetingResponse>('/meetings', body);
   return data;
 };
 

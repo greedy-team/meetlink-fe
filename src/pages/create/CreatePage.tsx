@@ -8,7 +8,7 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Label } from '@/components/ui/label';
-import { useCreateMeeting, useUpdateMeetingDetail } from '@/hooks/useMeeting';
+import { useCreateMeeting } from '@/hooks/useMeeting';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
@@ -18,19 +18,54 @@ import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
 export default function CreatePage() {
   const [meetingName, setMeetingName] = useState('');
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(false);
-  const [dateType, setDateType] = useState('');
+  const [dateType, setDateType] = useState('WEEKLY');
   const [timeRange, setTimeRange] = useState<[number, number]>([6, 18]);
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
 
   const { mutate: createMeeting } = useCreateMeeting();
   const [code, setCode] = useState('');
-  const { mutate: updateMeetingDetail } = useUpdateMeetingDetail(code);
 
   const navigate = useNavigate();
 
   const handleCreateClick = () => {
-    navigate('share');
+    if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
+      console.log('2-1. 중단: 추천 옵션 미선택');
+      return;
+    }
+    if (isTimeRecommendEnabled && !dateType) {
+      console.log('2-2. 중단: 날짜 타입(dateType) 미선택');
+      return;
+    }
+
+    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
+    const requestData = {
+      name: meetingName,
+      enableTimeRecommendation: isTimeRecommendEnabled,
+      enablePlaceRecommendation: isPlaceRecommendEnabled,
+      timeAvailabilityType: dateType,
+      timeRangeStart: formatTime(timeRange[0]),
+      timeRangeEnd: formatTime(timeRange[1]),
+    };
+
+    console.log('3. 서버로 보낼 데이터:', requestData);
+
+    createMeeting(requestData, {
+      onSuccess: (data) => {
+        console.log('4. 성공 응답:', data);
+        if (data.status && data.result) {
+          navigate(`/share/${data.result.code}`);
+        }
+      },
+      onError: (error) => {
+        console.error('4. 에러 발생:', error);
+      },
+    });
   };
+
+  const isFormValid =
+    meetingName.trim().length > 0 && // 이름 입력 필수
+    (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 하나는 선택
+    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType));
 
   return (
     <AppLayout
@@ -42,8 +77,12 @@ export default function CreatePage() {
       }
       pageBackgroundClassName="bg-white"
       bottom={
-        <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleCreateClick}>
+        <div className="flex flex-col items-center">
+          <FixedBottomButton
+            className="bg-greedy hover:bg-greedy/50"
+            onClick={handleCreateClick}
+            disabled={!isFormValid}
+          >
             모임 생성하기
           </FixedBottomButton>
         </div>

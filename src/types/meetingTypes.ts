@@ -1,5 +1,6 @@
 //참가자 현황
 export interface ParticipantStatus {
+  id: number;
   nickName: string;
   hasTimeInput: boolean;
   hasPlaceInput: boolean;

@@ -21,35 +21,56 @@ export default function MainPage() {
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
     participantStatusList,
-    recommendTimeList,
-    recommendPlaceList,
+    //recommendTimeList,
+    //recommendPlaceList,
   } = useMeetingContext();
 
-  const bestRecommendedTime = recommendTimeList?.[0];
-  const bestRecommendedPlace = recommendPlaceList?.[0];
+  //const bestRecommendedTime = recommendTimeList?.[0];
+  //const bestRecommendedPlace = recommendPlaceList?.[0];
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
 
-  const dummyList: ParticipantList = [
-    { nickName: '강건', hasTimeInput: true, hasPlaceInput: true },
-    { nickName: '민지', hasTimeInput: true, hasPlaceInput: false },
-    { nickName: '민주', hasTimeInput: false, hasPlaceInput: false },
-    { nickName: '철수', hasTimeInput: true, hasPlaceInput: true },
-    { nickName: '영희', hasTimeInput: false, hasPlaceInput: true },
-  ];
-  const completedCount = dummyList.filter((p) => p.hasTimeInput && p.hasPlaceInput).length;
-  const totalCount = dummyList.length;
+  const completedCount = participantStatusList.filter(
+    (p) => p.hasTimeInput && p.hasPlaceInput,
+  ).length;
+  const totalCount = participantStatusList.length;
+
+  const handleShare = async () => {
+    // 공유할 데이터 설정
+    const shareData = {
+      title: `MeetLink 모임 초대 : ${meetingName}`,
+      text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
+      url: window.location.href + '/join',
+    };
+
+    try {
+      // 1. 브라우저가 Web Share API를 지원하고, 데이터 공유가 가능한지 확인
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+        console.log('공유 성공!');
+      } else {
+        // 2. 지원하지 않는 브라우저(예: 일부 PC 브라우저)일 경우 클립보드 복사
+        await navigator.clipboard.writeText(shareData.url);
+        console.log('클립보드 복사 완료');
+      }
+    } catch (err) {
+      // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크
+      if ((err as Error).name !== 'AbortError') {
+        console.error('공유 중 에러 발생:', err);
+      }
+    }
+  };
 
   return (
     <AppLayout
-      header={<Header title={'그리디'} showBackButton={false} showSettingButton={true} />}
+      header={<Header title={meetingName} showBackButton={false} showSettingButton={true} />}
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
+          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
             초대 링크 공유하기
           </FixedBottomButton>
         </div>
@@ -58,10 +79,10 @@ export default function MainPage() {
       <div className="flex flex-col gap-4">
         <div className="">
           <RecommendSummaryCard
-            isTimeRecommendEnabled={true}
-            isPlaceRecommendEnabled={true}
-            bestTime={bestRecommendedTime}
-            bestPlace={bestRecommendedPlace}
+            isTimeRecommendEnabled={isTimeRecommendEnabled}
+            isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+            //bestTime={bestRecommendedTime}
+            //bestPlace={bestRecommendedPlace}
           />
         </div>
 
@@ -69,18 +90,22 @@ export default function MainPage() {
           <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold text-gray-700">
             내가 할 일
           </Label>
-          <GoToButton
-            icon={Clock}
-            title="가능한 시간 선택하기"
-            description="모임 만남 시간을 추천하는데 활용돼요."
-            onClick={() => handleGoToButton('input/time')}
-          />
-          <GoToButton
-            icon={MapPin}
-            title="출발지 입력하기"
-            description="모임 만남 장소를 추천하는데 활용돼요."
-            onClick={() => handleGoToButton('input/place')}
-          />
+          {isTimeRecommendEnabled && (
+            <GoToButton
+              icon={Clock}
+              title="가능한 시간 선택하기"
+              description="모임 만남 시간을 추천하는데 활용돼요."
+              onClick={() => handleGoToButton('input/time')}
+            />
+          )}
+          {isPlaceRecommendEnabled && (
+            <GoToButton
+              icon={MapPin}
+              title="출발지 입력하기"
+              description="모임 만남 장소를 추천하는데 활용돼요."
+              onClick={() => handleGoToButton('input/place')}
+            />
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -95,7 +120,11 @@ export default function MainPage() {
               {completedCount}/{totalCount} 입력 완료
             </div>
           </div>
-          <ParticipantStatusList list={dummyList || []} />
+          <ParticipantStatusList
+            list={participantStatusList || []}
+            isTimeRecommendEnabled={isTimeRecommendEnabled}
+            isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+          />
         </div>
       </div>
     </AppLayout>

@@ -34,9 +34,9 @@ export const getParticipantList = async (code: string): Promise<GetParticipantLi
 //내 상태 조회
 //요청 X
 //반환 GetMyStatusResponse
-export const getMyStatus = async (code: string, id: string): Promise<GetMyStatusResponse> => {
+export const getMyStatus = async (code: string): Promise<GetMyStatusResponse> => {
   const { data } = await axiosInstance.get<GetMyStatusResponse>(
-    `/meetings/${code}/participants/${id}`,
+    `/meetings/${code}/participants/me`,
   );
   return data;
 };
@@ -44,9 +44,9 @@ export const getMyStatus = async (code: string, id: string): Promise<GetMyStatus
 //모임 나가기
 //요청 X
 //반환 LeaveMeetingResponse
-export const leaveMeeting = async (code: string, id: string): Promise<LeaveMeetingResponse> => {
+export const leaveMeeting = async (code: string): Promise<LeaveMeetingResponse> => {
   const { data } = await axiosInstance.delete<LeaveMeetingResponse>(
-    `/meetings/${code}/participants/${id}`,
+    `/meetings/${code}/participants/me`,
   );
   return data;
 };

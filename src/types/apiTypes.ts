@@ -1,77 +1,132 @@
-import {
-  type ParticipantList,
-  type RecommendPlace,
-  type RecommendTime,
-  type SelectedTime,
-} from '@/types/meetingTypes';
+import { type RecommendPlace, type RecommendTime, type SelectedTime } from '@/types/meetingTypes';
 
 ////////////////////////////////////////////////////////////meeting
 //모임 생성
-export interface CreateMeetingResponse {
-  code: string;
 
-  success: boolean;
+export interface CreateMeetingRequest {
+  name: string;
+  enableTimeRecommendation: boolean;
+  enablePlaceRecommendation: boolean;
+  timeAvailabilityType: string;
+  timeRangeStart: string;
+  timeRangeEnd: string; // "18:00:00"
 }
 
-//모임 정보 요청
-export interface GetMeetingDetailResponse {
-  code: string;
+export interface CreateMeetingResponse {
+  status: boolean;
 
-  meetingName: string;
-  isTimeRecommendEnabled: boolean;
-  isPlaceRecommendEnabled: boolean;
-  dateType: string;
-  timeRange: [number, number];
+  result?: {
+    id: number;
+    name: string;
+    code: string;
+    enableTimeRecommendation: boolean;
+    enablePlaceRecommendation: boolean;
+    timeAvailabilityType: string;
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  code?: string;
+  message?: string;
+}
+
+//모임 정보 조회
+export interface GetMeetingDetailResponse {
+  status: boolean;
+
+  result?: {
+    id: number;
+    name: string;
+    code: string;
+    enableTimeRecommendation: boolean;
+    enablePlaceRecommendation: boolean;
+    timeAvailabilityType: string;
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  code?: string;
+  message?: string;
 }
 
 //모임 정보 수정
 export interface UpdateMeetingDetailRequest {
-  meetingName: string;
-  isTimeRecommendEnabled: boolean;
-  isPlaceRecommendEnabled: boolean;
-  dateType: string;
-  timeRange: [number, number];
+  name: string;
+  enableTimeRecommendation: boolean;
+  enablePlaceRecommendation: boolean;
+  timeAvailabilityType: string;
+  timeRangeStart: string;
+  timeRangeEnd: string;
 }
 
 export interface UpdateMeetingDetailResponse {
-  code: string;
+  status: boolean;
 
-  success: boolean;
+  result?: {
+    id: number;
+    name: string;
+    code: string;
+    enableTimeRecommendation: boolean;
+    enablePlaceRecommendation: boolean;
+    timeAvailabilityType: string;
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  code?: string;
+  message?: string;
 }
 
 ////////////////////////////////////////////////////////////participant
 //모임 참여
 export interface JoinMeetingRequest {
-  nickName: string;
+  nickname: string;
 }
 
 export interface JoinMeetingResponse {
-  code: string;
-
-  success: boolean;
+  status: boolean;
+  result?: {
+    token: string;
+    nickname: string;
+  };
+  code?: string;
+  message?: string;
 }
 
 //모임 참여자 목록 조회
 export interface GetParticipantListResponse {
-  code: string;
-
-  participantList: ParticipantList;
+  status: boolean;
+  result?: {
+    id: number;
+    nickname: string;
+    placeSubmitted: boolean;
+    timeSubmitted: boolean;
+  }[];
 }
 
 //내 참여 상태 확인
 export interface GetMyStatusResponse {
-  code: string;
-
-  isFirstVisit: boolean;
+  status: true;
+  result?: {
+    id: number;
+    nickname: string;
+    placeSubmitted: boolean;
+    timeSubmitted: boolean;
+  };
 }
 
 //모임 나가기
 
 export interface LeaveMeetingResponse {
-  code: string;
-
-  success: boolean;
+  status: true;
 }
+
 ////////////////////////////////////////////////////////////time
 // 가능 시간 조회
 export interface GetMyAvailableTimeResponse {
@@ -82,13 +137,17 @@ export interface GetMyAvailableTimeResponse {
 
 //가능 시간 등록
 export interface UpdateMyAvailableTimeRequest {
-  myTimeList: SelectedTime[];
+  slots: {
+    date: string;
+    dayOfWeek: number;
+    startTime: string;
+  }[];
 }
 
 export interface UpdateMyAvailableTimeResponse {
-  code: string;
-
-  success: boolean;
+  status: boolean;
+  code?: string;
+  message?: string;
 }
 
 ////////////////////////////////////////////////////////////place
@@ -108,9 +167,12 @@ export interface UpdateMyStartPlaceRequest {
 }
 
 export interface UpdateMyStartPlaceResponse {
-  code: string;
-
-  success: boolean;
+  status: false;
+  code?: string;
+  message?: string;
+  result?: {
+    latitude: string;
+  };
 }
 
 ////////////////////////////////////////////////////////////recommend
@@ -126,4 +188,36 @@ export interface GetRecommendTimeResponse {
 
 export interface GetRecommendPlaceResponse {
   recommendPlaceList: RecommendPlace[];
+}
+
+//추천 결과 조회
+export interface GetRecommendResultResponse {
+  status: boolean;
+  result: {
+    id: number;
+    timeCandidate: {
+      id: number;
+      date: string;
+      dayOfWeek: number;
+      startTime: string;
+      endTime: string;
+      availableCount: number;
+      rank: number;
+    };
+    placeCandidate: {
+      id: number;
+      name: string;
+      address: string;
+      latitude: number;
+      longitude: number;
+      avgTravelTime: number;
+      maxTravelTime: number;
+      calculationType: string;
+      rank: number;
+    };
+    createdAt: string;
+    updatedAt: string;
+  };
+  code: string;
+  message: string;
 }
