@@ -40,7 +40,10 @@ export default function TimeInputPage() {
       saveTime(
         { slots: convertedData },
         {
-          onSuccess: (data) => {},
+          onSuccess: (data) => {
+            console.log(data.message);
+            console.log('a');
+          },
           onError: (error) => {},
         },
       );

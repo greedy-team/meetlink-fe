@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
-import { useRecommendTime } from '@/hooks/useRecommend';
+import { useCalculateRecommendTime, useRecommendTime } from '@/hooks/useRecommend';
 
 import { convertToCommonTimeList } from '@/features/Time/timeConverter';
 import TimeHeader from '@/features/Time/TimeHeader';
@@ -79,11 +79,22 @@ export default function TimeRecommendPage() {
   const { dateType, timeRange, selectedTimeList, setSelectedTimeList, participantStatusList } =
     useMeetingContext();
   const { data: timeData } = useRecommendTime();
+  const { mutate: calculateRecommendTime } = useCalculateRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const participantsNum = participantStatusList.length;
   const commonTimeList = convertToCommonTimeList(timeData?.result.heatmaps);
   const candidateList = timeData?.result.candidates;
+
+  //console.log(candidateList);
+  console.log(commonTimeList);
+  useEffect(() => {
+    // 페이지 진입 시 및 새로고침 시 실행
+    calculateRecommendTime();
+
+    // 만약 특정 인자(body)가 필요하다면 아래와 같이 전달
+    // calculateRecommendTime({ someData: 'value' });
+  }, [calculateRecommendTime]);
 
   return (
     <AppLayout
@@ -101,7 +112,7 @@ export default function TimeRecommendPage() {
       bottom={
         <div className="space-y-3">
           <TimeRecommendModal
-            candidateList={mockCandidateList}
+            candidateList={candidateList}
             participantsNum={participantsNum}
             setSelectedDate={setSelectedDate}
           />
@@ -110,11 +121,12 @@ export default function TimeRecommendPage() {
     >
       <div className="space-y-4">
         <TimeHeatMap
-          mode="INPUT"
+          mode="OUTPUT"
+          participantsNum={participantsNum}
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}
-          selectedTimeList={selectedTimeList}
+          selectedTimeList={commonTimeList}
           setSelectedTimeList={setSelectedTimeList}
         />
       </div>

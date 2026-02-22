@@ -15,6 +15,13 @@ export const getRecommendTime = async (code: string): Promise<GetRecommendTimeRe
   return data;
 };
 
+export const calculateRecommendTime = async (code: string): Promise<GetRecommendTimeResponse> => {
+  const { data } = await axiosInstance.post<GetRecommendTimeResponse>(
+    `/meetings/${code}/candidates/time`,
+  );
+  return data;
+};
+
 //추천 장소 조회
 //요청 X
 //반환 GetRecommendTimeResponse

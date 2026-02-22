@@ -192,17 +192,29 @@ export default function TimeHeatMap({
                     }
                     style={{
                       height: SLOT_HEIGHT,
-                      opacity: mode === 'OUTPUT' ? opacityValue : availableNum > 0 ? 1 : 0,
+                      // 기존: 여기서 전체 셀에 opacity를 줘서 테두리까지 사라지거나 흐려지는 문제가 있었습니다.
+                      // 수정: 바깥 래퍼는 높이만 잡아줍니다.
                     }}
                     className={cn(
-                      'transition-colors duration-100',
+                      'relative transition-colors duration-100', // 배경 div를 절대 배치하기 위해 relative 추가
                       mode === 'INPUT' && 'cursor-pointer',
                       isTopHour
                         ? 'border-t border-gray-200'
                         : 'border-t border-dashed border-gray-100',
-                      availableNum > 0 ? 'bg-greedy' : mode === 'INPUT' ? 'hover:bg-gray-50' : '',
+                      mode === 'INPUT' && availableNum === 0 ? 'hover:bg-gray-50' : '',
                     )}
-                  />
+                  >
+                    {/* 투명도와 배경색만 담당하는 내부 요소 */}
+                    {availableNum > 0 && (
+                      <div
+                        className="bg-greedy pointer-events-none absolute inset-0"
+                        style={{
+                          // OUTPUT 모드일 때만 비율에 따른 투명도 적용, INPUT일 때는 1(100%)
+                          opacity: mode === 'OUTPUT' ? opacityValue : 1,
+                        }}
+                      />
+                    )}
+                  </div>
                 );
               })}
             </div>
