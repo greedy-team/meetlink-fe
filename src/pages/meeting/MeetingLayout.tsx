@@ -8,8 +8,6 @@ import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
 import {
   type ParticipantList,
   type ParticipantStatus,
-  type RecommendPlace,
-  type RecommendTime,
   type SelectedTime,
 } from '@/types/meetingTypes';
 

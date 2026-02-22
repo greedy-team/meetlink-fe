@@ -23,7 +23,6 @@ export default function CreatePage() {
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
 
   const { mutate: createMeeting } = useCreateMeeting();
-  const [code, setCode] = useState('');
 
   const navigate = useNavigate();
 
