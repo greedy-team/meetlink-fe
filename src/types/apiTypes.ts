@@ -178,10 +178,35 @@ export interface UpdateMyStartPlaceResponse {
 ////////////////////////////////////////////////////////////recommend
 //추천 시간 조회
 export interface GetRecommendTimeResponse {
+  status: boolean;
+  result: {
+    heatmaps: [
+      {
+        date: string;
+        dayOfWeek: number;
+        slots: [
+          {
+            dayOfWeek: number;
+            date: string;
+            startTime: string;
+          },
+        ];
+      },
+    ];
+    candidates: [
+      {
+        id: number;
+        date: string;
+        dayOfWeek: number;
+        startTime: string;
+        endTime: string;
+        availableCount: number;
+        rank: number;
+      },
+    ];
+  };
   code: string;
-
-  commonTimeList: SelectedTime[];
-  recommendTimeList: RecommendTime[];
+  message: string;
 }
 
 //추천 장소 조회

@@ -10,7 +10,7 @@ import { axiosInstance } from './axiosInstance';
 //반환 GetRecommendTimeResponse
 export const getRecommendTime = async (code: string): Promise<GetRecommendTimeResponse> => {
   const { data } = await axiosInstance.get<GetRecommendTimeResponse>(
-    `/meetings/${code}/time-recommendations`,
+    `/meetings/${code}/candidates/time`,
   );
   return data;
 };
@@ -20,7 +20,7 @@ export const getRecommendTime = async (code: string): Promise<GetRecommendTimeRe
 //반환 GetRecommendTimeResponse
 export const getRecommendPlace = async (code: string): Promise<GetRecommendPlaceResponse> => {
   const { data } = await axiosInstance.get<GetRecommendPlaceResponse>(
-    `/meetings/${code}/place-recommendations`,
+    `/meetings/${code}/candidates/place`,
   );
   return data;
 };
