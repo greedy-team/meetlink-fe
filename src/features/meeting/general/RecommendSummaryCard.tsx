@@ -1,40 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Calendar, type LucideIcon, MapPin } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
+import { LatLngMap } from './LatLngMap';
 import { RecommendItem } from './RecommendItem';
-
-//임시 지도
-interface LatLngMapProps {
-  lat: number;
-  lng: number;
-  zoom?: number;
-}
-
-const LatLngMap: React.FC<LatLngMapProps> = ({ lat, lng, zoom = 15 }) => {
-  // 2. URL 생성 (q 파라미터에 좌표를 넣어야 마커가 찍힙니다)
-  const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
-
-  return (
-    <div style={{ width: '100%', height: '400px' }}>
-      <iframe
-        title="Google Map"
-        src={mapUrl}
-        width="100%"
-        height="100%"
-        style={{
-          border: 0,
-          pointerEvents: 'none',
-        }}
-        allowFullScreen
-        loading="lazy"
-      ></iframe>
-    </div>
-  );
-};
 
 import { type RecommendPlace, type RecommendTime } from '@/types/meetingTypes';
 interface RecommendSummaryCardProps {
@@ -45,10 +17,22 @@ interface RecommendSummaryCardProps {
   className?: string;
 }
 
+// UI 확인용 목데이터
+const MOCK_BEST_PLACE = {
+  placeName: '서울역',
+  placeAddress: '서울특별시 용산구 한강대로 405',
+  latitude: '37.5546',
+  longitude: '126.9706',
+  rank: 1,
+  averageTime: 30,
+  maxTime: 45,
+  participantMovementList: [],
+} satisfies RecommendPlace;
+
 export function RecommendSummaryCard({
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
-  bestTime,
+  //bestTime,
   bestPlace,
   className,
 }: RecommendSummaryCardProps) {
@@ -61,6 +45,9 @@ export function RecommendSummaryCard({
     return null; // 혹시나 방지
   }
 
+  // 목데이터 없애면 삭제
+  const placeForMap = bestPlace ?? MOCK_BEST_PLACE;
+
   return (
     <div
       className={cn(
@@ -69,7 +56,14 @@ export function RecommendSummaryCard({
       )}
     >
       <div className="flex flex-col gap-2 p-3">
-        {isPlaceRecommendEnabled && <LatLngMap lat={37.5546} lng={126.9706} />}
+        {isPlaceRecommendEnabled && (
+          <LatLngMap
+            lat={Number(placeForMap.latitude)}
+            lng={Number(placeForMap.longitude)}
+            level={4}
+            className="h-70 w-full overflow-hidden rounded-2xl"
+          />
+        )}
 
         {isTimeRecommendEnabled && (
           <RecommendItem
@@ -88,7 +82,7 @@ export function RecommendSummaryCard({
           <RecommendItem
             icon={MapPin}
             label="추천 장소"
-            value="세종대학교ㅌ"
+            value={placeForMap.placeName}
             onClick={() => handleGoToButton('recommend/place')}
           />
         )}
