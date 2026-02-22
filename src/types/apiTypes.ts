@@ -167,7 +167,7 @@ export interface UpdateMyStartPlaceRequest {
 }
 
 export interface UpdateMyStartPlaceResponse {
-  status: false;
+  status: boolean;
   code?: string;
   message?: string;
   result?: {
@@ -178,35 +178,26 @@ export interface UpdateMyStartPlaceResponse {
 ////////////////////////////////////////////////////////////recommend
 //추천 시간 조회
 export interface GetRecommendTimeResponse {
-  status: boolean;
+  status: true;
   result: {
-    heatmaps: [
-      {
-        date: string;
-        dayOfWeek: number;
-        slots: [
-          {
-            dayOfWeek: number;
-            date: string;
-            startTime: string;
-          },
-        ];
-      },
-    ];
-    candidates: [
-      {
-        id: number;
-        date: string;
-        dayOfWeek: number;
+    heatmaps: {
+      date: string;
+      dayOfWeek: number;
+      slots: {
         startTime: string;
-        endTime: string;
         availableCount: number;
-        rank: number;
-      },
-    ];
+      }[];
+    };
+    candidates: {
+      availableCount: number;
+      date: string;
+      dayOfWeek: number;
+      endTime: string;
+      id: number;
+      rank: number;
+      startTime: string;
+    }[];
   };
-  code: string;
-  message: string;
 }
 
 //추천 장소 조회

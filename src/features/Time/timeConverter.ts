@@ -1,4 +1,5 @@
 import { type SelectedTime } from '@/types/meetingTypes';
+
 export type Slot =
   | { dayOfWeek: number; startTime: string } // WEEKLY 모드일 때
   | { date: string; startTime: string };
@@ -65,3 +66,28 @@ export const convertToSelectedTimeList = (slots: Slot[]): SelectedTime[] => {
 
   return Object.values(grouped);
 };
+
+// 입력받을 원본 데이터의 타입 (편의상 Heatmap으로 지정)
+export interface Heatmap {
+  date?: string;
+  dayOfWeek?: number;
+  slots: {
+    startTime: string;
+    availableCount: number;
+  }[];
+}
+
+export function convertToCommonTimeList(heatmaps: Heatmap | Heatmap[] | undefined): SelectedTime[] {
+  if (!heatmaps) return [];
+
+  const dataArray = Array.isArray(heatmaps) ? heatmaps : [heatmaps];
+
+  return dataArray.map((heatmap) => ({
+    date: heatmap.date ?? '',
+    dayOfWeek: heatmap.dayOfWeek ?? -1,
+    startTimeList: heatmap.slots.map((slot) => ({
+      startTime: slot.startTime,
+      availableNumber: slot.availableCount,
+    })),
+  }));
+}

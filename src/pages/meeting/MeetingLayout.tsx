@@ -4,7 +4,6 @@ import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'r
 
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
-import { useRecommendPlace, useRecommendTime } from '@/hooks/useRecommend';
 
 import {
   type ParticipantList,
@@ -24,9 +23,6 @@ export interface MeetingOutletContext {
   participantStatusList: ParticipantList;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
-  //commonTimeList: SelectedTime[] | undefined;
-  //recommendTimeList: RecommendTime[] | undefined;
-  //recommendPlaceList: RecommendPlace[] | undefined;
 
   nickName: string;
   id: string;
@@ -57,9 +53,6 @@ export default function MeetingLayout() {
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
 
   const [selectedTimeList, setSelectedTimeList] = useState<SelectedTime[]>([]);
-
-  //const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
-  //const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
 
   const token = localStorage.getItem('meeting_token');
 
@@ -121,9 +114,6 @@ export default function MeetingLayout() {
     ),
     selectedTimeList,
     setSelectedTimeList,
-    //commonTimeList: timeData?.commonTimeList,
-    //recommendTimeList: timeData?.recommendTimeList,
-    //recommendPlaceList: placeData?.recommendPlaceList,
 
     nickName: myStatusData?.result?.nickname || '',
     id: myStatusData?.result?.id?.toString() || '',
