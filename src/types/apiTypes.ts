@@ -189,3 +189,35 @@ export interface GetRecommendTimeResponse {
 export interface GetRecommendPlaceResponse {
   recommendPlaceList: RecommendPlace[];
 }
+
+//추천 결과 조회
+export interface GetRecommendResultResponse {
+  status: boolean;
+  result: {
+    id: number;
+    timeCandidate: {
+      id: number;
+      date: string;
+      dayOfWeek: number;
+      startTime: string;
+      endTime: string;
+      availableCount: number;
+      rank: number;
+    };
+    placeCandidate: {
+      id: number;
+      name: string;
+      address: string;
+      latitude: number;
+      longitude: number;
+      avgTravelTime: number;
+      maxTravelTime: number;
+      calculationType: string;
+      rank: number;
+    };
+    createdAt: string;
+    updatedAt: string;
+  };
+  code: string;
+  message: string;
+}
