@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
+import { AppLayout } from '@/components/common/layout/AppLayout';
+import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
+import { Label } from '@/components/ui/label';
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 
 export default function SharePage() {
@@ -24,12 +27,23 @@ export default function SharePage() {
     }
   };
   return (
-    <button
-      onClick={handleGoToMeeting}
-      disabled={!code} // 코드가 없으면 비활성화
-      className="bg-greedy w-full rounded-xl py-4 font-bold text-white disabled:bg-gray-300"
+    <AppLayout
+      header={
+        <div className="mx-8 mt-8 mb-5 flex flex-col gap-2 text-left">
+          <div className="text-3xl font-bold">모임 만들기</div>
+          <div className="text-gray-500">모임을 만드는데 필요한 기본 정보를 설정해요</div>
+        </div>
+      }
+      pageBackgroundClassName="bg-white"
+      bottom={
+        <div className="flex flex-col items-center">
+          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleGoToMeeting}>
+            모임 생성하기
+          </FixedBottomButton>
+        </div>
+      }
     >
-      모임 페이지로 이동하기
-    </button>
+      <div className="mx-3 flex flex-col gap-2"></div>
+    </AppLayout>
   );
 }
