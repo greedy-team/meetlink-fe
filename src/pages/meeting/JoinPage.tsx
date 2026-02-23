@@ -8,11 +8,14 @@ import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { useJoinMeeting } from '@/hooks/useParticipant';
+import { useUpdateMyStartPlace } from '@/hooks/usePlace';
+import { useUpdateMyAvailableTime } from '@/hooks/useTime';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { NickNameInput } from '@/features/meeting/join/NickNameInput';
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
+import { convertToAvailabilities } from '@/features/Time/timeConverter';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function JoinPage() {
@@ -25,6 +28,10 @@ export default function JoinPage() {
     nickName,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
+    selectedTimeList,
+    selectedPlace,
+    dateType,
+    id,
   } = useMeetingContext();
 
   const [inputNickName, setInputNickName] = useState(nickName ?? '');
@@ -36,7 +43,9 @@ export default function JoinPage() {
 
   const canSubmit = inputNickName.trim().length > 0;
 
-  const { mutate: join, isPending } = useJoinMeeting();
+  const { mutate: join, isPending: joinPending } = useJoinMeeting();
+  const { mutate: saveTime, isPending: timePending } = useUpdateMyAvailableTime();
+  const { mutate: savePlace, isPending: placePending } = useUpdateMyStartPlace(id);
 
   const goReconnect = () => {
     if (!code) return;
@@ -63,13 +72,18 @@ export default function JoinPage() {
       {
         onSuccess: (data) => {
           if (data.status) {
-            // 참여 성공 시에만 이동
+            // 참여 성공 시에만 이동saveTime(
+            const convertedData = convertToAvailabilities(selectedTimeList, dateType);
+            saveTime({ availabilities: convertedData });
+            savePlace(selectedPlace);
             navigate(`/meeting/${code}`, { replace: true });
           }
         },
       },
     );
   };
+
+  const isPending = joinPending || timePending || placePending;
 
   return (
     <AppLayout

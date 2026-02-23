@@ -59,6 +59,7 @@ const upsertRecentPlace = (place: UpdateMyStartPlaceRequest): UpdateMyStartPlace
 };
 
 export default function PlaceInputPage() {
+  const { selectedPlace, setSelectedPlace } = useMeetingContext();
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
   const location = useLocation();
@@ -90,8 +91,15 @@ export default function PlaceInputPage() {
   // 1) 사용자가 이번 세션에서 찍은 값(picked)
   // 2) 검색/지도에서 넘어온 값(incomingSelected)
   // 3) 마지막 저장된 내 출발지(cachedMyPlace)
-  const selected: UpdateMyStartPlaceRequest | null = picked ?? incomingSelected ?? cachedMyPlace;
-
+  setSelectedPlace(
+    picked ??
+      incomingSelected ??
+      cachedMyPlace ?? {
+        address: '',
+        latitude: 0,
+        longitude: 0,
+      },
+  );
   const handleSelectRecent = (place: UpdateMyStartPlaceRequest) => {
     setPicked(place);
   };
@@ -105,20 +113,24 @@ export default function PlaceInputPage() {
   };
 
   const handleSave = () => {
-    if (!selected) return;
+    if (!selectedPlace) return;
+    const token = localStorage.getItem('meeting_token');
+    if (token) {
+      savePlace(selectedPlace, {
+        onSuccess: () => {
+          // 최근 목록 갱신
+          const next = upsertRecentPlace(selectedPlace);
+          setRecentPlaces(next);
 
-    savePlace(selected, {
-      onSuccess: () => {
-        // 최근 목록 갱신
-        const next = upsertRecentPlace(selected);
-        setRecentPlaces(next);
+          // 내 출발지 캐시 갱신 (다음에 PlaceInputPage 들어오면 이게 바로 뜸)
+          saveMyStartPlaceCache(id, selectedPlace);
 
-        // 내 출발지 캐시 갱신 (다음에 PlaceInputPage 들어오면 이게 바로 뜸)
-        saveMyStartPlaceCache(id, selected);
-
-        goBackByFrom();
-      },
-    });
+          goBackByFrom();
+        },
+      });
+    } else {
+      navigate(-1);
+    }
   };
 
   const goToAddressSearch = () => {
@@ -137,11 +149,11 @@ export default function PlaceInputPage() {
       bottom={
         <div className="-mx-4 -mb-4">
           <div className="space-y-3 bg-gray-100 px-4 pt-3 pb-4">
-            <SelectedPlaceSummary selected={selected} />
+            <SelectedPlaceSummary selected={selectedPlace} />
 
             <FixedBottomButton
               onClick={handleSave}
-              disabled={!selected || isPending}
+              disabled={!selectedPlace || isPending}
               loading={isPending}
               className="bg-greedy hover:bg-greedy/50 text-white"
             >

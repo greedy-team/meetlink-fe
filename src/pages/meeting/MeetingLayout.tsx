@@ -5,6 +5,7 @@ import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'r
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
 
+import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 import {
   type ParticipantList,
   type ParticipantStatus,
@@ -21,6 +22,8 @@ export interface MeetingOutletContext {
   participantStatusList: ParticipantList;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
+  selectedPlace: UpdateMyStartPlaceRequest;
+  setSelectedPlace: React.Dispatch<React.SetStateAction<UpdateMyStartPlaceRequest>>;
 
   nickName: string;
   id: string;
@@ -51,6 +54,11 @@ export default function MeetingLayout() {
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
 
   const [selectedTimeList, setSelectedTimeList] = useState<SelectedTime[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<UpdateMyStartPlaceRequest>({
+    address: '',
+    latitude: 0,
+    longitude: 0,
+  });
 
   const token = localStorage.getItem('meeting_token');
 
@@ -112,6 +120,8 @@ export default function MeetingLayout() {
     ),
     selectedTimeList,
     setSelectedTimeList,
+    selectedPlace,
+    setSelectedPlace,
 
     nickName: myStatusData?.result?.nickname || '',
     id: myStatusData?.result?.id?.toString() || '',
