@@ -162,17 +162,15 @@ export interface GetMyStartPlaceResponse {
 //출발지 등록
 export interface UpdateMyStartPlaceRequest {
   address: string;
-  latitude: string; //위도
-  longitude: string; //경도
+  latitude: number; //위도
+  longitude: number; //경도
 }
 
 export interface UpdateMyStartPlaceResponse {
-  status: false;
+  status: boolean;
   code?: string;
   message?: string;
-  result?: {
-    latitude: string;
-  };
+  result?: Record<string, string>;
 }
 
 ////////////////////////////////////////////////////////////recommend

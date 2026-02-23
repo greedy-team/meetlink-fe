@@ -26,7 +26,7 @@ export const updateMyStartPlace = async (
   body: UpdateMyStartPlaceRequest,
 ): Promise<UpdateMyStartPlaceResponse> => {
   const { data } = await axiosInstance.post<UpdateMyStartPlaceResponse>(
-    `/meetings/${code}/location-availabilities`,
+    `/meetings/${code}/availabilities/location`,
     body,
   );
   return data;

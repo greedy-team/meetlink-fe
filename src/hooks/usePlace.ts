@@ -22,14 +22,13 @@ export const useGetMyStartPlace = (id: string) => {
 export const useUpdateMyStartPlace = (id: string) => {
   const { code } = useParams<{ code: string }>();
   const queryClient = useQueryClient();
-  const token = localStorage.getItem('meeting_token'); // 토큰 가져오기
 
   return useMutation({
     mutationFn: (body: UpdateMyStartPlaceRequest) => updateMyStartPlace(code!, body),
     onSuccess: () => {
-      //내 출발지 리패치
+      //내 출발지 리패치 (id로)
       queryClient.invalidateQueries({
-        queryKey: placeKeys.my(code!, token),
+        queryKey: placeKeys.my(code!, id),
       });
     },
     onError: () => {
