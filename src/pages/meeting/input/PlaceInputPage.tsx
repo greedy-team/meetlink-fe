@@ -13,15 +13,49 @@ import { UseCurrentLocationCard } from '@/features/place/ui/UseCurrentLocationCa
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
-// UI 확인용 목데이터
-const MOCK_RECENTS: UpdateMyStartPlaceRequest[] = [
-  { address: '서울 강남구 테헤란로 123', latitude: '37.5012', longitude: '127.0396' },
-  { address: '서울 서초구 서초대로 234', latitude: '37.4929', longitude: '127.0144' },
-  { address: '인천 연수구 송도과학로 56', latitude: '37.3850', longitude: '126.6440' },
-];
+type FromPage = 'join' | 'main';
 
 type LocationState = {
   selectedPlace?: UpdateMyStartPlaceRequest;
+  from?: FromPage;
+};
+
+const RECENT_PLACES_KEY = 'recent_places';
+const MAX_RECENTS = 5;
+
+// 내 출발지 저장 키 (meeting member id 기준)
+const myStartPlaceKey = (memberId: string) => `my_start_place_${memberId}`;
+
+const loadMyStartPlaceCache = (memberId: string): UpdateMyStartPlaceRequest | null => {
+  const raw = localStorage.getItem(myStartPlaceKey(memberId));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as UpdateMyStartPlaceRequest;
+  } catch {
+    return null;
+  }
+};
+
+const saveMyStartPlaceCache = (memberId: string, place: UpdateMyStartPlaceRequest) => {
+  localStorage.setItem(myStartPlaceKey(memberId), JSON.stringify(place));
+};
+
+const loadRecentPlaces = (): UpdateMyStartPlaceRequest[] => {
+  const raw = localStorage.getItem(RECENT_PLACES_KEY);
+  if (!raw) return [];
+  const parsed = JSON.parse(raw) as UpdateMyStartPlaceRequest[];
+  return Array.isArray(parsed) ? parsed : [];
+};
+
+const saveRecentPlaces = (places: UpdateMyStartPlaceRequest[]) => {
+  localStorage.setItem(RECENT_PLACES_KEY, JSON.stringify(places));
+};
+
+const upsertRecentPlace = (place: UpdateMyStartPlaceRequest): UpdateMyStartPlaceRequest[] => {
+  const current = loadRecentPlaces();
+  const next = [place, ...current.filter((p) => p.address !== place.address)].slice(0, MAX_RECENTS);
+  saveRecentPlaces(next);
+  return next;
 };
 
 export default function PlaceInputPage() {
@@ -32,45 +66,82 @@ export default function PlaceInputPage() {
   const { id } = useMeetingContext();
   const { mutate: savePlace, isPending } = useUpdateMyStartPlace(id);
 
-  // 이전 페이지(주소 검색)에서 선택된 장소 정보 (있을 때만)
-  const incomingSelected = (location.state as LocationState | null)?.selectedPlace;
+  const state = (location.state as LocationState | null) ?? null;
+
+  // 이전 페이지(주소 검색/지도 확인)에서 선택된 장소
+  const incomingSelected = state?.selectedPlace ?? null;
+
+  // 어디서 왔는지
+  const from: FromPage | undefined = state?.from;
+
+  // 저장된 내 출발지 캐시를 첫 렌더에서만 읽기
+  const [cachedMyPlace] = useState<UpdateMyStartPlaceRequest | null>(() =>
+    loadMyStartPlaceCache(id),
+  );
 
   // 유저가 최근목록을 눌러 새로 고르면 그 값이 우선됨
   const [picked, setPicked] = useState<UpdateMyStartPlaceRequest | null>(null);
 
-  const currentPlaceList = useMemo(() => MOCK_RECENTS, []);
+  const [recentPlaces, setRecentPlaces] = useState<UpdateMyStartPlaceRequest[]>(() =>
+    loadRecentPlaces(),
+  );
 
-  const selected: UpdateMyStartPlaceRequest | null = picked ?? incomingSelected ?? null;
+  // 우선순위:
+  // 1) 사용자가 이번 세션에서 찍은 값(picked)
+  // 2) 검색/지도에서 넘어온 값(incomingSelected)
+  // 3) 마지막 저장된 내 출발지(cachedMyPlace)
+  const selected: UpdateMyStartPlaceRequest | null = picked ?? incomingSelected ?? cachedMyPlace;
 
   const handleSelectRecent = (place: UpdateMyStartPlaceRequest) => {
     setPicked(place);
   };
 
+  const goBackByFrom = () => {
+    if (!code) return navigate(-1);
+
+    if (from === 'join') return navigate(`/meeting/${code}/join`);
+    if (from === 'main') return navigate(`/meeting/${code}`);
+    return navigate(-1);
+  };
+
   const handleSave = () => {
     if (!selected) return;
-    savePlace(selected);
+
+    savePlace(selected, {
+      onSuccess: () => {
+        // 최근 목록 갱신
+        const next = upsertRecentPlace(selected);
+        setRecentPlaces(next);
+
+        // 내 출발지 캐시 갱신 (다음에 PlaceInputPage 들어오면 이게 바로 뜸)
+        saveMyStartPlaceCache(id, selected);
+
+        goBackByFrom();
+      },
+    });
   };
 
   const goToAddressSearch = () => {
-    navigate(`/meeting/${code}/input/place/search`);
+    navigate(`/meeting/${code}/input/place/search`, { state: { from } satisfies LocationState });
   };
 
   const goToConfirmOnMap = () => {
-    navigate(`/meeting/${code}/input/place/confirm`);
+    navigate(`/meeting/${code}/input/place/confirm`, { state: { from } satisfies LocationState });
   };
+
+  const currentPlaceList = useMemo(() => recentPlaces, [recentPlaces]);
 
   return (
     <AppLayout
-      header={<Header title="출발지 입력" />}
+      header={<Header title="출발지 입력" onBack={goBackByFrom} />}
       bottom={
         <div className="-mx-4 -mb-4">
-          {/* 회색 배경 영역 */}
           <div className="space-y-3 bg-gray-100 px-4 pt-3 pb-4">
             <SelectedPlaceSummary selected={selected} />
 
             <FixedBottomButton
               onClick={handleSave}
-              disabled={!selected}
+              disabled={!selected || isPending}
               loading={isPending}
               className="bg-greedy hover:bg-greedy/50 text-white"
             >
