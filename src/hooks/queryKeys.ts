@@ -20,6 +20,7 @@ export const participantKeys = {
 export const timeKeys = {
   all: ['times'] as const,
   my: (code: string, token: string | null) => [...timeKeys.all, code, token] as const,
+  common: (code: string) => [...timeKeys.all, code] as const,
 };
 
 //장소 쿼리 (토큰 추가)

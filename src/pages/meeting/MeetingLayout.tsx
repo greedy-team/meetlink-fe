@@ -4,13 +4,10 @@ import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'r
 
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
-import { useRecommendPlace, useRecommendTime } from '@/hooks/useRecommend';
 
 import {
   type ParticipantList,
   type ParticipantStatus,
-  type RecommendPlace,
-  type RecommendTime,
   type SelectedTime,
 } from '@/types/meetingTypes';
 
@@ -22,9 +19,8 @@ export interface MeetingOutletContext {
   dateType: string;
   timeRange: [number, number];
   participantStatusList: ParticipantList;
-  //commonTimeList: SelectedTime[] | undefined;
-  //recommendTimeList: RecommendTime[] | undefined;
-  //recommendPlaceList: RecommendPlace[] | undefined;
+  selectedTimeList: SelectedTime[];
+  setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
 
   nickName: string;
   id: string;
@@ -54,35 +50,37 @@ export default function MeetingLayout() {
   } = useMyStatus();
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
 
-  //const { data: timeData, isLoading: isTimeLoading } = useRecommendTime();
-  //const { data: placeData, isLoading: isPlaceLoading } = useRecommendPlace();
+  const [selectedTimeList, setSelectedTimeList] = useState<SelectedTime[]>([]);
 
   const token = localStorage.getItem('meeting_token');
 
-  // 2. 가드 로직 설정
-  const isPublicPage = pathname.endsWith('/join') || pathname.endsWith('/reconnect');
+  const isJoinPage = pathname.endsWith('/join') || pathname.endsWith('/reconnect');
+  const isInputPage = pathname.includes('/input');
 
   useEffect(() => {
-    // 토큰이 아예 없으면 로딩을 기다릴 필요 없이 즉시 join으로
-    if (!isPublicPage && !token) {
+    // 토큰이 없는 경우
+    // join 관련 페이지도 아니고, input 페이지도 아닐 때만 join으로 보냅니다.
+    if (!isJoinPage && !isInputPage && !token) {
       navigate(`/meeting/${code}/join`, { replace: true });
       return;
     }
 
-    // 서버 요청 중일 때는 대기
+    // 서버 요청 중일 때는 판단을 유보하고 대기합니다.
     if (isMyStatusLoading || isMyStatusFetching) return;
 
-    // 토큰은 있으나 서버에서 권한 없다고 한 경우 (예: 잘못된 토큰)
-    if (!isPublicPage && (isMyStatusError || !myStatusData?.status)) {
+    // 2. 토큰은 있으나 서버에서 권한이 없다고 판단한 경우 (잘못된 토큰 등)
+    // 이 역시 input 페이지가 아닐 때만 체크하여 join으로 보냅니다.
+    if (!isJoinPage && token && (isMyStatusError || !myStatusData?.status)) {
       navigate(`/meeting/${code}/join`, { replace: true });
     }
 
-    // 이미 참여했는데 '참여' 페이지로 접근하는 경우 메인으로
-    if (isPublicPage && token && myStatusData?.status) {
+    // 3. 이미 참여 완료된 사용자가 '참여/재접속' 페이지로 접근하는 경우 메인으로 보냅니다.
+    if (isJoinPage && token && myStatusData?.status) {
       navigate(`/meeting/${code}`, { replace: true });
     }
   }, [
-    isPublicPage,
+    isJoinPage,
+    isInputPage, // 의존성 배열에 추가
     myStatusData,
     isMyStatusError,
     isMyStatusLoading,
@@ -99,19 +97,21 @@ export default function MeetingLayout() {
     dateType: meetingData?.result?.timeAvailabilityType || '',
     timeRange: [
       parseInt(meetingData?.result?.timeRangeStart?.split(':')[0] || '6', 10),
-      parseInt(meetingData?.result?.timeRangeEnd?.split(':')[0] || '24', 10),
+      // End Time 파싱 로직: 23이면 24로 올림 처리
+      ((hour: number) => (hour === 23 ? 24 : hour))(
+        parseInt(meetingData?.result?.timeRangeEnd?.split(':')[0] || '24', 10),
+      ),
     ],
     participantStatusList: (participantData?.result || []).map(
       (p: RawParticipantStatus): ParticipantStatus => ({
         id: p.id,
-        nickName: p.nickname, // nickname -> nickName
-        hasPlaceInput: p.placeSubmitted, // placeSubmitted -> hasPlaceInput
-        hasTimeInput: p.timeSubmitted, // timeSubmitted -> hasTimeInput
+        nickName: p.nickname,
+        hasPlaceInput: p.placeSubmitted,
+        hasTimeInput: p.timeSubmitted,
       }),
     ),
-    //commonTimeList: timeData?.commonTimeList,
-    //recommendTimeList: timeData?.recommendTimeList,
-    //recommendPlaceList: placeData?.recommendPlaceList,
+    selectedTimeList,
+    setSelectedTimeList,
 
     nickName: myStatusData?.result?.nickname || '',
     id: myStatusData?.result?.id?.toString() || '',
@@ -120,8 +120,11 @@ export default function MeetingLayout() {
   };
 
   if (
-    !isPublicPage &&
-    (!token || isMyStatusLoading || isMyStatusFetching || isMeetingLoading || isParticipantLoading)
+    (!isJoinPage && !isInputPage && !token) ||
+    isMyStatusLoading ||
+    isMyStatusFetching ||
+    isMeetingLoading ||
+    isParticipantLoading
   ) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-white">

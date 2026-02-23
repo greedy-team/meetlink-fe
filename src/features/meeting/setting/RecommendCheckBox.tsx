@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Check, type LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

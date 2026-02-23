@@ -19,11 +19,10 @@ export default function CreatePage() {
   const [meetingName, setMeetingName] = useState('');
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(false);
   const [dateType, setDateType] = useState('WEEKLY');
-  const [timeRange, setTimeRange] = useState<[number, number]>([6, 18]);
+  const [timeRange, setTimeRange] = useState<[number, number]>([12, 18]);
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
 
   const { mutate: createMeeting } = useCreateMeeting();
-  const [code, setCode] = useState('');
 
   const navigate = useNavigate();
 
@@ -37,7 +36,11 @@ export default function CreatePage() {
       return;
     }
 
-    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
+    const formatTime = (hour: number) => {
+      const adjustedHour = hour >= 24 ? 23 : hour;
+      return `${String(adjustedHour).padStart(2, '0')}:00:00`;
+    };
+
     const requestData = {
       name: meetingName,
       enableTimeRecommendation: isTimeRecommendEnabled,
