@@ -101,7 +101,7 @@ export default function PlaceInputPage() {
 
     if (from === 'join') return navigate(`/meeting/${code}/join`);
     if (from === 'main') return navigate(`/meeting/${code}`);
-    return navigate(-1);
+    return navigate(`/meeting/${code}`);
   };
 
   const handleSave = () => {

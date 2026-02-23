@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Clock } from 'lucide-react';
 import { MapPin } from 'lucide-react';
@@ -8,14 +8,13 @@ import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
-import { ParticipantStatusList } from '@/features/meeting/general/ParticipantSatusList';
+import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
-import { type ParticipantList } from '@/types/meetingTypes';
 
 // 내 출발지 localStorage 키/로드
 const myStartPlaceKey = (memberId: string) => `my_start_place_${memberId}`;
@@ -36,18 +35,18 @@ export default function MainPage() {
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
     participantStatusList,
-    //recommendTimeList,
-    recommendPlaceList,
-    id, // 내 출발지 캐시 키에 사용
+    id,
   } = useMeetingContext();
-
-  //const bestRecommendedTime = recommendTimeList?.[0];
-  const bestRecommendedPlace = recommendPlaceList?.[0];
+  const { data: resultData } = useRecommendResult();
+  const { code } = useParams<{ code: string }>();
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
+
+  const bestRecommendedTime = resultData?.result.timeCandidate;
+  const bestRecommendedPlace = resultData?.result.placeCandidate;
 
   const completedCount = participantStatusList.filter(
     (p) => p.hasTimeInput && p.hasPlaceInput,
@@ -58,10 +57,11 @@ export default function MainPage() {
 
   const handleShare = async () => {
     // 공유할 데이터 설정
+    const shareUrl = `${window.location.origin}/meeting/${code}`;
     const shareData = {
       title: `MeetLink 모임 초대 : ${meetingName}`,
       text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
-      url: window.location.href + '/join',
+      url: shareUrl,
     };
 
     try {
@@ -89,7 +89,7 @@ export default function MainPage() {
       bottom={
         <div className="flex items-center pt-2">
           <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
-            초대 링크 공유하기
+            초대 링크 복사 및 공유하기
           </FixedBottomButton>
         </div>
       }
@@ -99,7 +99,7 @@ export default function MainPage() {
           <RecommendSummaryCard
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
-            //bestTime={bestRecommendedTime}
+            bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
           />
         </div>

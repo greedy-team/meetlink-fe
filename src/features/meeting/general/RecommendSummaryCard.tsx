@@ -1,38 +1,78 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Calendar, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 import { LatLngMap } from './LatLngMap';
 import { RecommendItem } from './RecommendItem';
 
-import { type RecommendPlace, type RecommendTime } from '@/types/meetingTypes';
+interface BestTime {
+  id: number;
+  date: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  availableCount: number;
+  rank: number;
+}
+
+interface BestPlace {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  avgTravelTime: number;
+  maxTravelTime: number;
+  calculationType: string;
+  rank: number;
+}
+
+const makeTimeDescription = (bestTime: BestTime | undefined): string => {
+  if (!bestTime) return '시간 정보가 없습니다';
+  const { date, dayOfWeek, startTime, endTime } = bestTime;
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  let datePart = '';
+  if (date && date !== '') {
+    const dateObj = new Date(date);
+    const dayName = dayNames[dateObj.getDay()];
+    datePart = `${date} (${dayName})`;
+  } else if (dayOfWeek !== -1) {
+    datePart = `${dayNames[dayOfWeek]}요일`;
+  }
+
+  const formatTime = (timeStr: string) => {
+    const [hourStr, minuteStr] = timeStr.split(':');
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour < 12 ? '오전' : '오후';
+
+    if (hour > 12) hour -= 12;
+    if (hour === 0) hour = 12;
+
+    return `${ampm} ${hour}:${minuteStr}`;
+  };
+
+  const startFormatted = formatTime(startTime);
+  const endFormatted = formatTime(endTime);
+
+  return `${datePart} ${startFormatted} ~ ${endFormatted}`;
+};
+
 interface RecommendSummaryCardProps {
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
-  bestTime?: RecommendTime;
-  bestPlace?: RecommendPlace;
+  bestTime: BestTime | undefined;
+  bestPlace: BestPlace | undefined;
   className?: string;
 }
-
-// UI 확인용 목데이터
-const MOCK_BEST_PLACE = {
-  placeName: '서울역',
-  placeAddress: '서울특별시 용산구 한강대로 405',
-  latitude: '37.5546',
-  longitude: '126.9706',
-  rank: 1,
-  averageTime: 30,
-  maxTime: 45,
-  participantMovementList: [],
-} satisfies RecommendPlace;
 
 export function RecommendSummaryCard({
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
-  //bestTime,
+  bestTime,
   bestPlace,
   className,
 }: RecommendSummaryCardProps) {
@@ -41,12 +81,12 @@ export function RecommendSummaryCard({
     navigate(url);
   };
 
+  const timeValue = makeTimeDescription(bestTime);
+  const placeValue = bestPlace?.address || '장소 정보가 없습니다';
+
   if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
     return null; // 혹시나 방지
   }
-
-  // 목데이터 없애면 삭제
-  const placeForMap = bestPlace ?? MOCK_BEST_PLACE;
 
   return (
     <div
@@ -58,8 +98,8 @@ export function RecommendSummaryCard({
       <div className="flex flex-col gap-2 p-3">
         {isPlaceRecommendEnabled && (
           <LatLngMap
-            lat={Number(placeForMap.latitude)}
-            lng={Number(placeForMap.longitude)}
+            lat={bestPlace?.latitude ?? 37.5665}
+            lng={bestPlace?.longitude ?? 126.978}
             level={4}
             className="h-70 w-full overflow-hidden rounded-2xl"
           />
@@ -67,9 +107,9 @@ export function RecommendSummaryCard({
 
         {isTimeRecommendEnabled && (
           <RecommendItem
-            icon={Calendar}
+            icon={Clock}
             label="추천 시간"
-            value="1"
+            value={timeValue}
             onClick={() => handleGoToButton('recommend/time')}
           />
         )}
@@ -82,7 +122,7 @@ export function RecommendSummaryCard({
           <RecommendItem
             icon={MapPin}
             label="추천 장소"
-            value={placeForMap.placeName}
+            value={placeValue}
             onClick={() => handleGoToButton('recommend/place')}
           />
         )}
