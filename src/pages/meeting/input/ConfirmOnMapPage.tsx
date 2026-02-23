@@ -1,48 +1,213 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
 
+import { LatLngMap } from '@/features/meeting/general/LatLngMap';
 import { CenterPin } from '@/features/place/confirm/CenterPin';
-import { MapPreview } from '@/features/place/confirm/MapPreview';
 import { PlaceConfirmSheet } from '@/features/place/confirm/PlaceConfirmSheet';
 import { RecenterFab } from '@/features/place/confirm/RecenterFab';
 import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
+
+const RECENT_PLACES_KEY = 'recent_places';
+const MAX_RECENTS = 5;
+
+const loadRecentPlaces = (): UpdateMyStartPlaceRequest[] => {
+  const raw = localStorage.getItem(RECENT_PLACES_KEY);
+  if (!raw) return [];
+  const parsed = JSON.parse(raw) as UpdateMyStartPlaceRequest[];
+  return Array.isArray(parsed) ? parsed : [];
+};
+
+const saveRecentPlaces = (places: UpdateMyStartPlaceRequest[]) => {
+  localStorage.setItem(RECENT_PLACES_KEY, JSON.stringify(places));
+};
+
+const upsertRecentPlace = (place: UpdateMyStartPlaceRequest): UpdateMyStartPlaceRequest[] => {
+  const current = loadRecentPlaces();
+  const next = [place, ...current.filter((p) => p.address !== place.address)].slice(0, MAX_RECENTS);
+  saveRecentPlaces(next);
+  return next;
+};
+
+// window.kakao 최소 타입
+type KakaoCoord2AddressResult = {
+  address?: { address_name: string };
+  road_address?: { address_name: string };
+};
+
+type KakaoStatus = 'OK' | 'ZERO_RESULT' | 'ERROR';
+
+type KakaoGeocoder = {
+  coord2Address: (
+    lng: number,
+    lat: number,
+    callback: (result: KakaoCoord2AddressResult[], status: KakaoStatus) => void,
+  ) => void;
+};
+
+type KakaoMapsServices = {
+  Geocoder: new () => KakaoGeocoder;
+};
+
+type KakaoMaps = {
+  services: KakaoMapsServices;
+};
+
+type KakaoGlobal = {
+  maps: KakaoMaps;
+};
+
+const getKakao = (): KakaoGlobal | null => {
+  const w = window as unknown as { kakao?: KakaoGlobal };
+  return w.kakao ?? null;
+};
 
 export default function ConfirmOnMapPage() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
 
-  const roadAddress = '인천 서구 경서로56번길 3-2';
-  const jibunAddress = '인천 서구 경서동 735-2';
+  // 현재 위치 받기 전엔 null
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
+
+  const [roadAddress, setRoadAddress] = useState('');
+  const [jibunAddress, setJibunAddress] = useState('');
+
+  const [isLocating, setIsLocating] = useState(false);
+
+  // reverse geocode 디바운스
+  const reverseTimerRef = useRef<number | null>(null);
+
+  const reverseGeocode = (nextLat: number, nextLng: number) => {
+    const kakao = getKakao();
+    const Geocoder = kakao?.maps.services?.Geocoder;
+    if (!Geocoder) return;
+
+    const geocoder = new Geocoder();
+    geocoder.coord2Address(nextLng, nextLat, (result, status) => {
+      if (status !== 'OK' || result.length === 0) return;
+
+      const first = result[0];
+      const road = first.road_address?.address_name ?? '';
+      const jibun = first.address?.address_name ?? '';
+
+      setRoadAddress(road || jibun);
+      setJibunAddress(jibun);
+    });
+  };
+
+  const scheduleReverseGeocode = (nextLat: number, nextLng: number) => {
+    if (reverseTimerRef.current) window.clearTimeout(reverseTimerRef.current);
+
+    reverseTimerRef.current = window.setTimeout(() => {
+      reverseGeocode(nextLat, nextLng);
+    }, 100);
+  };
+
+  const fetchCurrentLocation = () => {
+    if (!navigator.geolocation) return;
+
+    setIsLocating(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const nextLat = pos.coords.latitude;
+        const nextLng = pos.coords.longitude;
+
+        setLat(nextLat);
+        setLng(nextLng);
+        setIsLocating(false);
+
+        // 현위치로 되돌아올 때는 바로 갱신
+        reverseGeocode(nextLat, nextLng);
+      },
+      () => {
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 60_000,
+      },
+    );
+  };
+
+  // 페이지 진입 즉시 1회 실행
+  useEffect(() => {
+    fetchCurrentLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const canConfirm = useMemo(() => {
+    return !!roadAddress.trim() && lat !== null && lng !== null && !isLocating;
+  }, [roadAddress, lat, lng, isLocating]);
 
   const handleConfirm = () => {
+    if (!code || !canConfirm || lat === null || lng === null) return;
+
     const selectedPlace: UpdateMyStartPlaceRequest = {
       address: roadAddress,
-      latitude: '37.3850',
-      longitude: '126.6440',
+      latitude: lat,
+      longitude: lng,
     };
+
+    upsertRecentPlace(selectedPlace);
 
     navigate(`/meeting/${code}/input/place`, { state: { selectedPlace } });
   };
 
   return (
     <AppLayout header={<Header title="지도에서 위치 확인" />}>
-      {/* AppLayout main padding 상쇄 */}
-      <div className="-mx-4 -my-4">
-        {/* 지도 영역에 명시적 높이 부여 (이게 핵심) */}
-        <div className="relative h-[55dvh] min-h-90 w-full overflow-hidden">
-          <MapPreview>
-            <CenterPin />
-            <RecenterFab onClick={() => {}} />
-          </MapPreview>
+      <div className="-mx-4 -my-4 flex min-h-0 flex-1 flex-col">
+        <div className="relative min-h-0 w-full flex-1 overflow-hidden">
+          {lat !== null && lng !== null ? (
+            <>
+              <div className="absolute inset-0">
+                <LatLngMap
+                  lat={lat}
+                  lng={lng}
+                  level={4}
+                  showMarker={false}
+                  onCenterChange={(nextLat, nextLng) => {
+                    // 지도 idle 이벤트가 자주 올 수 있어서 디바운스로 주소만 갱신
+                    setLat(nextLat);
+                    setLng(nextLng);
+                    scheduleReverseGeocode(nextLat, nextLng);
+                  }}
+                />
+              </div>
+
+              {/* 핀은 화면 중앙 고정 */}
+              <div className="pointer-events-none absolute inset-0 z-20">
+                <CenterPin />
+              </div>
+
+              {/* RecenterFab는 지도 위 레이어 */}
+              <div className="absolute right-6 bottom-6 z-30">
+                <RecenterFab onClick={fetchCurrentLocation} />
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 grid place-items-center bg-gray-50 px-6 text-center">
+              <div className="space-y-2">
+                <div className="text-base font-semibold text-gray-900">
+                  현재 위치를 불러와야 지도를 확인할 수 있어요
+                </div>
+                <div className="text-sm text-gray-500">
+                  위치 권한을 허용하고 잠시만 기다려주세요.
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* 하단 시트 */}
         <PlaceConfirmSheet
-          roadAddress={roadAddress}
+          roadAddress={roadAddress || (isLocating ? '현재 위치 불러오는 중…' : '')}
           jibunAddress={jibunAddress}
           onConfirm={handleConfirm}
+          onConfirmDisabled={!canConfirm}
         />
       </div>
     </AppLayout>
