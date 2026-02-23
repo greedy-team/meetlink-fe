@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type LatLngMapProps = {
   lat: number;
@@ -19,12 +19,16 @@ export function LatLngMap({
 }: LatLngMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // d.ts에 선언한 커스텀 타입 사용
   const mapRef = useRef<KakaoMap | null>(null);
   const markerRef = useRef<KakaoMarker | null>(null);
 
-  // programmatic setCenter로 발생하는 idle은 무시
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
   const programmaticMoveRef = useRef(false);
+
+  const onCenterChangeRef = useRef(onCenterChange);
+  useEffect(() => {
+    onCenterChangeRef.current = onCenterChange;
+  }, [onCenterChange]);
 
   useEffect(() => {
     const kakao = window.kakao;
@@ -45,20 +49,25 @@ export function LatLngMap({
       mapRef.current = map;
       markerRef.current = marker;
 
-      if (onCenterChange) {
+      // 이벤트 리스너 등록
+      if (kakao.maps.event) {
         kakao.maps.event.addListener(map, 'center_changed', () => {
           if (programmaticMoveRef.current) {
             programmaticMoveRef.current = false;
             return;
           }
+
           const c = map.getCenter();
-          onCenterChange(c.getLat(), c.getLng());
+          if (onCenterChangeRef.current) {
+            onCenterChangeRef.current(c.getLat(), c.getLng());
+          }
         });
       }
 
       requestAnimationFrame(() => {
         map.relayout?.();
         map.setCenter(center);
+        setIsMapLoaded(true);
       });
     });
 
@@ -66,9 +75,12 @@ export function LatLngMap({
   }, []);
 
   useEffect(() => {
+    if (!isMapLoaded) return;
+
     const kakao = window.kakao;
     const map = mapRef.current;
     const marker = markerRef.current;
+
     if (!kakao?.maps || !map) return;
 
     const next = new kakao.maps.LatLng(lat, lng);
@@ -76,8 +88,10 @@ export function LatLngMap({
     programmaticMoveRef.current = true;
     map.setCenter(next);
 
-    if (marker) marker.setPosition(next);
-  }, [lat, lng]);
+    if (marker) {
+      marker.setPosition(next);
+    }
+  }, [lat, lng, isMapLoaded]);
 
   return (
     <div ref={containerRef} className={className ?? 'h-full w-full overflow-hidden rounded-2xl'} />
