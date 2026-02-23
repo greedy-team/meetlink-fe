@@ -11,7 +11,7 @@ type Props = {
 };
 
 const defaultMakeTitle = (address: string) => {
-  // UI용 임시: 목데이터라 title 필드가 없어서 임시로 앞 3~4토큰만 잘라서 제목으로 사용. api 연결하면 수정 예정
+  // address만 있는 경우(카카오/서버/로컬 저장 공통) 주소 일부를 요약해서 보여줌
   const tokens = address.trim().split(/\s+/);
   return tokens.slice(0, Math.min(tokens.length, 4)).join(' ');
 };
@@ -23,7 +23,16 @@ export function RecentPlaceList({
   showTitle = true,
   title = '최근 위치',
 }: Props) {
-  if (places.length === 0) return null;
+  if (places.length === 0) {
+    return (
+      <section className="mt-6">
+        {showTitle && <h2 className="mb-2 text-sm font-semibold text-gray-500">{title}</h2>}
+        <div className="rounded-xl bg-gray-50 px-4 py-5 text-sm text-gray-500">
+          저장된 최근 위치가 없습니다.
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-6">

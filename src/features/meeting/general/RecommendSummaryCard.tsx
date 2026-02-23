@@ -5,14 +5,8 @@ import { Clock, MapPin } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
+import { LatLngMap } from './LatLngMap';
 import { RecommendItem } from './RecommendItem';
-
-//임시 지도
-interface LatLngMapProps {
-  lat: number;
-  lng: number;
-  zoom?: number;
-}
 
 interface BestTime {
   id: number;
@@ -35,28 +29,6 @@ interface BestPlace {
   calculationType: string;
   rank: number;
 }
-
-const LatLngMap: React.FC<LatLngMapProps> = ({ lat, lng, zoom = 15 }) => {
-  // 2. URL 생성 (q 파라미터에 좌표를 넣어야 마커가 찍힙니다)
-  const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
-
-  return (
-    <div style={{ width: '100%', height: '400px' }}>
-      <iframe
-        title="Google Map"
-        src={mapUrl}
-        width="100%"
-        height="100%"
-        style={{
-          border: 0,
-          pointerEvents: 'none',
-        }}
-        allowFullScreen
-        loading="lazy"
-      ></iframe>
-    </div>
-  );
-};
 
 const makeTimeDescription = (bestTime: BestTime | undefined): string => {
   if (!bestTime) return '시간 정보가 없습니다';
@@ -124,7 +96,14 @@ export function RecommendSummaryCard({
       )}
     >
       <div className="flex flex-col gap-2 p-3">
-        {isPlaceRecommendEnabled && <LatLngMap lat={37.5546} lng={126.9706} />}
+        {isPlaceRecommendEnabled && (
+          <LatLngMap
+            lat={bestPlace?.latitude ?? 37.5665}
+            lng={bestPlace?.longitude ?? 126.978}
+            level={4}
+            className="h-70 w-full overflow-hidden rounded-2xl"
+          />
+        )}
 
         {isTimeRecommendEnabled && (
           <RecommendItem

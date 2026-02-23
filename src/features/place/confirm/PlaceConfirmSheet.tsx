@@ -15,7 +15,13 @@ export function PlaceConfirmSheet({
   onConfirmDisabled,
 }: Props) {
   return (
-    <div className="rounded-t-3xl bg-white px-5 pt-5 pb-6 shadow-[0_-8px_24px_rgba(0,0,0,0.08)]">
+    <div
+      className={[
+        'rounded-t-3xl bg-white px-5 pt-5',
+        'pb-[calc(1rem+env(safe-area-inset-bottom))]',
+        'shadow-[0_-8px_24px_rgba(0,0,0,0.08)]',
+      ].join(' ')}
+    >
       <div className="space-y-2">
         <div className="text-2xl font-extrabold text-gray-900">{roadAddress}</div>
         <div className="text-base font-medium text-gray-500">{jibunAddress}</div>

@@ -6,16 +6,27 @@ type HeaderProps = {
   title: string;
   showBackButton?: boolean;
   showSettingButton?: boolean;
+  onBack?: () => void;
 };
 
-export function Header({ title, showBackButton = true, showSettingButton = false }: HeaderProps) {
+export function Header({
+  title,
+  showBackButton = true,
+  showSettingButton = false,
+  onBack,
+}: HeaderProps) {
   const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onBack) return onBack();
+    navigate(-1);
+  };
 
   return (
     <header className="flex h-16 items-center border-b bg-white px-4">
       <div className="flex flex-1 items-center gap-2">
         {showBackButton && (
-          <button type="button" onClick={() => navigate(-1)} className="flex items-center">
+          <button type="button" onClick={handleBack} className="flex items-center">
             <ChevronLeft className="h-6 w-6" />
           </button>
         )}

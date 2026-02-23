@@ -50,7 +50,7 @@ export default function JoinPage() {
 
   const goPlaceInput = () => {
     if (!code) return;
-    navigate(`/meeting/${code}/input/place`);
+    navigate(`/meeting/${code}/input/place`, { state: { from: 'join' } });
   };
 
   const onSubmit = () => {

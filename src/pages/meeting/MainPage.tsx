@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Clock } from 'lucide-react';
@@ -13,10 +14,29 @@ import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
+import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
+
+// 내 출발지 localStorage 키/로드
+const myStartPlaceKey = (memberId: string) => `my_start_place_${memberId}`;
+
+const loadMyStartPlace = (memberId: string): UpdateMyStartPlaceRequest | null => {
+  const raw = localStorage.getItem(myStartPlaceKey(memberId));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as UpdateMyStartPlaceRequest;
+  } catch {
+    return null;
+  }
+};
 
 export default function MainPage() {
-  const { meetingName, isTimeRecommendEnabled, isPlaceRecommendEnabled, participantStatusList } =
-    useMeetingContext();
+  const {
+    meetingName,
+    isTimeRecommendEnabled,
+    isPlaceRecommendEnabled,
+    participantStatusList,
+    id,
+  } = useMeetingContext();
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
 
@@ -32,6 +52,8 @@ export default function MainPage() {
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
   const totalCount = participantStatusList.length;
+
+  const myStartPlace = useMemo(() => loadMyStartPlace(id), [id]);
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -98,8 +120,8 @@ export default function MainPage() {
             <GoToButton
               icon={MapPin}
               title="출발지 입력하기"
-              description="모임 만남 장소를 추천하는데 활용돼요."
-              onClick={() => handleGoToButton('input/place')}
+              description={'모임 만남 장소를 추천하는데 활용돼요.'}
+              onClick={() => navigate('input/place', { state: { from: 'main' } })}
             />
           )}
         </div>
