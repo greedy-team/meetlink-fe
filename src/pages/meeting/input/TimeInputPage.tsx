@@ -55,6 +55,7 @@ export default function TimeInputPage() {
             setSelectedDate={setSelectedDate}
             selectedTimeList={selectedTimeList}
             participantsNum={1}
+            timeRange={timeRange}
           />
         </div>
       }

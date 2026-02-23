@@ -25,7 +25,7 @@ export default function TimeRecommendPage() {
   console.log(commonTimeList);
   console.log(candidateList);
   useEffect(() => {
-    // 페이지 진입 시 및 새로고침 시 실행
+    console.log('didcalculate');
     calculateRecommendTime();
   }, [calculateRecommendTime]);
 
@@ -40,6 +40,7 @@ export default function TimeRecommendPage() {
             setSelectedDate={setSelectedDate}
             selectedTimeList={commonTimeList}
             participantsNum={participantsNum}
+            timeRange={timeRange}
           />
         </div>
       }

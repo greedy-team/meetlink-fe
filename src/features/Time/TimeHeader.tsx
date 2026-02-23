@@ -27,6 +27,8 @@ interface TimeHeaderProps {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
   selectedTimeList: SelectedTime[];
   participantsNum: number;
+  // 🚨 새롭게 추가된 시간 범위 Props
+  timeRange: [number, number];
 }
 
 const DAYS: string[] = ['일', '월', '화', '수', '목', '금', '토'];
@@ -55,12 +57,24 @@ const getWeeksInMonth = (date: Date): Date[][] => {
   return weeks;
 };
 
+// 🚨 헬퍼 함수: timeRange 범위 내에 있는 시간인지 체크 ("09:30" 형태를 받아서 [9, 18] 범위 안인지 확인)
+const isTimeInRange = (timeStr: string, [startHour, endHour]: [number, number]) => {
+  if (!timeStr) return false;
+  const [hourStr] = timeStr.split(':');
+  const hour = parseInt(hourStr, 10);
+  if (isNaN(hour)) return false;
+
+  // 종료 시간(endHour) 직전까지만 포함 (예: 18시면 17:30까지)
+  return hour >= startHour && hour < endHour;
+};
+
 export default function TimeHeader({
   dateType = 'SPECIFIC_DATE',
   selectedDate,
   setSelectedDate,
   selectedTimeList = [],
   participantsNum = 0,
+  timeRange, // 구조 분해 할당으로 받아옴
 }: TimeHeaderProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -81,7 +95,6 @@ export default function TimeHeader({
 
   const handleDateClick = (date: Date): void => {
     setSelectedDate(date);
-    // setIsOpen(false);
   };
 
   const getDayColor = (dayIndex: number): string => {
@@ -141,7 +154,6 @@ export default function TimeHeader({
       <div className="w-full bg-white">
         {dateType === 'SPECIFIC_DATE' && (
           <div className="relative z-45 flex items-center justify-between px-26 pt-4 pb-2 text-lg font-bold text-gray-800">
-            {/* 이전 버튼 */}
             <button
               onClick={handlePrevClick}
               disabled={isPrevDisabled}
@@ -159,7 +171,6 @@ export default function TimeHeader({
               {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월
             </span>
 
-            {/* 다음 버튼 */}
             <button
               onClick={handleNextClick}
               className="p-1 text-gray-600 transition-colors hover:text-gray-900"
@@ -178,12 +189,17 @@ export default function TimeHeader({
           )}
         >
           {DAYS.map((day, idx) => {
-            // WEEKLY 모드일 경우 해당 요일의 가장 큰 인원수 찾기
             let maxCount = 0;
             if (dateType === 'WEEKLY' && selectedTimeList.length > 0) {
               const matched = selectedTimeList.find((item) => Number(item.dayOfWeek) === idx);
               if (matched && matched.startTimeList && matched.startTimeList.length > 0) {
-                maxCount = Math.max(...matched.startTimeList.map((st) => st.availableNumber));
+                // 🚨 timeRange 필터링 적용 (해당 요일)
+                const validTimes = matched.startTimeList.filter((st) =>
+                  isTimeInRange(st.startTime, timeRange),
+                );
+                if (validTimes.length > 0) {
+                  maxCount = Math.max(...validTimes.map((st) => st.availableNumber));
+                }
               }
             }
             const ratio = participantsNum > 0 ? maxCount / participantsNum : 0;
@@ -194,17 +210,19 @@ export default function TimeHeader({
                 className={cn(
                   'relative flex items-center justify-center font-semibold',
                   getDayColor(idx),
-                  dateType === 'WEEKLY' ? 'h-10 text-lg' : 'text-xs', // WEEKLY일 땐 원형 배경을 위해 높이 할당
+                  dateType === 'WEEKLY' ? 'h-10 text-lg' : 'text-xs',
                 )}
               >
-                {dateType === 'WEEKLY' && maxCount > 0 && (
-                  <div
-                    className="bg-greedy absolute h-9 w-9 rounded-lg"
-                    style={{ opacity: Math.max(0.15, ratio) }}
-                  />
-                )}
-                {/* 배경이 글자를 덮지 않도록 z-index를 올림 */}
-                <span className="relative z-10">{day}</span>
+                {/* 저번에 수정한 깔끔한 중앙 정렬 방식 반영 */}
+                <div className="relative flex h-9 w-9 items-center justify-center">
+                  {dateType === 'WEEKLY' && maxCount > 0 && (
+                    <div
+                      className="bg-greedy absolute inset-0 rounded-lg"
+                      style={{ opacity: Math.max(0.15, ratio) }}
+                    />
+                  )}
+                  <span className="relative z-10">{day}</span>
+                </div>
               </div>
             );
           })}
@@ -247,7 +265,6 @@ export default function TimeHeader({
                             {week.map((date, dateIdx) => {
                               const isDisabled = isBefore(date, currentWeekStart);
 
-                              // SPECIFIC_DATE 모드일 경우 해당 날짜의 가장 큰 인원수 찾기
                               let maxCount = 0;
                               if (selectedTimeList.length > 0) {
                                 const matched = selectedTimeList.find((item) => {
@@ -258,14 +275,22 @@ export default function TimeHeader({
                                     return false;
                                   }
                                 });
+
                                 if (
                                   matched &&
                                   matched.startTimeList &&
                                   matched.startTimeList.length > 0
                                 ) {
-                                  maxCount = Math.max(
-                                    ...matched.startTimeList.map((st) => st.availableNumber),
+                                  // 🚨 timeRange 필터링 적용 (해당 날짜)
+                                  const validTimes = matched.startTimeList.filter((st) =>
+                                    isTimeInRange(st.startTime, timeRange),
                                   );
+
+                                  if (validTimes.length > 0) {
+                                    maxCount = Math.max(
+                                      ...validTimes.map((st) => st.availableNumber),
+                                    );
+                                  }
                                 }
                               }
                               const ratio = participantsNum > 0 ? maxCount / participantsNum : 0;
@@ -275,23 +300,24 @@ export default function TimeHeader({
                                   key={dateIdx}
                                   onClick={() => !isDisabled && handleDateClick(date)}
                                   className={cn(
-                                    'relative flex items-center justify-center text-lg font-bold',
+                                    'flex items-center justify-center text-lg font-bold',
                                     getDayColor(date.getDay()),
                                     !isSameMonth(date, selectedDate) && 'opacity-40',
                                     isDisabled && 'cursor-not-allowed opacity-30',
                                   )}
                                 >
-                                  {/* 투명도를 가진 원형 배경 */}
-                                  {maxCount > 0 &&
-                                    !isDisabled &&
-                                    isSameMonth(date, selectedDate) && (
-                                      <div
-                                        className="bg-greedy absolute top-1/2 left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-lg"
-                                        style={{ opacity: Math.max(0.15, ratio / 2) }}
-                                      />
-                                    )}
-                                  {/* 글자는 투명해지지 않게 위로 띄움 */}
-                                  <span className="relative z-10">{date.getDate()}</span>
+                                  {/* 저번에 수정한 깔끔한 중앙 정렬 방식 반영 */}
+                                  <div className="relative flex h-9 w-9 items-center justify-center">
+                                    {maxCount > 0 &&
+                                      !isDisabled &&
+                                      isSameMonth(date, selectedDate) && (
+                                        <div
+                                          className="bg-greedy absolute inset-0 rounded-lg"
+                                          style={{ opacity: Math.max(0.15, ratio / 2) }}
+                                        />
+                                      )}
+                                    <span className="relative z-10">{date.getDate()}</span>
+                                  </div>
                                 </div>
                               );
                             })}
