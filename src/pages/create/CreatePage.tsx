@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Clock } from 'lucide-react';
@@ -7,6 +7,7 @@ import { MapPin } from 'lucide-react';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useCreateMeeting } from '@/hooks/useMeeting';
 
@@ -16,31 +17,44 @@ import { RecommendCheckBox } from '@/features/meeting/setting/RecommendCheckBox'
 import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
 
 export default function CreatePage() {
+  //모임 설정값
   const [meetingName, setMeetingName] = useState('');
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(false);
   const [dateType, setDateType] = useState('WEEKLY');
   const [timeRange, setTimeRange] = useState<[number, number]>([12, 18]);
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
 
+  //모임 생성 뮤테이션
   const { mutate: createMeeting } = useCreateMeeting();
+
+  //미팅 이름 입력 여부
+  const [meetingNameInputFinished, setMeetingNameInputFinished] = useState(false);
+  const [showMeetingNameInputMessage, setShowMeetingNameInputMessage] = useState(false);
+  if (meetingName.trim().length <= 0 && meetingNameInputFinished === true) {
+    setMeetingNameInputFinished(false);
+  }
+
+  const handleMeetingNameInput = () => {
+    if (meetingName.trim().length <= 0) {
+      setMeetingNameInputFinished(false);
+      document.getElementById('meeting-name')?.focus();
+      setShowMeetingNameInputMessage(true);
+    } else {
+      setMeetingNameInputFinished(true);
+      setShowMeetingNameInputMessage(false);
+    }
+  };
 
   const navigate = useNavigate();
 
+  //모임 생성 버튼 클릭 핸들
   const handleCreateClick = () => {
-    if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
-      console.log('2-1. 중단: 추천 옵션 미선택');
-      return;
-    }
-    if (isTimeRecommendEnabled && !dateType) {
-      console.log('2-2. 중단: 날짜 타입(dateType) 미선택');
-      return;
-    }
-
     const formatTime = (hour: number) => {
-      const adjustedHour = hour >= 24 ? 23 : hour;
+      const adjustedHour = hour >= 24 ? 23 : hour; // 24:00:00 시간이 존재하지 않는 오류 방지
       return `${String(adjustedHour).padStart(2, '0')}:00:00`;
     };
 
+    //서버 요청 데이터 - 모임 설정값
     const requestData = {
       name: meetingName,
       enableTimeRecommendation: isTimeRecommendEnabled,
@@ -50,11 +64,10 @@ export default function CreatePage() {
       timeRangeEnd: formatTime(timeRange[1]),
     };
 
-    console.log('3. 서버로 보낼 데이터:', requestData);
-
+    //뮤테이션
     createMeeting(requestData, {
       onSuccess: (data) => {
-        console.log('4. 성공 응답:', data);
+        //성공시
         if (data.status && data.result) {
           navigate(`/share/${data.result.code}`);
         }
@@ -65,10 +78,11 @@ export default function CreatePage() {
     });
   };
 
+  //모임 생성 버튼 활성화 조건
   const isFormValid =
     meetingName.trim().length > 0 && // 이름 입력 필수
-    (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 하나는 선택
-    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType));
+    (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 추천 기능 중 하나는 필수
+    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType)); // 시간 추천이 없거나 | 있으면 dateType도 있어야 됨.
 
   return (
     <AppLayout
@@ -81,18 +95,41 @@ export default function CreatePage() {
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex flex-col items-center">
-          <FixedBottomButton
-            className="bg-greedy hover:bg-greedy/50"
-            onClick={handleCreateClick}
-            disabled={!isFormValid}
-          >
-            모임 생성하기
-          </FixedBottomButton>
+          {isFormValid && (
+            <FixedBottomButton
+              className="bg-greedy hover:bg-greedy/50"
+              onClick={handleCreateClick}
+              disabled={!isFormValid}
+            >
+              모임 생성하기
+            </FixedBottomButton>
+          )}
         </div>
       }
     >
       <div className="mx-3 flex flex-col gap-2">
-        <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
+        <Label className="ml-1 text-2xl font-medium text-gray-700">
+          모임 이름을 <br />
+          입력해주세요.
+        </Label>
+
+        <div>
+          {/** 미팅 이름 입력 */}
+          <MeetingNameInput
+            value={meetingName}
+            onChange={(e) => setMeetingName(e.target.value)}
+            showMessage={showMeetingNameInputMessage}
+          />
+          {!meetingNameInputFinished && (
+            <Button
+              className="bg-greedy/80 hover:bg-greedy/50 h-11 w-full rounded-xl text-lg font-semibold text-white"
+              onClick={handleMeetingNameInput}
+            >
+              다음
+            </Button>
+          )}
+        </div>
+
         <div className="h-2" />
         <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
           모임 설정
