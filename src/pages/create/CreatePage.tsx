@@ -133,7 +133,7 @@ export default function CreatePage() {
               onCheckedChange={setIsTimeRecommendEnabled}
             />
             {isTimeRecommendEnabled && (
-              <div className="flex flex-col gap-5">
+              <div className="mx-3 flex flex-col gap-5 rounded-b-4xl border-r-2 border-b-2 border-l-2 px-3">
                 <DateTypeSelector value={dateType} onChange={setDateType} />
                 <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
                 <div className="h-1" />
