@@ -1,0 +1,35 @@
+import { Calendar, Repeat } from 'lucide-react';
+
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+
+import { SelectCardButton } from './SelectCardButton';
+type DateTypeSelectorProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
+
+export function DateTypeSelector({ value, onChange }: DateTypeSelectorProps) {
+  return (
+    <div className={cn('w-full gap-2')}>
+      <Label className="ml-1 text-base font-semibold text-gray-700">장소 유형 선택</Label>
+
+      <div className="flex gap-1">
+        <SelectCardButton
+          icon={Repeat}
+          title="공평한 만남"
+          description="모두에게 공평해요"
+          isActive={value === 'FAIR'}
+          onClick={() => onChange('FAIR')}
+        />
+        <SelectCardButton
+          icon={Calendar}
+          title="빠른 만남"
+          description="가장 빨리 만나요"
+          isActive={value === 'FAST'}
+          onClick={() => onChange('FAST')}
+        />
+      </div>
+    </div>
+  );
+}
