@@ -79,7 +79,7 @@ export default function CreatePage() {
   };
 
   //모임 생성 버튼 활성화 조건
-  const isFormValid =
+  const isCreateButtonEnabled =
     meetingName.trim().length > 0 && // 이름 입력 필수
     (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 추천 기능 중 하나는 필수
     (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType)) && // 시간 추천이 없거나 | 있으면 dateType도 있어야 됨.
@@ -96,11 +96,11 @@ export default function CreatePage() {
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex flex-col items-center">
-          {isFormValid && (
+          {isCreateButtonEnabled && (
             <FixedBottomButton
               className="bg-greedy hover:bg-greedy/50"
               onClick={handleCreateClick}
-              disabled={!isFormValid}
+              disabled={!isCreateButtonEnabled}
             >
               모임 생성하기
             </FixedBottomButton>
@@ -156,7 +156,9 @@ export default function CreatePage() {
                 <div className="h-1" />
               </div>
             )}
-            <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
+            {isCreateButtonEnabled && (
+              <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
+            )}
           </div>
         )}
       </div>
