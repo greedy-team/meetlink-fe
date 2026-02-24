@@ -130,7 +130,7 @@ export default function CreatePage() {
             <RecommendCheckBox
               icon={Clock}
               title="시간 추천 받기"
-              description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
+              description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천 받을지 선택 해주세요"
               checked={isTimeRecommendEnabled}
               onCheckedChange={setIsTimeRecommendEnabled}
             />
@@ -145,7 +145,7 @@ export default function CreatePage() {
             <RecommendCheckBox
               icon={MapPin}
               title="장소 추천 받기"
-              description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
+              description="참여자들의 출발지를 바탕으로 만남 장소를 추천 받을지 선택 해주세요"
               checked={isPlaceRecommendEnabled}
               onCheckedChange={setIsPlaceRecommendEnabled}
             />
