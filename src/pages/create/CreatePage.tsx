@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Clock } from 'lucide-react';
@@ -13,6 +13,7 @@ import { useCreateMeeting } from '@/hooks/useMeeting';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
+import { PlaceTypeSelector } from '@/features/meeting/setting/PlaceTypeSelector';
 import { RecommendCheckBox } from '@/features/meeting/setting/RecommendCheckBox';
 import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
 
@@ -23,6 +24,7 @@ export default function CreatePage() {
   const [dateType, setDateType] = useState('WEEKLY');
   const [timeRange, setTimeRange] = useState<[number, number]>([12, 18]);
   const [isPlaceRecommendEnabled, setIsPlaceRecommendEnabled] = useState(false);
+  const [placeType, setPlaceType] = useState('FAIR');
 
   //모임 생성 뮤테이션
   const { mutate: createMeeting } = useCreateMeeting();
@@ -147,6 +149,12 @@ export default function CreatePage() {
               checked={isPlaceRecommendEnabled}
               onCheckedChange={setIsPlaceRecommendEnabled}
             />
+            {isPlaceRecommendEnabled && (
+              <div className="mx-3 flex flex-col gap-5 rounded-b-4xl border-r-2 border-b-2 border-l-2 px-3">
+                <PlaceTypeSelector value={placeType} onChange={setPlaceType} />
+                <div className="h-1" />
+              </div>
+            )}
             <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
           </div>
         )}
