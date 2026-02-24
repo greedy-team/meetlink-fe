@@ -8,7 +8,6 @@ interface RecommendCheckBoxProps {
   description: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
-  className?: string;
 }
 
 export function RecommendCheckBox({
@@ -17,16 +16,14 @@ export function RecommendCheckBox({
   description,
   checked,
   onCheckedChange,
-  className,
 }: RecommendCheckBoxProps) {
   return (
     <button
       type="button"
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        'group flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
+        'flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
         checked ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
-        className,
       )}
     >
       <div className="flex flex-col gap-2 text-left">
