@@ -28,14 +28,14 @@ export function RecommendCheckBox({
     >
       <div className="flex flex-col gap-2 text-left">
         <div className="flex items-center gap-2">
-          <Icon
+          <Icon //아이콘
             size={20}
             className={cn(
               'h-auto! w-auto! transition-colors',
               checked ? 'text-greedy' : 'text-gray-900',
             )}
           />
-          <span
+          <span //제목
             className={cn(
               'text-base font-bold transition-colors',
               checked ? 'text-greedy' : 'text-gray-900',
@@ -44,10 +44,14 @@ export function RecommendCheckBox({
             {title}
           </span>
         </div>
-        <span className="pr-3 text-xs leading-tight font-medium text-gray-400">{description}</span>
+        <span //설명
+          className="pr-3 text-xs leading-tight font-medium text-gray-400"
+        >
+          {description}
+        </span>
       </div>
 
-      <Check
+      <Check // 체크박스
         strokeWidth={4}
         size={30}
         className={cn(

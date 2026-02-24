@@ -12,7 +12,7 @@ type DateTypeSelectorProps = {
 export function DateTypeSelector({ value, onChange }: DateTypeSelectorProps) {
   return (
     <div className={cn('w-full gap-2')}>
-      <Label className="ml-1 text-base font-semibold text-gray-700">날짜 유형 선택</Label>
+      <Label className="ml-2 text-base font-semibold text-gray-700">날짜 유형 선택</Label>
 
       <div className="flex gap-1">
         <SelectCardButton
