@@ -6,7 +6,6 @@ type MeetingNameInputProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  showMessage: boolean;
   className?: string;
 };
 
@@ -14,7 +13,6 @@ export function MeetingNameInput({
   value = '',
   onChange,
   placeholder = '예: 동아리 정기 모임',
-  showMessage,
   className,
 }: MeetingNameInputProps) {
   return (
@@ -29,12 +27,8 @@ export function MeetingNameInput({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={cn(
-          'h-12 rounded-xl border-gray-200 bg-white text-base',
-          !showMessage ? 'focus-visible:ring-greedy' : 'focus-visible:ring-red-500',
-        )}
+        className="focus-visible:ring-greedy h-12 rounded-xl border-gray-200 bg-white text-base"
       />
-      {showMessage && <div className="ml-1 text-sm text-red-500">모임 이름은 필수 정보입니다.</div>}
     </div>
   );
 }

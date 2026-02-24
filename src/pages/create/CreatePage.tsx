@@ -29,7 +29,7 @@ export default function CreatePage() {
 
   //미팅 이름 입력 여부
   const [meetingNameInputFinished, setMeetingNameInputFinished] = useState(false);
-  const [showMeetingNameInputMessage, setShowMeetingNameInputMessage] = useState(false);
+
   if (meetingName.trim().length <= 0 && meetingNameInputFinished === true) {
     setMeetingNameInputFinished(false);
   }
@@ -38,10 +38,8 @@ export default function CreatePage() {
     if (meetingName.trim().length <= 0) {
       setMeetingNameInputFinished(false);
       document.getElementById('meeting-name')?.focus();
-      setShowMeetingNameInputMessage(true);
     } else {
       setMeetingNameInputFinished(true);
-      setShowMeetingNameInputMessage(false);
     }
   };
 
@@ -108,21 +106,12 @@ export default function CreatePage() {
       }
     >
       <div className="mx-3 flex flex-col gap-2">
-        <Label className="ml-1 text-2xl font-medium text-gray-700">
-          모임 이름을 <br />
-          입력해주세요.
-        </Label>
-
         <div>
           {/** 미팅 이름 입력 */}
-          <MeetingNameInput
-            value={meetingName}
-            onChange={(e) => setMeetingName(e.target.value)}
-            showMessage={showMeetingNameInputMessage}
-          />
-          {!meetingNameInputFinished && (
+          <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
+          {!meetingNameInputFinished && meetingName.trim().length > 0 && (
             <Button
-              className="bg-greedy/80 hover:bg-greedy/50 h-11 w-full rounded-xl text-lg font-semibold text-white"
+              className="bg-greedy hover:bg-greedy/50 h-12 w-full rounded-xl text-lg font-semibold text-white"
               onClick={handleMeetingNameInput}
             >
               다음
@@ -130,34 +119,37 @@ export default function CreatePage() {
           )}
         </div>
 
-        <div className="h-2" />
-        <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
-          모임 설정
-        </Label>
-        <RecommendCheckBox
-          icon={Clock}
-          title="시간 추천 받기"
-          description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
-          checked={isTimeRecommendEnabled}
-          onCheckedChange={setIsTimeRecommendEnabled}
-        />
-        {isTimeRecommendEnabled && (
-          <div className="flex flex-col gap-5">
-            <DateTypeSelector value={dateType} onChange={setDateType} />
-            <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
-            <div className="h-1" />
+        {meetingNameInputFinished && (
+          <div className="flex flex-col gap-2">
+            {/** 추천 기능 선택 */}
+            <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
+              모임 설정
+            </Label>
+            <RecommendCheckBox
+              icon={Clock}
+              title="시간 추천 받기"
+              description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
+              checked={isTimeRecommendEnabled}
+              onCheckedChange={setIsTimeRecommendEnabled}
+            />
+            {isTimeRecommendEnabled && (
+              <div className="flex flex-col gap-5">
+                <DateTypeSelector value={dateType} onChange={setDateType} />
+                <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
+                <div className="h-1" />
+              </div>
+            )}
+
+            <RecommendCheckBox
+              icon={MapPin}
+              title="장소 추천 받기"
+              description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
+              checked={isPlaceRecommendEnabled}
+              onCheckedChange={setIsPlaceRecommendEnabled}
+            />
+            <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
           </div>
         )}
-
-        <RecommendCheckBox
-          icon={MapPin}
-          title="장소 추천 받기"
-          description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
-          checked={isPlaceRecommendEnabled}
-          onCheckedChange={setIsPlaceRecommendEnabled}
-        />
-
-        <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
       </div>
     </AppLayout>
   );

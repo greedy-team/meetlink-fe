@@ -40,24 +40,24 @@ export function RecommendCheckBox({
           />
           <span
             className={cn(
-              'text-base leading-tight font-bold transition-colors',
+              'text-base font-bold transition-colors',
               checked ? 'text-greedy' : 'text-gray-900',
             )}
           >
             {title}
           </span>
         </div>
-        <span className="text-xs leading-relaxed font-medium text-gray-400">{description}</span>
+        <span className="pr-3 text-xs leading-tight font-medium text-gray-400">{description}</span>
       </div>
 
-      <div
+      <Check
+        strokeWidth={4}
+        size={30}
         className={cn(
-          'ml-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-200',
+          'ml-4 h-auto! w-auto! shrink-0 rounded-2xl p-3 transition-colors',
           checked ? 'bg-[#CCE3D3] text-[#4A8B5F]' : 'bg-gray-200 text-transparent',
         )}
-      >
-        <Check strokeWidth={4} className="h-6 w-6" />
-      </div>
+      />
     </button>
   );
 }
