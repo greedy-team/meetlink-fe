@@ -82,7 +82,8 @@ export default function CreatePage() {
   const isFormValid =
     meetingName.trim().length > 0 && // 이름 입력 필수
     (isTimeRecommendEnabled || isPlaceRecommendEnabled) && // 추천 기능 중 하나는 필수
-    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType)); // 시간 추천이 없거나 | 있으면 dateType도 있어야 됨.
+    (!isTimeRecommendEnabled || (isTimeRecommendEnabled && dateType)) && // 시간 추천이 없거나 | 있으면 dateType도 있어야 됨.
+    (!isPlaceRecommendEnabled || (isPlaceRecommendEnabled && placeType)); // 장소 추천이 없거나 있으면 placeType도 있어야 됨.
 
   return (
     <AppLayout
