@@ -62,20 +62,25 @@ export default function CreatePage() {
 
     createMeeting(requestData, {
       onSuccess: (data) => {
+        if (!data?.result?.code) {
+          //요청 데이터가 부족하면 요청을 보낼수 없기 때문에 발생할 일 없지만 방어로직
+          toast.error('서버 응답이 이상해요.', {
+            description: '재접속을 추천해요',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+          return;
+        }
         toast.success('모임 생성 완료!', {
           description: '팀원들에게 링크를 공유해보세요.',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
-        if (data.status && data.result) {
-          navigate(`/share/${data.result.code}`);
-        }
+        navigate(`/share/${data.result.code}`);
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('오류가 발생했어요', {
           description: '인터넷 연결 상태를 확인해보세요!',
           icon: <AlertCircle className="h-5 w-5 text-red-500" />,
         });
-        console.error('에러 발생:', error);
       },
     });
   };
