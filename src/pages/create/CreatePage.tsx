@@ -70,6 +70,7 @@ export default function CreatePage() {
           });
           return;
         }
+        //성공 토스트
         toast.success('모임 생성 완료!', {
           description: '팀원들에게 링크를 공유해보세요.',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
@@ -77,6 +78,7 @@ export default function CreatePage() {
         navigate(`/share/${data.result.code}`);
       },
       onError: () => {
+        //실패 토스트
         toast.error('오류가 발생했어요', {
           description: '인터넷 연결 상태를 확인해보세요!',
           icon: <AlertCircle className="h-5 w-5 text-red-500" />,
