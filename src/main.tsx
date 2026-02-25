@@ -23,7 +23,21 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <App />
-        <Toaster richColors closeButton position="top-center" />
+        <Toaster
+          richColors
+          closeButton
+          position="bottom-center"
+          toastOptions={{
+            className: 'rounded-2xl border-2',
+            classNames: {
+              toast: 'bg-white text-gray-900',
+              title: 'text-lg font-bold',
+              description: 'text-md text-gray-500',
+              success: 'border-greedy bg-greedy/5 text-greedy',
+              error: 'border-red-200 bg-red-50 text-red-600',
+            },
+          }}
+        />
       </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
