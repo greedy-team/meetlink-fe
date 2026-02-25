@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -15,8 +17,16 @@ export function MeetingNameInput({
   placeholder = '예: 동아리 정기 모임',
   className,
 }: MeetingNameInputProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleFocus = () => {
+    containerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  };
   return (
-    <div className={cn('mb-2 grid w-full items-center gap-2', className)}>
+    <div ref={containerRef} className={cn('mb-2 grid w-full items-center gap-2', className)}>
       <Label htmlFor="meeting-name" className="ml-1 text-base font-semibold text-gray-700">
         모임 이름
       </Label>
@@ -26,6 +36,7 @@ export function MeetingNameInput({
         id="meeting-name"
         value={value}
         onChange={onChange}
+        onFocus={handleFocus}
         placeholder={placeholder}
         className="focus-visible:ring-greedy h-12 rounded-xl border-gray-200 bg-white text-base"
       />
