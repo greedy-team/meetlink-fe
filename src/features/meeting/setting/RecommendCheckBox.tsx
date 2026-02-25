@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { Check, type LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -19,8 +21,19 @@ export function RecommendCheckBox({
   onCheckedChange,
   children,
 }: RecommendCheckBoxProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (checked) {
+      containerRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [checked]);
+
   return (
     <div
+      ref={containerRef}
       className={cn(
         'flex flex-col rounded-3xl border-2 transition-all duration-200',
         checked ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
