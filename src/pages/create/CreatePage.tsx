@@ -32,10 +32,6 @@ export default function CreatePage() {
   //미팅 이름 입력 여부
   const [meetingNameInputFinished, setMeetingNameInputFinished] = useState(false);
 
-  if (meetingName.trim().length <= 0 && meetingNameInputFinished === true) {
-    setMeetingNameInputFinished(false);
-  }
-
   const handleMeetingNameInput = () => {
     if (meetingName.trim().length <= 0) {
       setMeetingNameInputFinished(false);
