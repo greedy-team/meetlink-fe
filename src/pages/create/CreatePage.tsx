@@ -27,7 +27,7 @@ export default function CreatePage() {
   const [placeType, setPlaceType] = useState('FAIR');
 
   //모임 생성 뮤테이션
-  const { mutate: createMeeting } = useCreateMeeting();
+  const { mutate: createMeeting, isPending } = useCreateMeeting();
 
   //미팅 이름 입력 여부
   const [meetingNameInputFinished, setMeetingNameInputFinished] = useState(false);
@@ -60,7 +60,6 @@ export default function CreatePage() {
       timeRangeEnd: formatTime(timeRange[1]),
     };
 
-    //뮤테이션
     createMeeting(requestData, {
       onSuccess: (data) => {
         //성공시
@@ -69,7 +68,7 @@ export default function CreatePage() {
         }
       },
       onError: (error) => {
-        console.error('4. 에러 발생:', error);
+        console.error('에러 발생:', error);
       },
     });
   };
@@ -97,6 +96,7 @@ export default function CreatePage() {
               className="bg-greedy hover:bg-greedy/50"
               onClick={handleCreateClick}
               disabled={!isCreateButtonEnabled}
+              loading={isPending}
             >
               모임 생성하기
             </FixedBottomButton>

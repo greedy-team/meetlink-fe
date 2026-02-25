@@ -22,6 +22,7 @@ export function RecommendCheckBox({
   children,
 }: RecommendCheckBoxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (checked) {
       containerRef.current?.scrollIntoView({
