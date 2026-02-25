@@ -15,21 +15,22 @@ interface InfoItem {
   description: string;
 }
 
+//캐러셀 아이템 정보
 const INFO_LIST: InfoItem[] = [
   {
     icon: Calendar,
-    title: '쉬운 모임 생성',
+    title: '모임 생성',
     description: '미뤄 두었던 모임을 시작하세요.',
   },
   {
     icon: Clock,
     title: '시간 추천',
-    description: '참여자들의 가능시간을 바탕으로 만남 시간을 추천해요.',
+    description: '만남 시간을 결정하세요.',
   },
   {
     icon: MapPin,
     title: '장소 추천',
-    description: '참여자들의 출발지를 바탕으로 만남 장소를 추천해요.',
+    description: '만남 장소를 결정하세요.',
   },
 ];
 
@@ -64,23 +65,27 @@ export default function StartPage() {
         </div>
       }
     >
-      <div className="mt-40 flex flex-col items-center gap-5 text-center">
-        <div className="bg-greedy flex items-center justify-center gap-2 rounded-2xl px-2 py-1 font-semibold text-white">
+      <div className="mt-25 flex flex-col items-center gap-4 text-center">
+        <div className="bg-greedy flex items-center justify-center gap-2 rounded-2xl px-3 py-1 font-semibold text-white">
           <Link size={16} className="h-auto! w-auto!" />
           MeetLink
         </div>
+
         <div className="text-4xl font-bold">
           결정 안되던 약속, <br />
           여기서 끝내세요
         </div>
+
         <div className="text-gray-500">
           모두의 시간과 위치를 고려해 <br />
           가장 납득이 되는 약속을 만들어 드릴게요
         </div>
-        <Carousel setApi={setApi} opts={{ loop: true }} className="mt-20 w-55">
+
+        {/* 캐러셀 */}
+        <Carousel setApi={setApi} opts={{ loop: true }} className="mt-25 w-55">
           <CarouselContent>
             {INFO_LIST.map((item, index) => (
-              <CarouselItem key={index} className="flex items-center justify-center gap-2">
+              <CarouselItem key={index} className="flex justify-center gap-3">
                 <div className="bg-greedy/20 flex h-16 w-16 items-center justify-center rounded-2xl">
                   <item.icon size={30} className="text-greedy h-auto! w-auto!" />
                 </div>
@@ -92,6 +97,8 @@ export default function StartPage() {
             ))}
           </CarouselContent>
         </Carousel>
+
+        {/* 하단 인디게이터 */}
         <div className="flex justify-center gap-2">
           {INFO_LIST.map((_, index) => (
             <button
