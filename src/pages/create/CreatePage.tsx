@@ -127,31 +127,23 @@ export default function CreatePage() {
             <RecommendCheckBox
               icon={Clock}
               title="시간 추천 받기"
-              description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천 받을지 선택 해주세요"
+              description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
               checked={isTimeRecommendEnabled}
               onCheckedChange={setIsTimeRecommendEnabled}
-            />
-            {isTimeRecommendEnabled && (
-              <div className="mx-3 flex flex-col gap-5 rounded-b-4xl border-r-2 border-b-2 border-l-2 px-3">
-                <DateTypeSelector value={dateType} onChange={setDateType} />
-                <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
-                <div className="h-1" />
-              </div>
-            )}
+            >
+              <DateTypeSelector value={dateType} onChange={setDateType} />
+              <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
+            </RecommendCheckBox>
 
             <RecommendCheckBox
               icon={MapPin}
               title="장소 추천 받기"
-              description="참여자들의 출발지를 바탕으로 만남 장소를 추천 받을지 선택 해주세요"
+              description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
               checked={isPlaceRecommendEnabled}
               onCheckedChange={setIsPlaceRecommendEnabled}
-            />
-            {isPlaceRecommendEnabled && (
-              <div className="mx-3 flex flex-col gap-5 rounded-b-4xl border-r-2 border-b-2 border-l-2 px-3">
-                <PlaceTypeSelector value={placeType} onChange={setPlaceType} />
-                <div className="h-1" />
-              </div>
-            )}
+            >
+              <PlaceTypeSelector value={placeType} onChange={setPlaceType} />
+            </RecommendCheckBox>
             {isCreateButtonEnabled && (
               <NotifyBox className="mt-3">모임 초대 링크를 통해 바로 참여할 수 있어요</NotifyBox>
             )}

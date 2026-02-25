@@ -8,6 +8,7 @@ interface RecommendCheckBoxProps {
   description: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  children: React.ReactNode;
 }
 
 export function RecommendCheckBox({
@@ -16,49 +17,55 @@ export function RecommendCheckBox({
   description,
   checked,
   onCheckedChange,
+  children,
 }: RecommendCheckBoxProps) {
   return (
-    <button
-      type="button"
-      onClick={() => onCheckedChange(!checked)}
+    <div
       className={cn(
-        'flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
+        'flex flex-col rounded-3xl border-2 transition-all duration-200',
         checked ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
       )}
     >
-      <div className="flex flex-col gap-2 text-left">
-        <div className="flex items-center gap-2">
-          <Icon //아이콘
-            size={20}
-            className={cn(
-              'h-auto! w-auto! transition-colors',
-              checked ? 'text-greedy' : 'text-gray-900',
-            )}
-          />
-          <span //제목
-            className={cn(
-              'text-base font-bold transition-colors',
-              checked ? 'text-greedy' : 'text-gray-900',
-            )}
+      <button
+        className="flex w-full items-center justify-between p-4"
+        type="button"
+        onClick={() => onCheckedChange(!checked)}
+      >
+        <div className="flex flex-col gap-2 text-left">
+          <div className="flex items-center gap-2">
+            <Icon //아이콘
+              size={20}
+              className={cn(
+                'h-auto! w-auto! transition-colors',
+                checked ? 'text-greedy' : 'text-gray-900',
+              )}
+            />
+            <span //제목
+              className={cn(
+                'text-base font-bold transition-colors',
+                checked ? 'text-greedy' : 'text-gray-900',
+              )}
+            >
+              {title}
+            </span>
+          </div>
+          <div //설명
+            className="text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400"
           >
-            {title}
-          </span>
+            {description}
+          </div>
         </div>
-        <span //설명
-          className="pr-3 text-xs leading-tight font-medium text-gray-400"
-        >
-          {description}
-        </span>
-      </div>
 
-      <Check // 체크박스
-        strokeWidth={4}
-        size={30}
-        className={cn(
-          'ml-4 h-auto! w-auto! shrink-0 rounded-2xl p-3 transition-colors',
-          checked ? 'bg-[#CCE3D3] text-[#4A8B5F]' : 'bg-gray-200 text-transparent',
-        )}
-      />
-    </button>
+        <Check // 체크박스
+          strokeWidth={4}
+          size={30}
+          className={cn(
+            'ml-4 h-auto! w-auto! shrink-0 rounded-[15px] p-3 transition-colors',
+            checked ? 'bg-[#CCE3D3] text-[#4A8B5F]' : 'bg-gray-200 text-transparent',
+          )}
+        />
+      </button>
+      {checked && <div className="mb-4 flex flex-col gap-5 border-t px-3 pt-4">{children}</div>}
+    </div>
   );
 }
