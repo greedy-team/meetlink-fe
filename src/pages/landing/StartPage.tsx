@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
+import { Link } from 'lucide-react';
+
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 
@@ -13,7 +15,7 @@ export default function StartPage() {
   return (
     <AppLayout
       header={''}
-      pageBackgroundClassName="bg-gray-100/70"
+      pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
           <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleStartClick}>
@@ -22,7 +24,11 @@ export default function StartPage() {
         </div>
       }
     >
-      <div className="mt-40 flex flex-col gap-5 text-center">
+      <div className="mt-40 flex flex-col items-center gap-5 text-center">
+        <div className="bg-greedy flex items-center justify-center gap-2 rounded-2xl px-2 py-1 font-semibold text-white">
+          <Link size={16} className="h-auto! w-auto!" />
+          MeetLink
+        </div>
         <div className="text-4xl font-bold">
           결정 안되던 약속, <br />
           여기서 끝내세요
