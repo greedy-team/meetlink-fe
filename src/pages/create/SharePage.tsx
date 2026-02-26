@@ -5,6 +5,7 @@ import { CalendarDays, Clock, MapPin } from 'lucide-react';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 
 import { SettingInfoCard } from '@/features/meeting/general/SettingInfoCard';
@@ -13,7 +14,7 @@ export default function SharePage() {
   const { data: meetingData, isLoading, isSuccess } = useGetMeetingDetail();
   const { code } = useParams<{ code: string }>();
 
-  const meetingName = meetingData?.result?.name || '모임 이름 없음';
+  const meetingName = meetingData?.result?.name || '없음';
   const isTimeRecommendEnabled = meetingData?.result?.enableTimeRecommendation || false;
   const isPlaceRecommendEnabled = meetingData?.result?.enablePlaceRecommendation || false;
   const dateType =
@@ -55,8 +56,6 @@ export default function SharePage() {
     }
   };
 
-  if (isLoading) return <div>로딩중</div>;
-
   return (
     <AppLayout
       header={
@@ -90,13 +89,32 @@ export default function SharePage() {
     >
       <div className="mx-3 flex flex-col rounded-2xl border border-gray-100 bg-white shadow-sm">
         <div className="m-6 flex flex-col gap-1.5">
-          <Label className="text-sm font-medium text-gray-500">모임 이름</Label>
-          <div className="text-xl font-bold text-gray-900">{meetingName}</div>
+          <Label
+            className={cn(
+              'text-sm font-medium text-gray-500',
+              isLoading ? 'w-15 rounded-lg bg-gray-100 text-gray-100' : '',
+            )}
+          >
+            모임 이름
+          </Label>
+          <div
+            className={cn(
+              'text-xl font-bold text-gray-900',
+              isLoading ? 'w-30 rounded-lg bg-gray-100 text-gray-100' : '',
+            )}
+          >
+            {meetingName}
+          </div>
         </div>
 
         <div className="h-px w-full bg-gray-100" />
 
-        <SettingInfoCard isEnabled={isTimeRecommendEnabled} title="시간 추천" icon={Clock}>
+        <SettingInfoCard
+          isEnabled={isTimeRecommendEnabled}
+          title="시간 추천"
+          icon={Clock}
+          isLoading={isLoading}
+        >
           <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <CalendarDays className="h-4 w-4 text-gray-400" />
@@ -110,7 +128,12 @@ export default function SharePage() {
             </div>
           </div>
         </SettingInfoCard>
-        <SettingInfoCard isEnabled={isPlaceRecommendEnabled} title="장소 추천" icon={MapPin}>
+        <SettingInfoCard
+          isEnabled={isPlaceRecommendEnabled}
+          title="장소 추천"
+          icon={MapPin}
+          isLoading={isLoading}
+        >
           <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPin className="h-4 w-4 text-gray-400" />
