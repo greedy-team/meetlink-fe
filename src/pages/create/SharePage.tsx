@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { CalendarDays, CheckCircle2, Clock, MapPin, XCircle } from 'lucide-react';
 
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 
 export default function SharePage() {
-  const { data: meetingData, isLoading: isMeetingLoading } = useGetMeetingDetail();
+  const { data: meetingData, isLoading, isSuccess } = useGetMeetingDetail();
   const { code } = useParams<{ code: string }>();
 
   const meetingName = meetingData?.result?.name || '모임 이름 없음';
@@ -24,6 +24,11 @@ export default function SharePage() {
       : meetingData?.result?.timeRangeEnd?.split(':').slice(0, 2).join(':') || '24:00',
   ];
 
+  const navigate = useNavigate();
+  const handleJoin = () => {
+    navigate(`/meeting/${code}/join`);
+  };
+
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/meeting/${code}`;
     const shareData = {
@@ -36,11 +41,9 @@ export default function SharePage() {
       // 1. 브라우저가 Web Share API를 지원하고, 데이터 공유가 가능한지 확인
       if (navigator.share && navigator.canShare?.(shareData)) {
         await navigator.share(shareData);
-        console.log('공유 성공!');
       } else {
         // 2. 지원하지 않는 브라우저(예: 일부 PC 브라우저)일 경우 클립보드 복사
         await navigator.clipboard.writeText(shareData.url);
-        console.log('클립보드 복사 완료');
       }
     } catch (err) {
       // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크
@@ -50,7 +53,7 @@ export default function SharePage() {
     }
   };
 
-  if (isMeetingLoading) return <div>로딩중</div>;
+  if (isLoading) return <div>로딩중</div>;
 
   return (
     <AppLayout
@@ -62,14 +65,25 @@ export default function SharePage() {
       }
       pageBackgroundClassName="bg-gray-50"
       bottom={
-        <div className="flex flex-col items-center px-6 pb-6">
-          <FixedBottomButton
-            className="bg-greedy hover:bg-greedy/90 shadow-greedy/20 shadow-xl"
-            onClick={handleShare}
-          >
-            초대 링크 복사 및 공유하기
-          </FixedBottomButton>
-        </div>
+        isSuccess && (
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleJoin}
+              className="text-greedy-strong w-full text-center text-sm font-semibold underline underline-offset-4"
+            >
+              모임에 바로 참여하시겠습니까?
+            </button>
+            <div className="flex flex-col items-center px-6 pb-6">
+              <FixedBottomButton
+                className="bg-greedy hover:bg-greedy/90 shadow-greedy/20 shadow-xl"
+                onClick={handleShare}
+              >
+                초대 링크 복사 및 공유하기
+              </FixedBottomButton>
+            </div>
+          </div>
+        )
       }
     >
       <div className="mx-3 mt-0 flex flex-col gap-4">
