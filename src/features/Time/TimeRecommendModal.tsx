@@ -144,7 +144,7 @@ export default function TimeRecommendModal({
         style={{ height: `${SHEET_CONFIG.FULL_VH}vh` }}
         className="fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-[24px] bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
       >
-        <div
+        <button
           onClick={() => sheetState === 'peek' && setSheetState('half')}
           className="flex cursor-pointer flex-col items-center pt-3 pb-4"
         >
@@ -155,7 +155,7 @@ export default function TimeRecommendModal({
               {candidateList.length}개의 후보
             </div>
           </div>
-        </div>
+        </button>
 
         <div
           className="flex-1 overflow-y-auto px-6 pb-20"

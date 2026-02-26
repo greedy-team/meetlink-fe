@@ -9,7 +9,6 @@ type SelectCardButtonProps = {
   description: string;
   isActive: boolean;
   onClick: () => void;
-  className?: string;
 };
 export function SelectCardButton({
   icon: Icon,
@@ -17,18 +16,16 @@ export function SelectCardButton({
   description,
   isActive,
   onClick,
-  className,
 }: SelectCardButtonProps) {
   return (
     <Button
       variant="outline"
       onClick={onClick}
       className={cn(
-        'm-2 flex aspect-square h-auto flex-1 flex-col items-center justify-center gap-3 rounded-[32px] border-2 p-0 transition-all',
+        'm-2 flex aspect-square h-auto flex-1 flex-col items-center justify-center gap-3 rounded-[32px] border-2 transition-colors',
         isActive
           ? 'border-greedy bg-greedy/5 text-greedy hover:bg-greedy/10 hover:text-greedy'
-          : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200',
-        className,
+          : 'border-gray-100 bg-white text-gray-200 hover:bg-gray-100',
       )}
     >
       <div
@@ -42,7 +39,7 @@ export function SelectCardButton({
           strokeWidth={2.5}
           className={cn(
             'h-auto! w-auto! shrink-0 transition-colors',
-            isActive ? 'text-greedy' : 'text-gray-600',
+            isActive ? 'text-greedy' : 'text-gray-800',
           )}
         />
       </div>

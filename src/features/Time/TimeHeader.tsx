@@ -296,7 +296,7 @@ export default function TimeHeader({
                               const ratio = participantsNum > 0 ? maxCount / participantsNum : 0;
 
                               return (
-                                <div
+                                <button
                                   key={dateIdx}
                                   onClick={() => !isDisabled && handleDateClick(date)}
                                   className={cn(
@@ -318,7 +318,7 @@ export default function TimeHeader({
                                       )}
                                     <span className="relative z-10">{date.getDate()}</span>
                                   </div>
-                                </div>
+                                </button>
                               );
                             })}
                           </div>

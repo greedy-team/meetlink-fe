@@ -25,6 +25,7 @@ import { useLeaveMeeting } from '@/hooks/useParticipant';
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
 import { LeaveButton } from '@/features/meeting/setting/LeaveButton';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
+import { PlaceTypeSelector } from '@/features/meeting/setting/PlaceTypeSelector';
 import { RecommendCheckBox } from '@/features/meeting/setting/RecommendCheckBox';
 import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
@@ -50,6 +51,7 @@ export default function SettingPage() {
   );
   const [dateType, setDateType] = useState(initialDateType);
   const [timeRange, setTimeRange] = useState(initialTimeRange);
+  const [placeType, setPlaceType] = useState('FAIR');
 
   const navigate = useNavigate();
 
@@ -175,15 +177,10 @@ export default function SettingPage() {
           description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
           checked={isTimeRecommendEnabled}
           onCheckedChange={setIsTimeRecommendEnabled}
-        />
-
-        {isTimeRecommendEnabled && (
-          <div className="flex flex-col gap-5">
-            <DateTypeSelector value={dateType} onChange={setDateType} />
-            <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
-            <div className="h-1" />
-          </div>
-        )}
+        >
+          <DateTypeSelector value={dateType} onChange={setDateType} />
+          <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
+        </RecommendCheckBox>
 
         <RecommendCheckBox
           icon={MapPin}
@@ -191,7 +188,9 @@ export default function SettingPage() {
           description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
           checked={isPlaceRecommendEnabled}
           onCheckedChange={setIsPlaceRecommendEnabled}
-        />
+        >
+          <PlaceTypeSelector value={placeType} onChange={setPlaceType} />
+        </RecommendCheckBox>
 
         <NotifyBox variant="emphasis" className="mt-3">
           변경 사항은 모두에게 적용됩니다.
