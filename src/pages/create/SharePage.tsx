@@ -17,7 +17,7 @@ export default function SharePage() {
   const isPlaceRecommendEnabled = meetingData?.result?.enablePlaceRecommendation || false;
   const dateType =
     meetingData?.result?.timeAvailabilityType === 'WEEKLY' ? '매주 반복' : '특정 날짜';
-  const [start, end] = [
+  const timeRange = [
     meetingData?.result?.timeRangeStart?.split(':').slice(0, 2).join(':') || '00:00',
     meetingData?.result?.timeRangeEnd?.split(':')[0] === '23'
       ? '24:00'
@@ -86,69 +86,29 @@ export default function SharePage() {
         )
       }
     >
-      <div className="mx-3 mt-0 flex flex-col gap-4">
-        {/* 모임 요약 카드 */}
-        <div className="flex flex-col gap-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          {/* 모임 이름 */}
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-medium text-gray-500">모임 이름</Label>
-            <div className="text-xl font-bold text-gray-900">{meetingName}</div>
-          </div>
+      {/* 모임 요약 카드 */}
+      <div className="mx-3 flex flex-col rounded-2xl border border-gray-100 bg-white shadow-sm">
+        {/* 모임 이름 */}
+        <div className="m-6 flex flex-col gap-1.5">
+          <Label className="text-sm font-medium text-gray-500">모임 이름</Label>
+          <div className="text-xl font-bold text-gray-900">{meetingName}</div>
+        </div>
 
-          <div className="h-px w-full bg-gray-100" />
+        <div className="h-px w-full bg-gray-100" />
 
-          {/* 설정 정보 리스트 */}
-          <div className="flex flex-col gap-6">
-            {/* 시간 추천 설정 */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
-                    <Clock className="h-5 w-5" />
-                  </div>
-                  <span className="text-base font-semibold text-gray-800">시간 추천</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  {isTimeRecommendEnabled ? (
-                    <>
-                      <CheckCircle2 className="text-greedy/70 h-5 w-5" />
-                      <span className="text-greedy/70 text-sm font-medium">사용</span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="h-5 w-5 text-gray-300" />
-                      <span className="text-sm font-medium text-gray-400">사용 안 함</span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* 시간 추천을 사용할 경우 상세 정보 표시 */}
-              {isTimeRecommendEnabled && (
-                <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <CalendarDays className="h-4 w-4 text-gray-400" />
-                    <span className="font-medium">{dateType}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="font-medium">
-                      {start} ~ {end}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-            {/* 장소 추천 설정 */}
+        {/* 설정 정보 리스트 */}
+        <div className="m-6 flex flex-col gap-6">
+          {/* 시간 추천 설정 */}
+          <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
-                  <MapPin className="h-5 w-5" />
+                  <Clock className="h-5 w-5" />
                 </div>
-                <span className="text-base font-semibold text-gray-800">장소 추천</span>
+                <span className="text-base font-semibold text-gray-800">시간 추천</span>
               </div>
               <div className="flex items-center gap-1.5">
-                {isPlaceRecommendEnabled ? (
+                {isTimeRecommendEnabled ? (
                   <>
                     <CheckCircle2 className="text-greedy/70 h-5 w-5" />
                     <span className="text-greedy/70 text-sm font-medium">사용</span>
@@ -160,6 +120,44 @@ export default function SharePage() {
                   </>
                 )}
               </div>
+            </div>
+
+            {/* 시간 추천을 사용할 경우 상세 정보 표시 */}
+            {isTimeRecommendEnabled && (
+              <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CalendarDays className="h-4 w-4 text-gray-400" />
+                  <span className="font-medium">{dateType}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock className="h-4 w-4 text-gray-400" />
+                  <span className="font-medium">
+                    {timeRange[0]} ~ {timeRange[1]}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* 장소 추천 설정 */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <span className="text-base font-semibold text-gray-800">장소 추천</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {isPlaceRecommendEnabled ? (
+                <>
+                  <CheckCircle2 className="text-greedy/70 h-5 w-5" />
+                  <span className="text-greedy/70 text-sm font-medium">사용</span>
+                </>
+              ) : (
+                <>
+                  <XCircle className="h-5 w-5 text-gray-300" />
+                  <span className="text-sm font-medium text-gray-400">사용 안 함</span>
+                </>
+              )}
             </div>
           </div>
         </div>
