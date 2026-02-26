@@ -7,15 +7,14 @@ import { SelectCardButton } from './SelectCardButton';
 type DateTypeSelectorProps = {
   value: string;
   onChange: (value: string) => void;
-  className?: string;
 };
 
-export function DateTypeSelector({ value, onChange, className }: DateTypeSelectorProps) {
+export function DateTypeSelector({ value, onChange }: DateTypeSelectorProps) {
   return (
-    <div className={cn('grid w-full gap-2', className)}>
+    <div className={cn('w-full gap-2')}>
       <Label className="ml-1 text-base font-semibold text-gray-700">날짜 유형 선택</Label>
 
-      <div className="mx-2 flex gap-4">
+      <div className="flex gap-1">
         <SelectCardButton
           icon={Repeat}
           title="매주 반복"

@@ -99,7 +99,7 @@ export function TimeRecommendCard({
   }
 
   return (
-    <div
+    <button
       onClick={() => onClick(candidate.date)}
       className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border p-5 transition-colors ${
         isTopRank ? 'border-green-600 bg-green-50/30' : 'border-gray-200 bg-white hover:bg-gray-50'
@@ -150,6 +150,6 @@ export function TimeRecommendCard({
           );
         })}
       </div>
-    </div>
+    </button>
   );
 }

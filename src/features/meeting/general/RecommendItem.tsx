@@ -20,7 +20,7 @@ export function RecommendItem({
   className,
 }: RecommendItemProps) {
   return (
-    <div
+    <button
       onClick={onClick}
       className={cn(
         'flex items-start gap-4 rounded-xl p-1 transition-all duration-200',
@@ -42,6 +42,6 @@ export function RecommendItem({
           {value || placeholder}
         </span>
       </div>
-    </div>
+    </button>
   );
 }
