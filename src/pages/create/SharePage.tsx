@@ -1,12 +1,13 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { CalendarDays, CheckCircle2, Clock, MapPin, XCircle } from 'lucide-react';
+import { CalendarDays, Clock, MapPin } from 'lucide-react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
+
+import { SettingInfoCard } from '@/features/meeting/general/SettingInfoCard';
 
 export default function SharePage() {
   const { data: meetingData, isLoading, isSuccess } = useGetMeetingDetail();
@@ -23,6 +24,7 @@ export default function SharePage() {
       ? '24:00'
       : meetingData?.result?.timeRangeEnd?.split(':').slice(0, 2).join(':') || '24:00',
   ];
+  const placeType = '공평한 만남';
 
   const navigate = useNavigate();
   const handleJoin = () => {
@@ -86,9 +88,7 @@ export default function SharePage() {
         )
       }
     >
-      {/* 모임 요약 카드 */}
       <div className="mx-3 flex flex-col rounded-2xl border border-gray-100 bg-white shadow-sm">
-        {/* 모임 이름 */}
         <div className="m-6 flex flex-col gap-1.5">
           <Label className="text-sm font-medium text-gray-500">모임 이름</Label>
           <div className="text-xl font-bold text-gray-900">{meetingName}</div>
@@ -96,71 +96,28 @@ export default function SharePage() {
 
         <div className="h-px w-full bg-gray-100" />
 
-        {/* 설정 정보 리스트 */}
-        <div className="m-6 flex flex-col gap-6">
-          {/* 시간 추천 설정 */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
-                  <Clock className="h-5 w-5" />
-                </div>
-                <span className="text-base font-semibold text-gray-800">시간 추천</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                {isTimeRecommendEnabled ? (
-                  <>
-                    <CheckCircle2 className="text-greedy/70 h-5 w-5" />
-                    <span className="text-greedy/70 text-sm font-medium">사용</span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="h-5 w-5 text-gray-300" />
-                    <span className="text-sm font-medium text-gray-400">사용 안 함</span>
-                  </>
-                )}
-              </div>
+        <SettingInfoCard isEnabled={isTimeRecommendEnabled} title="시간 추천" icon={Clock}>
+          <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <CalendarDays className="h-4 w-4 text-gray-400" />
+              <span className="font-medium">{dateType}</span>
             </div>
-
-            {/* 시간 추천을 사용할 경우 상세 정보 표시 */}
-            {isTimeRecommendEnabled && (
-              <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CalendarDays className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium">{dateType}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium">
-                    {timeRange[0]} ~ {timeRange[1]}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-          {/* 장소 추천 설정 */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-greedy/10 text-greedy flex h-10 w-10 items-center justify-center rounded-full">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <span className="text-base font-semibold text-gray-800">장소 추천</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {isPlaceRecommendEnabled ? (
-                <>
-                  <CheckCircle2 className="text-greedy/70 h-5 w-5" />
-                  <span className="text-greedy/70 text-sm font-medium">사용</span>
-                </>
-              ) : (
-                <>
-                  <XCircle className="h-5 w-5 text-gray-300" />
-                  <span className="text-sm font-medium text-gray-400">사용 안 함</span>
-                </>
-              )}
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Clock className="h-4 w-4 text-gray-400" />
+              <span className="font-medium">
+                {timeRange[0]} ~ {timeRange[1]}
+              </span>
             </div>
           </div>
-        </div>
+        </SettingInfoCard>
+        <SettingInfoCard isEnabled={isPlaceRecommendEnabled} title="장소 추천" icon={MapPin}>
+          <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <MapPin className="h-4 w-4 text-gray-400" />
+              <span className="font-medium">{placeType}</span>
+            </div>
+          </div>
+        </SettingInfoCard>
       </div>
     </AppLayout>
   );
