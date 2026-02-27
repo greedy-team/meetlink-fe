@@ -59,11 +59,11 @@ export default function SettingPage() {
   const handleLeave = () => {
     leaveMeeting(undefined, {
       onSuccess: (data) => {
-        console.log('회의 나가기 성공!', data);
+        console.log('모임 나가기 성공!', data);
         navigate(`/meeting/${code}/join`);
       },
       onError: (error) => {
-        console.error('회의 나가기 실패:', error);
+        console.error('모임 나가기 실패:', error);
         // 사용자에게 에러 알리기
       },
     });
@@ -84,7 +84,7 @@ export default function SettingPage() {
     updateMeeting(requestData, {
       onSuccess: (data) => {
         console.log('수정 성공! 반환 데이터:', data);
-        navigate(-1);
+        navigate(`/meeting/${code}`);
       },
       onError: (error) => {
         console.error('수정 실패:', error);
@@ -146,7 +146,7 @@ export default function SettingPage() {
                       입력하신 정보는 모든 사용자에게 적용됩니다.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter>
+                  <AlertDialogFooter className="flex-row gap-2">
                     <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
                       취소
                     </AlertDialogCancel>
