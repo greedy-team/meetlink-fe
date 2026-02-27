@@ -38,6 +38,7 @@ export default function SettingPage() {
     isPlaceRecommendEnabled: initialIsPlaceRecommendEnabled,
     dateType: initialDateType,
     timeRange: initialTimeRange,
+    //placeType: initialPlaceType,
   } = useMeetingContext();
   const { mutate: updateMeeting } = useUpdateMeetingDetail();
   const { mutate: leaveMeeting } = useLeaveMeeting();
@@ -103,6 +104,7 @@ export default function SettingPage() {
     dateType !== initialDateType ||
     timeRange[0] !== initialTimeRange[0] ||
     timeRange[1] !== initialTimeRange[1];
+  //placeType != initialPlaceType;
 
   return (
     <AppLayout
@@ -145,12 +147,12 @@ export default function SettingPage() {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl border-none bg-gray-100 hover:bg-gray-200">
+                    <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
                       취소
                     </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleSave}
-                      className="bg-greedy hover:bg-greedy/80 rounded-xl text-white"
+                      className="bg-greedy! hover:bg-greedy/50! rounded-xl text-white"
                     >
                       저장하기
                     </AlertDialogAction>
