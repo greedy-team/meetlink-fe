@@ -9,26 +9,27 @@ import { type UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 //출발지 조회
 export const useGetMyStartPlace = (id: string) => {
   const { code } = useParams<{ code: string }>();
+  const token = localStorage.getItem('meeting_token');
 
   return useQuery({
-    queryKey: placeKeys.my(code!, id),
-    queryFn: () => getMyStartPlace(code!, id),
-    enabled: !!code && !!id,
+    queryKey: placeKeys.my(code!, token),
+    queryFn: () => getMyStartPlace(code!),
+    enabled: !!code && !!token,
     staleTime: 1000 * 60 * 5,
   });
 };
 
 //출발지 등록
-export const useUpdateMyStartPlace = (id: string) => {
+export const useUpdateMyStartPlace = () => {
   const { code } = useParams<{ code: string }>();
   const queryClient = useQueryClient();
+  const token = localStorage.getItem('meeting_token');
 
   return useMutation({
     mutationFn: (body: UpdateMyStartPlaceRequest) => updateMyStartPlace(code!, body),
     onSuccess: () => {
-      //내 출발지 리패치 (id로)
       queryClient.invalidateQueries({
-        queryKey: placeKeys.my(code!, id),
+        queryKey: placeKeys.my(code!, token),
       });
     },
     onError: () => {
