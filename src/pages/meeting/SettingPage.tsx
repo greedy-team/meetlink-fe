@@ -154,9 +154,9 @@ export default function SettingPage() {
                 </AlertDialogTrigger>
                 <AlertDialogContent className="w-[90%] rounded-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>설정을 저장하시겠습니까?</AlertDialogTitle>
+                    <AlertDialogTitle>변경된 설정을 저장할까요?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      입력하신 정보는 모든 사용자에게 적용됩니다.
+                      변경하신 정보는 모든 사용자에게 적용돼요.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter className="flex-row gap-2">
@@ -208,7 +208,7 @@ export default function SettingPage() {
         </RecommendCheckBox>
 
         <NotifyBox variant="emphasis" className="mt-3">
-          변경 사항은 모두에게 적용됩니다.
+          변경 사항은 모두에게 적용되니 주의해주세요.
         </NotifyBox>
 
         <LeaveButton onLeave={handleLeave} />
