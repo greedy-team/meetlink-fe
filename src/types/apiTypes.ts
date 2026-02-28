@@ -84,7 +84,6 @@ export interface JoinMeetingResponse {
   status: boolean;
   result?: {
     token: string;
-    nickname: string;
   };
   code?: string;
   message?: string;
@@ -94,10 +93,10 @@ export interface JoinMeetingResponse {
 export interface GetParticipantListResponse {
   status: boolean;
   result?: {
-    id: number;
     nickname: string;
-    placeSubmitted: boolean;
-    timeSubmitted: boolean;
+    token?: string;
+    placeSubmitted?: boolean;
+    timeSubmitted?: boolean;
   }[];
 }
 
@@ -105,7 +104,6 @@ export interface GetParticipantListResponse {
 export interface GetMyStatusResponse {
   status: true;
   result?: {
-    id: number;
     nickname: string;
     placeSubmitted: boolean;
     timeSubmitted: boolean;
