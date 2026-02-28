@@ -126,20 +126,6 @@ export default function MeetingLayout() {
     isLoading: isMeetingLoading || isParticipantLoading,
   };
 
-  if (
-    (!isJoinPage && !isInputPage && !token) ||
-    isMyStatusLoading ||
-    isMyStatusFetching ||
-    isMeetingLoading ||
-    isParticipantLoading
-  ) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-white">
-        <span className="font-medium text-gray-500">데이터를 불러오는 중입니다...</span>
-      </div>
-    );
-  }
-
   return (
     <div>
       <Outlet context={contextValue} />
