@@ -24,7 +24,7 @@ export function GoToButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'group flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
+        'group flex w-full items-center justify-between rounded-2xl border-2 p-4 transition-all duration-200',
         'border-gray-200 bg-gray-50 hover:bg-gray-100 active:scale-[0.98]',
         className,
       )}
