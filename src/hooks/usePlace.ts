@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { participantKeys, placeKeys } from './queryKeys';
+import { participantKeys, placeKeys, recommendKeys } from './queryKeys';
 
 import { getMyStartPlace, updateMyStartPlace } from '@/features/api/placeApi';
 import { type UpdateMyStartPlaceRequest } from '@/types/apiTypes';
@@ -36,6 +36,11 @@ export const useUpdateMyStartPlace = () => {
       //참여자 현황 리패치
       queryClient.invalidateQueries({
         queryKey: participantKeys.list(code!, token),
+      });
+
+      //추천 결과 래패치
+      queryClient.invalidateQueries({
+        queryKey: recommendKeys.all,
       });
     },
     onError: () => {

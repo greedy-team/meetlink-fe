@@ -119,7 +119,7 @@ export function RecommendSummaryCard({
             lat={bestPlace?.latitude ?? 37.54972}
             lng={bestPlace?.longitude ?? 127.075475}
             level={4}
-            className="h-50 w-full overflow-hidden rounded-t-2xl"
+            className="h-40 w-full overflow-hidden rounded-t-2xl lg:h-50"
           />
         )}
 
