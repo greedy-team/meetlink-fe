@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { timeKeys } from './queryKeys';
+import { participantKeys, timeKeys } from './queryKeys';
 
 import {
   getCommonAvailableTime,
@@ -47,6 +47,10 @@ export const useUpdateMyAvailableTime = () => {
       // 내 가능 시간 리패치
       queryClient.invalidateQueries({
         queryKey: timeKeys.my(code!, token),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: participantKeys.list(code!, token),
       });
     },
     onError: () => {
