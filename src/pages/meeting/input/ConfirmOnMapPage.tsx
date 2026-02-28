@@ -3,13 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
-import { type RecentPlaceItem,upsertRecentPlace } from '@/lib/recentPlaces';
+import { type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
 
 import { LatLngMap } from '@/features/meeting/general/LatLngMap';
 import { CenterPin } from '@/features/place/confirm/CenterPin';
 import { PlaceConfirmSheet } from '@/features/place/confirm/PlaceConfirmSheet';
 import { RecenterFab } from '@/features/place/confirm/RecenterFab';
-import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
 // window.kakao 최소 타입
 type KakaoCoord2AddressResult = {
