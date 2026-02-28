@@ -42,9 +42,9 @@ export default function JoinPage() {
 
   const canSubmit = tempNickName.trim().length > 0;
 
-  const { mutate: join, isPending: joinPending } = useJoinMeeting();
-  const { mutate: saveTime, isPending: timePending } = useUpdateMyAvailableTime();
-  const { mutate: savePlace, isPending: placePending } = useUpdateMyStartPlace();
+  const { mutateAsync: joinAsync, isPending: joinPending } = useJoinMeeting();
+  const { mutateAsync: saveTimeAsync, isPending: timePending } = useUpdateMyAvailableTime();
+  const { mutateAsync: savePlaceAsync, isPending: placePending } = useUpdateMyStartPlace();
 
   const goReconnect = () => {
     if (!code) return;
@@ -61,25 +61,37 @@ export default function JoinPage() {
     navigate(`/meeting/${code}/input/place`, { state: { from: 'join' } });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!code) return;
     const trimmed = tempNickName.trim();
     if (!trimmed) return;
 
-    join(
-      { nickname: trimmed },
-      {
-        onSuccess: (data) => {
-          if (data.status) {
-            // 참여 성공 시에만 이동saveTime(
-            const convertedData = convertToAvailabilities(selectedTimeList, dateType);
-            saveTime({ availabilities: convertedData });
-            savePlace(selectedPlace);
-            navigate(`/meeting/${code}`, { replace: true });
-          }
-        },
-      },
-    );
+    try {
+      const joinData = await joinAsync({ nickname: trimmed });
+
+      if (joinData.status) {
+        const promises = [];
+
+        // 입력한 시간 데이터가 있는 경우
+        if (selectedTimeList && selectedTimeList.length > 0) {
+          const convertedData = convertToAvailabilities(selectedTimeList, dateType);
+          promises.push(saveTimeAsync({ availabilities: convertedData }));
+        }
+
+        // 입력한 장소 데이터가 있는 경우
+        if (selectedPlace && selectedPlace.address) {
+          promises.push(savePlaceAsync(selectedPlace));
+        }
+
+        if (promises.length > 0) {
+          await Promise.all(promises);
+        }
+
+        navigate(`/meeting/${code}`, { replace: true });
+      }
+    } catch (error) {
+      console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
+    }
   };
 
   const isPending = joinPending || timePending || placePending;
