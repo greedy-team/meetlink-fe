@@ -15,7 +15,6 @@ export function RecommendItem({
   icon: Icon,
   label,
   value,
-  placeholder = '추천 값이 없습니다..!',
   onClick,
   className,
 }: RecommendItemProps) {
@@ -31,7 +30,7 @@ export function RecommendItem({
       <div className="bg-greedy/10 text-greedy flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl">
         <Icon className="h-6 w-6" />
       </div>
-      <div className="flex flex-col pt-0.5">
+      <div className="flex flex-col pt-0.5 text-left">
         <span className="text-greedy text-sm font-semibold">{label}</span>
         <span
           className={cn(
@@ -39,7 +38,7 @@ export function RecommendItem({
             value ? 'text-gray-900' : 'text-gray-400',
           )}
         >
-          {value || placeholder}
+          {value}
         </span>
       </div>
     </button>

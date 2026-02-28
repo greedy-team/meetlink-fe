@@ -109,17 +109,17 @@ export function RecommendSummaryCard({
   return (
     <div
       className={cn(
-        'w-full overflow-hidden rounded-[32px] border border-gray-200 bg-white shadow-sm',
+        'w-full overflow-hidden rounded-[32px] border border-gray-200 bg-gray-50 shadow-sm',
         className,
       )}
     >
       <div className="flex flex-col gap-2 p-3">
         {isPlaceRecommendEnabled && (
           <LatLngMap
-            lat={bestPlace?.latitude ?? 37.5665}
-            lng={bestPlace?.longitude ?? 126.978}
+            lat={bestPlace?.latitude ?? 37.54972}
+            lng={bestPlace?.longitude ?? 127.075475}
             level={4}
-            className="h-70 w-full overflow-hidden rounded-2xl"
+            className="h-50 w-full overflow-hidden rounded-t-2xl"
           />
         )}
 
