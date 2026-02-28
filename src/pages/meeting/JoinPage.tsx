@@ -25,7 +25,8 @@ export default function JoinPage() {
   const {
     meetingName,
     participantStatusList,
-    nickName,
+    tempNickName,
+    setTempNickName,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
     selectedTimeList,
@@ -34,18 +35,16 @@ export default function JoinPage() {
     id,
   } = useMeetingContext();
 
-  const [inputNickName, setInputNickName] = useState(nickName ?? '');
-
   const participantSummary = useMemo(
     () => buildParticipantSummary(participantStatusList || []),
     [participantStatusList],
   );
 
-  const canSubmit = inputNickName.trim().length > 0;
+  const canSubmit = tempNickName.trim().length > 0;
 
   const { mutate: join, isPending: joinPending } = useJoinMeeting();
   const { mutate: saveTime, isPending: timePending } = useUpdateMyAvailableTime();
-  const { mutate: savePlace, isPending: placePending } = useUpdateMyStartPlace(id);
+  const { mutate: savePlace, isPending: placePending } = useUpdateMyStartPlace();
 
   const goReconnect = () => {
     if (!code) return;
@@ -64,7 +63,7 @@ export default function JoinPage() {
 
   const onSubmit = () => {
     if (!code) return;
-    const trimmed = inputNickName.trim();
+    const trimmed = tempNickName.trim();
     if (!trimmed) return;
 
     join(
@@ -87,7 +86,7 @@ export default function JoinPage() {
 
   return (
     <AppLayout
-      header={<Header title="모임 참여 페이지" showBackButton />}
+      header={<Header title="모임 참여 페이지" showBackButton={false} />}
       bottom={
         <div className="space-y-3">
           <button
@@ -112,7 +111,7 @@ export default function JoinPage() {
       <div className="space-y-3">
         <MeetingInfoCard title={meetingName || '모임'} participantSummary={participantSummary} />
 
-        <NickNameInput value={inputNickName} onChange={setInputNickName} />
+        <NickNameInput value={tempNickName} onChange={setTempNickName} />
 
         <div className="space-y-3">
           <NotifyBox variant="emphasis">모임 참여 이후 닉네임은 변경할 수 없어요</NotifyBox>
