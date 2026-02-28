@@ -29,6 +29,7 @@ interface BestPlace {
   rank: number;
 }
 
+//추천 스크립트 제작 함수
 const makeTimeDescription = (bestTime: BestTime | undefined): string => {
   if (!bestTime) return '시간 정보가 없습니다';
   const { date, dayOfWeek, startTime, endTime } = bestTime;
@@ -46,18 +47,36 @@ const makeTimeDescription = (bestTime: BestTime | undefined): string => {
   const formatTime = (timeStr: string) => {
     const [hourStr, minuteStr] = timeStr.split(':');
     let hour = parseInt(hourStr, 10);
-    const ampm = hour < 12 ? '오전' : '오후';
+    const dayPart = hour < 12 ? '오전' : '오후';
 
     if (hour > 12) hour -= 12;
     if (hour === 0) hour = 12;
-
-    return `${ampm} ${hour}:${minuteStr}`;
+    return `${dayPart} ${hour}:${minuteStr}`;
   };
-
   const startFormatted = formatTime(startTime);
   const endFormatted = formatTime(endTime);
 
   return `${datePart} ${startFormatted} ~ ${endFormatted}`;
+};
+
+const makePlaceDescription = (bestPlace: BestPlace | undefined): string => {
+  if (!bestPlace) return '장소 정보가 없습니다';
+
+  const { name, address, avgTravelTime, maxTravelTime } = bestPlace;
+
+  const formatDuration = (mins: number) => {
+    if (mins < 60) return `${mins}분`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m === 0 ? `${h}시간` : `${h}시간 ${m}분`;
+  };
+
+  const avgFormatted = formatDuration(avgTravelTime);
+  const maxFormatted = formatDuration(maxTravelTime);
+  //짧은 버전
+  //const shortAddress = address.split(' ').slice(0, 2).join(' ');
+
+  return `${name} (${address}) | 평균 ${avgFormatted} 소요 (최대 ${maxFormatted})`;
 };
 
 interface RecommendSummaryCardProps {
@@ -81,7 +100,7 @@ export function RecommendSummaryCard({
   };
 
   const timeValue = makeTimeDescription(bestTime);
-  const placeValue = bestPlace?.address || '장소 정보가 없습니다';
+  const placeValue = makePlaceDescription(bestPlace);
 
   if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
     return null; // 혹시나 방지
