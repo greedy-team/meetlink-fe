@@ -3,33 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
+import { type RecentPlaceItem,upsertRecentPlace } from '@/lib/recentPlaces';
 
 import { LatLngMap } from '@/features/meeting/general/LatLngMap';
 import { CenterPin } from '@/features/place/confirm/CenterPin';
 import { PlaceConfirmSheet } from '@/features/place/confirm/PlaceConfirmSheet';
 import { RecenterFab } from '@/features/place/confirm/RecenterFab';
 import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
-
-const RECENT_PLACES_KEY = 'recent_places';
-const MAX_RECENTS = 5;
-
-const loadRecentPlaces = (): UpdateMyStartPlaceRequest[] => {
-  const raw = localStorage.getItem(RECENT_PLACES_KEY);
-  if (!raw) return [];
-  const parsed = JSON.parse(raw) as UpdateMyStartPlaceRequest[];
-  return Array.isArray(parsed) ? parsed : [];
-};
-
-const saveRecentPlaces = (places: UpdateMyStartPlaceRequest[]) => {
-  localStorage.setItem(RECENT_PLACES_KEY, JSON.stringify(places));
-};
-
-const upsertRecentPlace = (place: UpdateMyStartPlaceRequest): UpdateMyStartPlaceRequest[] => {
-  const current = loadRecentPlaces();
-  const next = [place, ...current.filter((p) => p.address !== place.address)].slice(0, MAX_RECENTS);
-  saveRecentPlaces(next);
-  return next;
-};
 
 // window.kakao 최소 타입
 type KakaoCoord2AddressResult = {
@@ -77,8 +57,11 @@ export default function ConfirmOnMapPage() {
 
   const [isLocating, setIsLocating] = useState(false);
 
-  // reverse geocode 디바운스
   const reverseTimerRef = useRef<number | null>(null);
+
+  const goBack = () => {
+    navigate(`/meeting/${code}/input/place`, { replace: true });
+  };
 
   const reverseGeocode = (nextLat: number, nextLng: number) => {
     const kakao = getKakao();
@@ -93,7 +76,7 @@ export default function ConfirmOnMapPage() {
       const road = first.road_address?.address_name ?? '';
       const jibun = first.address?.address_name ?? '';
 
-      setRoadAddress(road || jibun);
+      setRoadAddress(road);
       setJibunAddress(jibun);
     });
   };
@@ -134,32 +117,39 @@ export default function ConfirmOnMapPage() {
     );
   };
 
-  // 페이지 진입 즉시 1회 실행
   useEffect(() => {
     fetchCurrentLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 검증(주소가 있나, 위도/경도는 유효한가, 현재 위치 불러오는 중이 아닌가)
   const canConfirm = useMemo(() => {
-    return !!roadAddress.trim() && lat !== null && lng !== null && !isLocating;
-  }, [roadAddress, lat, lng, isLocating]);
+    return (
+      !!(roadAddress.trim() || jibunAddress.trim()) && lat !== null && lng !== null && !isLocating
+    );
+  }, [roadAddress, jibunAddress, lat, lng, isLocating]);
 
   const handleConfirm = () => {
     if (!code || !canConfirm || lat === null || lng === null) return;
 
-    const selectedPlace: UpdateMyStartPlaceRequest = {
-      address: roadAddress,
+    const selectedPlace: RecentPlaceItem = {
+      address: roadAddress || jibunAddress,
       latitude: lat,
       longitude: lng,
+      roadAddress: roadAddress,
+      jibunAddress: jibunAddress,
     };
 
     upsertRecentPlace(selectedPlace);
 
-    navigate(`/meeting/${code}/input/place`, { state: { selectedPlace } });
+    navigate(`/meeting/${code}/input/place`, {
+      state: { selectedPlace },
+      replace: true,
+    });
   };
 
   return (
-    <AppLayout header={<Header title="지도에서 위치 확인" />}>
+    <AppLayout header={<Header title="지도에서 위치 확인" onBack={goBack} />}>
       <div className="-mx-4 -my-4 flex min-h-0 flex-1 flex-col">
         <div className="relative min-h-0 w-full flex-1 overflow-hidden">
           {lat !== null && lng !== null ? (
@@ -171,7 +161,6 @@ export default function ConfirmOnMapPage() {
                   level={4}
                   showMarker={false}
                   onCenterChange={(nextLat, nextLng) => {
-                    // 지도 idle 이벤트가 자주 올 수 있어서 디바운스로 주소만 갱신
                     setLat(nextLat);
                     setLng(nextLng);
                     scheduleReverseGeocode(nextLat, nextLng);
@@ -204,8 +193,12 @@ export default function ConfirmOnMapPage() {
         </div>
 
         <PlaceConfirmSheet
-          roadAddress={roadAddress || (isLocating ? '현재 위치 불러오는 중…' : '')}
-          jibunAddress={jibunAddress}
+          roadAddress={
+            roadAddress ||
+            jibunAddress ||
+            (isLocating ? '현재 위치 불러오는 중…' : '위치를 찾을 수 없습니다')
+          }
+          jibunAddress={roadAddress ? jibunAddress : ''} // 도로명이 메인에 들어갔을 때만 지번을 서브로 띄움
           onConfirm={handleConfirm}
           onConfirmDisabled={!canConfirm}
         />
