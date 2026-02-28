@@ -226,29 +226,26 @@ export interface GetRecommendResultResponse {
   status: boolean;
   result: {
     id: number;
-    timeCandidate: {
-      id: number;
-      date: string;
-      dayOfWeek: number;
-      startTime: string;
-      endTime: string;
-      availableCount: number;
-      rank: number;
-    };
     placeCandidate: {
-      id: number;
-      name: string;
       address: string;
+      avgTravelTime: number;
+      id: number;
       latitude: number;
       longitude: number;
-      avgTravelTime: number;
       maxTravelTime: number;
-      calculationType: string;
+      name: string;
       rank: number;
+    };
+    timeCandidate: {
+      availableCount: number;
+      date: string;
+      dayOfWeek: number;
+      endTime: string;
+      id: number;
+      rank: number;
+      startTime: string;
     };
     createdAt: string;
     updatedAt: string;
   };
-  code: string;
-  message: string;
 }

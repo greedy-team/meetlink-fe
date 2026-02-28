@@ -9,24 +9,23 @@ import { LatLngMap } from './LatLngMap';
 import { RecommendItem } from './RecommendItem';
 
 interface BestTime {
-  id: number;
+  availableCount: number;
   date: string;
   dayOfWeek: number;
-  startTime: string;
   endTime: string;
-  availableCount: number;
+  id: number;
   rank: number;
+  startTime: string;
 }
 
 interface BestPlace {
-  id: number;
-  name: string;
   address: string;
+  avgTravelTime: number;
+  id: number;
   latitude: number;
   longitude: number;
-  avgTravelTime: number;
   maxTravelTime: number;
-  calculationType: string;
+  name: string;
   rank: number;
 }
 
