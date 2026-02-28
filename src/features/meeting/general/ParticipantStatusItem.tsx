@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { type ParticipantStatus } from '@/types/meetingTypes';
 
 interface ParticipantStatusItemProps extends ParticipantStatus {
+  isMe: boolean;
   isLast: boolean;
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
@@ -12,6 +13,7 @@ interface ParticipantStatusItemProps extends ParticipantStatus {
 
 export function ParticipantStatusItem({
   nickName,
+  isMe,
   hasTimeInput,
   hasPlaceInput,
   isLast,
@@ -26,11 +28,12 @@ export function ParticipantStatusItem({
       )}
     >
       {/* 왼쪽: 프로필 및 닉네임 */}
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-600">
+      <div className="flex items-center justify-center gap-3 text-base font-bold text-black">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600">
           {nickName.charAt(0)}
         </div>
-        <span className="text-base font-bold text-gray-800">{nickName}</span>
+        <span>{nickName}</span>
+        {isMe && <span> (나)</span>}
       </div>
 
       {/* 오른쪽: 상태 아이콘 (조건부 렌더링) */}

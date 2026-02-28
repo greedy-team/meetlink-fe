@@ -48,11 +48,11 @@ export default function MainPage() {
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
-  const sortedList = [
+  const sortedParticipantStatusList = [
     ...participantStatusList.filter((p) => p.id === id),
     ...participantStatusList.filter((p) => p.id !== id),
   ];
-  const myStatus = participantStatusList[0];
+  const myStatus = sortedParticipantStatusList[0];
 
   const completedCount = participantStatusList.filter(
     (p) => p.hasTimeInput && p.hasPlaceInput,
@@ -145,7 +145,7 @@ export default function MainPage() {
             </div>
           </div>
           <ParticipantStatusList
-            list={participantStatusList || []}
+            list={sortedParticipantStatusList || []}
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
           />
