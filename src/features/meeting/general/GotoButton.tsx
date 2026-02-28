@@ -37,7 +37,7 @@ export function GoToButton({
         <span className="text-xs leading-relaxed font-medium text-gray-400">{description}</span>
       </div>
 
-      <div className="rounded-2x transition-color ml-4 flex h-11 w-11 shrink-0 items-center justify-center text-gray-500">
+      <div className="rounded-2x transition-color ml-4 flex h-11 shrink-0 items-center justify-center text-gray-500">
         <ChevronRight strokeWidth={3} className="h-6 w-6" />
       </div>
     </button>
