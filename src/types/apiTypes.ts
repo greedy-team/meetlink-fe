@@ -16,7 +16,6 @@ export interface CreateMeetingResponse {
   status: boolean;
 
   result?: {
-    id: number;
     name: string;
     code: string;
     enableTimeRecommendation: boolean;
@@ -24,8 +23,6 @@ export interface CreateMeetingResponse {
     timeAvailabilityType: string;
     timeRangeStart: string;
     timeRangeEnd: string;
-    createdAt: string;
-    updatedAt: string;
   };
 
   code?: string;
@@ -37,7 +34,6 @@ export interface GetMeetingDetailResponse {
   status: boolean;
 
   result?: {
-    id: number;
     name: string;
     code: string;
     enableTimeRecommendation: boolean;
@@ -45,8 +41,6 @@ export interface GetMeetingDetailResponse {
     timeAvailabilityType: string;
     timeRangeStart: string;
     timeRangeEnd: string;
-    createdAt: string;
-    updatedAt: string;
   };
 
   code?: string;
@@ -67,7 +61,6 @@ export interface UpdateMeetingDetailResponse {
   status: boolean;
 
   result?: {
-    id: number;
     name: string;
     code: string;
     enableTimeRecommendation: boolean;
@@ -75,8 +68,6 @@ export interface UpdateMeetingDetailResponse {
     timeAvailabilityType: string;
     timeRangeStart: string;
     timeRangeEnd: string;
-    createdAt: string;
-    updatedAt: string;
   };
 
   code?: string;
