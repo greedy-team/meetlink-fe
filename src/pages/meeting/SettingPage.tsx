@@ -61,7 +61,7 @@ export default function SettingPage() {
     leaveMeeting(undefined, {
       onSuccess: () => {
         toast.success('나가기 성공!', {
-          description: '모임에서 성공적으로 나갔어요.',
+          description: '모임에서 성공적으로 나갔어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
         navigate(`/meeting/${code}/join`);
@@ -91,7 +91,7 @@ export default function SettingPage() {
     updateMeeting(requestData, {
       onSuccess: () => {
         toast.success('수정 성공!', {
-          description: '모임 설정이 정상적으로 수정되었어요.',
+          description: '모임 설정이 정상적으로 수정되었어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
         navigate(`/meeting/${code}`);
@@ -156,7 +156,7 @@ export default function SettingPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>변경된 설정을 저장할까요?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      변경하신 정보는 모든 사용자에게 적용돼요.
+                      변경하신 정보는 모든 사용자에게 적용돼요
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter className="flex-row gap-2">
@@ -208,7 +208,7 @@ export default function SettingPage() {
         </RecommendCheckBox>
 
         <NotifyBox variant="emphasis" className="mt-3">
-          변경 사항은 모두에게 적용되니 주의해주세요.
+          변경 사항은 모두에게 적용되니 주의해주세요
         </NotifyBox>
 
         <LeaveButton onLeave={handleLeave} />

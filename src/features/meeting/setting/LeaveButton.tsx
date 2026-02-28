@@ -46,7 +46,7 @@ export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>모임에서 나갈까요?</AlertDialogTitle>
           <AlertDialogDescription>
-            참여자 정보는 저장되지 않아요. 재참가 시 정보 재입력이 필요해요.
+            참여자 정보는 저장되지 않아요. 재참가 시 정보 재입력이 필요해요
           </AlertDialogDescription>
         </AlertDialogHeader>
 
