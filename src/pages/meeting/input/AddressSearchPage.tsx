@@ -1,9 +1,9 @@
 import { useMemo, useRef, useState } from 'react';
-import { useLocation,useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
-import { type RecentPlaceItem,upsertRecentPlace } from '@/lib/recentPlaces';
+import { type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
 
 import { AddressSearchInput } from '@/features/place/search/AddressSearchInput';
 import { SearchEmptyState } from '@/features/place/search/SearchEmptyState';
@@ -155,19 +155,12 @@ export default function AddressSearchPage() {
   };
 
   const handleSelect = (place: RecentPlaceItem) => {
-    // 서버에 보낼 기본 형태로 변환
-    const placeToSave: UpdateMyStartPlaceRequest = {
-      address: place.address,
-      latitude: place.latitude,
-      longitude: place.longitude,
-    };
-
     // 최근 검색어에 추가
     upsertRecentPlace(place);
 
     // 입력 페이지로 데이터 넘기면서 이동
     navigate(`/meeting/${code}/input/place`, {
-      state: { selectedPlace: placeToSave },
+      state: { selectedPlace: place },
       replace: true,
     });
   };
