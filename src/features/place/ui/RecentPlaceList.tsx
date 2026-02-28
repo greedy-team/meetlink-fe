@@ -1,17 +1,16 @@
 import { MapPin } from 'lucide-react';
 
-import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
+import type { RecentPlaceItem } from '@/lib/recentPlaces';
 
 type Props = {
-  places: UpdateMyStartPlaceRequest[];
-  onSelect: (place: UpdateMyStartPlaceRequest) => void;
+  places: RecentPlaceItem[];
+  onSelect: (place: RecentPlaceItem) => void;
   makeTitle?: (address: string) => string;
   showTitle?: boolean;
   title?: string;
 };
 
 const defaultMakeTitle = (address: string) => {
-  // address만 있는 경우(카카오/서버/로컬 저장 공통) 주소 일부를 요약해서 보여줌
   const tokens = address.trim().split(/\s+/);
   return tokens.slice(0, Math.min(tokens.length, 4)).join(' ');
 };
@@ -28,7 +27,7 @@ export function RecentPlaceList({
       <section className="mt-6">
         {showTitle && <h2 className="mb-2 text-sm font-semibold text-gray-500">{title}</h2>}
         <div className="rounded-xl bg-gray-50 px-4 py-5 text-sm text-gray-500">
-          저장된 최근 위치가 없습니다.
+          {title === '검색 결과' ? '검색 결과가 없습니다.' : '저장된 최근 위치가 없습니다.'}
         </div>
       </section>
     );
@@ -40,14 +39,32 @@ export function RecentPlaceList({
 
       <div className="divide-y divide-gray-200">
         {places.map((p, idx) => {
-          const titleText = makeTitle(p.address);
+          const hasTwoLines = Boolean(p.roadAddress || p.jibunAddress);
+
+          // 장소 이름 > 도로명 주소
+          const titleText = p.placeName
+            ? p.placeName
+            : hasTwoLines
+              ? p.roadAddress || p.jibunAddress
+              : makeTitle(p.address);
+
+          // 장소 이름 있을 경우 도로명 주소, 없을 경우 지번 주소
+          const subText = p.placeName
+            ? p.roadAddress || p.jibunAddress || p.address
+            : hasTwoLines
+              ? p.jibunAddress || p.address
+              : p.address;
 
           return (
             <button
               key={`${p.address}-${idx}`}
               type="button"
               onClick={() => onSelect(p)}
-              className="flex w-full items-start gap-3 py-4 text-left"
+              className={[
+                'flex w-full items-start gap-3 px-2 py-4 text-left transition-colors',
+                'hover:bg-gray-100',
+                'active:scale-[0.98] active:bg-gray-100',
+              ].join(' ')}
             >
               <div className="mt-0.5 grid h-8 w-8 place-items-center rounded-full bg-gray-100">
                 <MapPin className="h-4 w-4 text-gray-500" />
@@ -55,7 +72,7 @@ export function RecentPlaceList({
 
               <div className="min-w-0 flex-1">
                 <div className="truncate text-base font-semibold text-gray-900">{titleText}</div>
-                <div className="truncate text-sm text-gray-500">{p.address}</div>
+                <div className="truncate text-sm text-gray-500">{subText}</div>
               </div>
             </button>
           );
