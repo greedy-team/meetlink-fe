@@ -27,7 +27,7 @@ export function ParticipantStatusItem({
         !isLast && 'border-b-2 border-gray-100',
       )}
     >
-      {/* 왼쪽: 프로필 및 닉네임 */}
+      {/* 프로필 및 닉네임 */}
       <div className="flex items-center justify-center gap-3 text-base font-bold text-black">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600">
           {nickName.charAt(0)}
@@ -36,9 +36,8 @@ export function ParticipantStatusItem({
         {isMe && <span> (나)</span>}
       </div>
 
-      {/* 오른쪽: 상태 아이콘 (조건부 렌더링) */}
       <div className="flex items-center gap-2">
-        {/* 시간 추천이 활성화된 경우만 렌더링 */}
+        {/* 시간 추천이 활성화 된 경우*/}
         {isTimeRecommendEnabled && (
           <div
             className={cn(
@@ -50,7 +49,7 @@ export function ParticipantStatusItem({
           </div>
         )}
 
-        {/* 장소 추천이 활성화된 경우만 렌더링 */}
+        {/* 장소 추천이 활성화된 경우 */}
         {isPlaceRecommendEnabled && (
           <div
             className={cn(

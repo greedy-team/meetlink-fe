@@ -10,6 +10,7 @@ interface GoToButtonProps {
   description: string;
   onClick: () => void;
   className?: string;
+  isDone?: boolean;
 }
 
 export function GoToButton({
@@ -18,6 +19,7 @@ export function GoToButton({
   description,
   onClick,
   className,
+  isDone = false,
 }: GoToButtonProps) {
   return (
     <button
@@ -25,7 +27,8 @@ export function GoToButton({
       onClick={onClick}
       className={cn(
         'group flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
-        'border-gray-200 bg-gray-50 hover:bg-gray-100 active:scale-[0.98]',
+        'border-gray-200 bg-gray-50 hover:bg-gray-100',
+        isDone ? 'bg-greedy/10' : '',
         className,
       )}
     >

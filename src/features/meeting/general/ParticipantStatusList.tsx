@@ -23,6 +23,7 @@ export function ParticipantStatusList({
 }: ParticipantStatusListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  //처음에는 최대 3명만 보기
   const visibleList = isExpanded ? list : list.slice(0, 3);
   const showExpandButton = list.length > 3;
 
@@ -43,7 +44,7 @@ export function ParticipantStatusList({
             />
           ))}
         </div>
-
+        {/* 모든 참여자 리스트 보기 */}
         {showExpandButton && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}

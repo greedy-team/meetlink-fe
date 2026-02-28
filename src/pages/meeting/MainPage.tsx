@@ -120,6 +120,7 @@ export default function MainPage() {
               title="가능한 시간 선택하기"
               description="모임 만남 시간을 추천하는데 활용돼요."
               onClick={() => handleGoToButton('input/time')}
+              isDone={myStatus?.hasTimeInput}
             />
           )}
           {isPlaceRecommendEnabled && (
@@ -128,6 +129,7 @@ export default function MainPage() {
               title="출발지 입력하기"
               description={'모임 만남 장소를 추천하는데 활용돼요.'}
               onClick={() => navigate('input/place', { state: { from: 'main' } })}
+              isDone={myStatus?.hasPlaceInput}
             />
           )}
         </div>
