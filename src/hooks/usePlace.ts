@@ -7,7 +7,7 @@ import { getMyStartPlace, updateMyStartPlace } from '@/features/api/placeApi';
 import { type UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
 //출발지 조회
-export const useGetMyStartPlace = (id: string) => {
+export const useGetMyStartPlace = () => {
   const { code } = useParams<{ code: string }>();
   const token = localStorage.getItem('meeting_token');
 
