@@ -64,7 +64,7 @@ export default function CreatePage() {
       onSuccess: (data) => {
         if (!data?.result?.code) {
           //요청 데이터가 부족하면 요청을 보낼수 없기 때문에 발생할 일 없지만 방어로직
-          toast.error('서버 응답이 이상해요.', {
+          toast.error('서버 응답이 이상해요', {
             description: '재접속을 추천해요',
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
@@ -72,7 +72,7 @@ export default function CreatePage() {
         }
         //성공 토스트
         toast.success('모임 생성 완료!', {
-          description: '팀원들에게 링크를 공유해보세요.',
+          description: '팀원들에게 링크를 공유해보세요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
         navigate(`/share/${data.result.code}`);
@@ -124,7 +124,7 @@ export default function CreatePage() {
           <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
           {!meetingNameInputFinished && meetingName.trim().length > 0 && (
             <Button
-              className="bg-greedy hover:bg-greedy/50 h-12 w-full rounded-xl text-lg font-semibold text-white"
+              className="bg-greedy hover:bg-greedy/50 h-12 w-full rounded-xl text-base font-semibold"
               onClick={handleMeetingNameInput}
             >
               다음

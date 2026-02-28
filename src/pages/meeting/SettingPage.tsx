@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock, MapPin } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
@@ -38,6 +39,7 @@ export default function SettingPage() {
     isPlaceRecommendEnabled: initialIsPlaceRecommendEnabled,
     dateType: initialDateType,
     timeRange: initialTimeRange,
+    //placeType: initialPlaceType,
   } = useMeetingContext();
   const { mutate: updateMeeting } = useUpdateMeetingDetail();
   const { mutate: leaveMeeting } = useLeaveMeeting();
@@ -57,13 +59,19 @@ export default function SettingPage() {
 
   const handleLeave = () => {
     leaveMeeting(undefined, {
-      onSuccess: (data) => {
-        console.log('회의 나가기 성공!', data);
+      onSuccess: () => {
+        toast.success('나가기 성공!', {
+          description: '모임에서 성공적으로 나갔어요',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
         navigate(`/meeting/${code}/join`);
       },
-      onError: (error) => {
-        console.error('회의 나가기 실패:', error);
+      onError: () => {
         // 사용자에게 에러 알리기
+        toast.error('오류가 발생했어요', {
+          description: '인터넷 연결 상태를 확인해보세요!',
+          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+        });
       },
     });
   };
@@ -81,12 +89,18 @@ export default function SettingPage() {
 
     // mutate 호출 시 콜백 추가
     updateMeeting(requestData, {
-      onSuccess: (data) => {
-        console.log('수정 성공! 반환 데이터:', data);
-        navigate(-1);
+      onSuccess: () => {
+        toast.success('수정 성공!', {
+          description: '모임 설정이 정상적으로 수정되었어요',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}`);
       },
-      onError: (error) => {
-        console.error('수정 실패:', error);
+      onError: () => {
+        toast.error('오류가 발생했어요', {
+          description: '인터넷 연결 상태를 확인해보세요!',
+          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+        });
       },
     });
   };
@@ -103,6 +117,7 @@ export default function SettingPage() {
     dateType !== initialDateType ||
     timeRange[0] !== initialTimeRange[0] ||
     timeRange[1] !== initialTimeRange[1];
+  //placeType != initialPlaceType;
 
   return (
     <AppLayout
@@ -113,7 +128,7 @@ export default function SettingPage() {
           <div className="flex-1">
             <FixedBottomButton
               className="border-2 bg-white text-xl text-black hover:bg-gray-300"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/meeting/${code}`)}
             >
               취소
             </FixedBottomButton>
@@ -126,7 +141,7 @@ export default function SettingPage() {
             ) : !hasChanges ? (
               <FixedBottomButton
                 className="bg-greedy hover:bg-greedy/50"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate(`/meeting/${code}`)}
               >
                 완료
               </FixedBottomButton>
@@ -139,18 +154,18 @@ export default function SettingPage() {
                 </AlertDialogTrigger>
                 <AlertDialogContent className="w-[90%] rounded-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>설정을 저장하시겠습니까?</AlertDialogTitle>
+                    <AlertDialogTitle>변경된 설정을 저장할까요?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      입력하신 정보는 모든 사용자에게 적용됩니다.
+                      변경하신 정보는 모든 사용자에게 적용돼요
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl border-none bg-gray-100 hover:bg-gray-200">
+                  <AlertDialogFooter className="flex-row gap-2">
+                    <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
                       취소
                     </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleSave}
-                      className="bg-greedy hover:bg-greedy/80 rounded-xl text-white"
+                      className="bg-greedy! hover:bg-greedy/50! rounded-xl text-white"
                     >
                       저장하기
                     </AlertDialogAction>
@@ -193,7 +208,7 @@ export default function SettingPage() {
         </RecommendCheckBox>
 
         <NotifyBox variant="emphasis" className="mt-3">
-          변경 사항은 모두에게 적용됩니다.
+          변경 사항은 모두에게 적용되니 주의해주세요
         </NotifyBox>
 
         <LeaveButton onLeave={handleLeave} />

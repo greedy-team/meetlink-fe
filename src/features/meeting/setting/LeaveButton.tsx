@@ -26,7 +26,7 @@ export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
         <Button
           variant="ghost"
           className={cn(
-            'bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600',
+            'bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600',
             'my-3 h-14 w-full rounded-2xl py-3 font-semibold transition-all',
             'flex flex-row items-center justify-start gap-3',
             className, // 외부에서 위치 조정을 위한 커스텀 클래스 허용
@@ -44,19 +44,19 @@ export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
 
       <AlertDialogContent className="w-[85%] rounded-2xl md:w-full">
         <AlertDialogHeader>
-          <AlertDialogTitle>모임에서 나가시겠습니까?</AlertDialogTitle>
+          <AlertDialogTitle>모임에서 나갈까요?</AlertDialogTitle>
           <AlertDialogDescription>
-            참여자 정보는 저장되지 않습니다. 재참가 시 정보 재입력이 필요합니다.
+            참여자 정보는 저장되지 않아요. 재참가 시 정보 재입력이 필요해요
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter className="flex-row gap-2">
-          <AlertDialogCancel className="mt-0 flex-1 rounded-xl border-none bg-gray-100 hover:bg-gray-200">
+          <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
             취소
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onLeave}
-            className="bg-greedy hover:bg-greedy/80 flex-1 rounded-xl text-white"
+            className="rounded-xl bg-red-50 text-red-500! hover:bg-red-100! hover:text-red-600!"
           >
             나가기
           </AlertDialogAction>
