@@ -26,7 +26,7 @@ export interface MeetingOutletContext {
   setSelectedPlace: React.Dispatch<React.SetStateAction<UpdateMyStartPlaceRequest>>;
 
   nickName: string;
-  id: string;
+  id: number;
 
   isLoading: boolean;
 }
@@ -121,7 +121,7 @@ export default function MeetingLayout() {
     setSelectedPlace,
 
     nickName: myStatusData?.result?.nickname || '',
-    id: myStatusData?.result?.id?.toString() || '',
+    id: myStatusData?.result?.id || -1,
 
     isLoading: isMeetingLoading || isParticipantLoading,
   };
