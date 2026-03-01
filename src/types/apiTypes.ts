@@ -189,7 +189,7 @@ export interface UpdateMyStartPlaceResponse {
 ////////////////////////////////////////////////////////////recommend
 //추천 시간 후보 조회
 export interface GetRecommendTimeResponse {
-  status: true;
+  status: boolean;
   result: {
     date: string;
     dayOfWeek: number;
@@ -206,6 +206,7 @@ export interface GetRecommendTimeResponse {
 //추천 장소 조회
 
 export interface GetRecommendPlaceResponse {
+  status: boolean;
   recommendPlaceList: {
     address: string;
     avgTravelTime: number;
