@@ -20,7 +20,7 @@ export const participantKeys = {
 export const timeKeys = {
   all: ['times'] as const,
   my: (code: string, token: string | null) => [...timeKeys.all, code, token] as const,
-  common: (code: string) => [...timeKeys.all, code] as const,
+  whole: (code: string, token: string | null) => [...timeKeys.all, code, token] as const,
 };
 
 //장소 쿼리 (토큰 추가)
@@ -33,7 +33,10 @@ export const placeKeys = {
 export const recommendKeys = {
   all: ['recommend'] as const,
 
-  time: (code: string) => [...recommendKeys.all, 'time', code] as const,
-  place: (code: string) => [...recommendKeys.all, 'place', code] as const,
-  result: (code: string) => [...recommendKeys.all, 'result', code] as const,
+  time: (code: string, token: string | null) =>
+    [...recommendKeys.all, 'time', code, token] as const,
+  place: (code: string, token: string | null) =>
+    [...recommendKeys.all, 'place', code, token] as const,
+  result: (code: string, token: string | null) =>
+    [...recommendKeys.all, 'result', code, token] as const,
 };

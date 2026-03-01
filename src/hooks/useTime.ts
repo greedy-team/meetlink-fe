@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { timeKeys } from './queryKeys';
 
 import {
-  getCommonAvailableTime,
   getMyAvailableTime,
+  getWholeAvailableTime,
   updateMyAvailableTime,
 } from '@/features/api/timeApi';
 import { type UpdateMyAvailableTimeRequest } from '@/types/apiTypes';
@@ -24,12 +24,13 @@ export const useGetMyAvailableTime = () => {
 };
 
 //가능 시간 조회
-export const useGetCommonAvailableTime = () => {
+export const useGetWholeAvailableTime = () => {
   const { code } = useParams<{ code: string }>();
+  const token = localStorage.getItem('meeting_token'); // 토큰 가져오기
 
   return useQuery({
-    queryKey: timeKeys.common(code!),
-    queryFn: () => getCommonAvailableTime(code!),
+    queryKey: timeKeys.whole(code!, token),
+    queryFn: () => getWholeAvailableTime(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
   });

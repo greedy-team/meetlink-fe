@@ -7,13 +7,14 @@ import { getMyStartPlace, updateMyStartPlace } from '@/features/api/placeApi';
 import { type UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
 //출발지 조회
-export const useGetMyStartPlace = (id: string) => {
+export const useGetMyStartPlace = () => {
   const { code } = useParams<{ code: string }>();
+  const token = localStorage.getItem('meeting_token'); // 토큰 가져오기
 
   return useQuery({
-    queryKey: placeKeys.my(code!, id),
-    queryFn: () => getMyStartPlace(code!, id),
-    enabled: !!code && !!id,
+    queryKey: placeKeys.my(code!, token),
+    queryFn: () => getMyStartPlace(code!),
+    enabled: !!code && !!token,
     staleTime: 1000 * 60 * 5,
   });
 };

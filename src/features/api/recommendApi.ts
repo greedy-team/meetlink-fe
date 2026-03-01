@@ -32,6 +32,13 @@ export const getRecommendPlace = async (code: string): Promise<GetRecommendPlace
   return data;
 };
 
+export const calculateRecommendPlace = async (code: string): Promise<GetRecommendPlaceResponse> => {
+  const { data } = await axiosInstance.post<GetRecommendPlaceResponse>(
+    `/meetings/${code}/candidates/place`,
+  );
+  return data;
+};
+
 //추천 결과 조회
 export const getRecommendResult = async (code: string): Promise<GetRecommendResultResponse> => {
   const { data } = await axiosInstance.get<GetRecommendResultResponse>(`/meetings/${code}/result`);
