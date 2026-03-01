@@ -29,17 +29,15 @@ export interface MeetingOutletContext {
   setTempNickName: React.Dispatch<React.SetStateAction<string>>;
 
   nickName: string;
-  id: string;
 
   // 3. 로딩 상태
   //isLoading: boolean;
 }
 
 interface RawParticipantStatus {
-  id: number;
   nickname: string;
-  placeSubmitted: boolean;
-  timeSubmitted: boolean;
+  placeSubmitted?: boolean;
+  timeSubmitted?: boolean;
 }
 
 export default function MeetingLayout() {
@@ -116,10 +114,9 @@ export default function MeetingLayout() {
     ],
     participantStatusList: (participantData?.result || []).map(
       (p: RawParticipantStatus): ParticipantStatus => ({
-        id: p.id,
         nickName: p.nickname,
-        hasPlaceInput: p.placeSubmitted,
-        hasTimeInput: p.timeSubmitted,
+        hasPlaceInput: p.placeSubmitted || false,
+        hasTimeInput: p.timeSubmitted || false,
       }),
     ),
     selectedTimeList,
@@ -130,7 +127,6 @@ export default function MeetingLayout() {
     setTempNickName,
 
     nickName: myStatusData?.result?.nickname || '',
-    id: myStatusData?.result?.id?.toString() || '',
 
     //isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
   };
