@@ -122,6 +122,7 @@ export interface GetMyAvailableTimeResponse {
     availabilities: {
       dayOfWeek: number;
       date: string;
+      startTimes: string[];
     }[];
   };
   code?: string;
