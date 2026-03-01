@@ -124,28 +124,26 @@ export interface GetMyAvailableTimeResponse {
     availabilities: {
       dayOfWeek: number;
       date: string;
-      startTimes: string[];
     }[];
   };
-  code: string;
-  message: string;
+  code?: string;
+  message?: string;
 }
 
 //공통 시간 조회
 export interface GetCommonAvailableTimeResponse {
   status: boolean;
   result: {
-    heatmaps: {
-      date: string;
-      dayOfWeek: number;
-      slots: {
-        startTime: string;
-        availableCount: number;
-      }[];
+    availabilities: {
+      date?: string;
+      dayOfWeek?: number;
+      startTimes: string[];
     }[];
+    nickname: string;
   };
-  code: string;
-  message: string;
+
+  code?: string;
+  message?: string;
 }
 
 //가능 시간 등록
@@ -166,12 +164,14 @@ export interface UpdateMyAvailableTimeResponse {
 ////////////////////////////////////////////////////////////place
 //출발지 조회
 export interface GetMyStartPlaceResponse {
-  code: string;
-
-  address: string;
-  latitude: string; //위도
-  longitude: string; //경도
+  status: true;
+  result: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
 }
+
 //출발지 등록
 export interface UpdateMyStartPlaceRequest {
   address: string;
@@ -181,9 +181,11 @@ export interface UpdateMyStartPlaceRequest {
 
 export interface UpdateMyStartPlaceResponse {
   status: boolean;
+  result?: {
+    latitude: string;
+  };
   code?: string;
   message?: string;
-  result?: Record<string, string>;
 }
 
 ////////////////////////////////////////////////////////////recommend
@@ -191,7 +193,6 @@ export interface UpdateMyStartPlaceResponse {
 export interface GetRecommendTimeResponse {
   status: true;
   result: {
-    id: number;
     date: string;
     dayOfWeek: number;
     startTime: string;
@@ -200,23 +201,29 @@ export interface GetRecommendTimeResponse {
     rank: number;
   }[];
 
-  code: string;
-  message: string;
+  code?: string;
+  message?: string;
 }
 
 //추천 장소 조회
 
 export interface GetRecommendPlaceResponse {
-  recommendPlaceList: RecommendPlace[];
+  recommendPlaceList: {
+    address: string;
+    avgTravelTime: number;
+    latitude: number;
+    longitude: number;
+    maxTravelTime: number;
+    name: string;
+    rank: number;
+  }[];
 }
 
 //추천 결과 조회
 export interface GetRecommendResultResponse {
   status: boolean;
   result: {
-    id: number;
     timeCandidate: {
-      id: number;
       date: string;
       dayOfWeek: number;
       startTime: string;
@@ -225,19 +232,15 @@ export interface GetRecommendResultResponse {
       rank: number;
     };
     placeCandidate: {
-      id: number;
       name: string;
       address: string;
       latitude: number;
       longitude: number;
       avgTravelTime: number;
       maxTravelTime: number;
-      calculationType: string;
       rank: number;
     };
-    createdAt: string;
-    updatedAt: string;
   };
-  code: string;
-  message: string;
+  code?: string;
+  message?: string;
 }
