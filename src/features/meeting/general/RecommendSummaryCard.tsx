@@ -13,7 +13,6 @@ interface BestTime {
   date: string;
   dayOfWeek: number;
   endTime: string;
-  id: number;
   rank: number;
   startTime: string;
 }
@@ -21,7 +20,6 @@ interface BestTime {
 interface BestPlace {
   address: string;
   avgTravelTime: number;
-  id: number;
   latitude: number;
   longitude: number;
   maxTravelTime: number;

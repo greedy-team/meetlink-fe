@@ -16,26 +16,13 @@ import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummar
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
-// 내 출발지 localStorage 키/로드
-// const myStartPlaceKey = (memberId: string) => `my_start_place_${memberId}`;
-
-// const loadMyStartPlace = (memberId: string): UpdateMyStartPlaceRequest | null => {
-//   const raw = localStorage.getItem(myStartPlaceKey(memberId));
-//   if (!raw) return null;
-//   try {
-//     return JSON.parse(raw) as UpdateMyStartPlaceRequest;
-//   } catch {
-//     return null;
-//   }
-// };
-
 export default function MainPage() {
   const {
     meetingName,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
     participantStatusList,
-    id,
+    nickName,
   } = useMeetingContext();
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
@@ -49,8 +36,8 @@ export default function MainPage() {
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
   const sortedParticipantStatusList = [
-    ...participantStatusList.filter((p) => p.id === id),
-    ...participantStatusList.filter((p) => p.id !== id),
+    ...participantStatusList.filter((p) => p.nickName === nickName),
+    ...participantStatusList.filter((p) => p.nickName === nickName),
   ];
   const myStatus = sortedParticipantStatusList[0];
 
@@ -58,8 +45,6 @@ export default function MainPage() {
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
   const totalCount = participantStatusList.length;
-
-  //const myStartPlace = useMemo(() => loadMyStartPlace(id), [id]);
 
   const handleShare = async () => {
     // 공유할 데이터 설정
