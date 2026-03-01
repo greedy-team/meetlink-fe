@@ -100,7 +100,6 @@ export default function JoinPage() {
     } catch (error) {
       console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
 
-      // 백엔드 응답 구조
       const err = error as {
         response?: {
           status?: number;
@@ -108,15 +107,22 @@ export default function JoinPage() {
             status?: boolean;
             code?: string;
             message?: string;
+            result?: {
+              nickname?: string;
+            };
           };
         };
       };
 
-      // 상태 코드가 409이고, 에러 코드가 중복 닉네임일 때
-      if (err.response?.status === 409 && err.response?.data?.code === 'DUPLICATE_NICKNAME') {
-        setNicknameError(err.response.data.message || '이미 사용 중인 닉네임이에요');
+      const status = err.response?.status;
+      const errorCode = err.response?.data?.code;
+
+      if (status === 409 && errorCode === 'DUPLICATE_NICKNAME') {
+        setNicknameError('이미 사용 중인 닉네임이에요');
+      } else if (status === 400 && errorCode === 'VALIDATION_FAILED') {
+        setNicknameError('닉네임은 필수 입력 사항이에요');
       } else {
-        setNicknameError('닉네임 설정에 실패했어요. 다른 닉네임으로 시도해주세요');
+        setNicknameError('닉네임 설정에 실패했어요. 다시 시도해주세요');
       }
     }
   };
