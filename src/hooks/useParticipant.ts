@@ -42,7 +42,7 @@ export const useParticipantList = () => {
   return useQuery({
     queryKey: participantKeys.list(code!, token), // 쿼리 키에 토큰 전달
     queryFn: () => getParticipantList(code!),
-    enabled: !!code && !!token,
+    enabled: !!code,
     staleTime: 1000 * 60 * 5,
   });
 };
