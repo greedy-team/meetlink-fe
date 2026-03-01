@@ -20,17 +20,17 @@ const INFO_LIST: InfoItem[] = [
   {
     icon: Calendar,
     title: '모임 생성',
-    description: '미뤄 두었던 모임을 시작하세요.',
+    description: '미뤄 두었던 모임을 시작하세요',
   },
   {
     icon: Clock,
     title: '시간 추천',
-    description: '만남 시간을 결정하세요.',
+    description: '만남 시간을 결정하세요',
   },
   {
     icon: MapPin,
     title: '장소 추천',
-    description: '만남 장소를 결정하세요.',
+    description: '만남 장소를 결정하세요',
   },
 ];
 

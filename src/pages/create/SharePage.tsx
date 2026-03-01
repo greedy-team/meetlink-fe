@@ -73,13 +73,10 @@ export default function SharePage() {
               onClick={handleJoin}
               className="text-greedy-strong w-full text-center text-sm font-semibold underline underline-offset-4"
             >
-              모임에 바로 참여하시겠습니까?
+              모임에 바로 참여할래요
             </button>
             <div className="flex flex-col items-center px-6 pb-6">
-              <FixedBottomButton
-                className="bg-greedy hover:bg-greedy/90 shadow-greedy/20 shadow-xl"
-                onClick={handleShare}
-              >
+              <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
                 초대 링크 복사 및 공유하기
               </FixedBottomButton>
             </div>
