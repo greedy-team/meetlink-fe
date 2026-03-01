@@ -1,5 +1,3 @@
-import { type RecommendPlace, type RecommendTime, type SelectedTime } from '@/types/meetingTypes';
-
 ////////////////////////////////////////////////////////////meeting
 //모임 생성
 
@@ -130,8 +128,8 @@ export interface GetMyAvailableTimeResponse {
   message?: string;
 }
 
-//공통 시간 조회
-export interface GetCommonAvailableTimeResponse {
+//모든 시간 조회
+export interface GetWholeAvailableTimeResponse {
   status: boolean;
   result: {
     availabilities: {
