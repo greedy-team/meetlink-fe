@@ -37,7 +37,7 @@ export default function MainPage() {
 
   const sortedParticipantStatusList = [
     ...participantStatusList.filter((p) => p.nickName === nickName),
-    ...participantStatusList.filter((p) => p.nickName === nickName),
+    ...participantStatusList.filter((p) => p.nickName !== nickName),
   ];
   const myStatus = sortedParticipantStatusList[0];
 
