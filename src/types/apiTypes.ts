@@ -168,6 +168,8 @@ export interface GetMyStartPlaceResponse {
     latitude: number;
     longitude: number;
   };
+  code?: string;
+  message?: string;
 }
 
 //출발지 등록
@@ -207,7 +209,7 @@ export interface GetRecommendTimeResponse {
 
 export interface GetRecommendPlaceResponse {
   status: boolean;
-  recommendPlaceList: {
+  result: {
     address: string;
     avgTravelTime: number;
     latitude: number;

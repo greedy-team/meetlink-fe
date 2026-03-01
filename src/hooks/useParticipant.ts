@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { AxiosError } from 'axios';
+
 import { participantKeys } from './queryKeys';
 
 import {
@@ -55,6 +57,16 @@ export const useMyStatus = () => {
     queryFn: () => getMyStatus(code!),
     enabled: !!code && !!token,
     staleTime: 1000 * 60 * 5,
+    // 에러 유형에 따른 재시도 로직 추가
+    retry: (failureCount: number, error: AxiosError) => {
+      const status = error?.response?.status;
+
+      if (status === 401 || status === 403) {
+        return false;
+      }
+      // 그 외 일시적 에러(네트워크 끊김 등)는 기본값처럼 최대 3번까지 재시도
+      return failureCount < 3;
+    },
   });
 };
 

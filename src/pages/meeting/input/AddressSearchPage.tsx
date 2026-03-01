@@ -1,77 +1,64 @@
 import { useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
+import { type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
 
 import { AddressSearchInput } from '@/features/place/search/AddressSearchInput';
 import { SearchEmptyState } from '@/features/place/search/SearchEmptyState';
 import { SearchGuide } from '@/features/place/search/SearchGuide';
+import { PlaceListSkeleton } from '@/features/place/ui/PlaceListSkeleton';
 import { RecentPlaceList } from '@/features/place/ui/RecentPlaceList';
 import { UseCurrentLocationCard } from '@/features/place/ui/UseCurrentLocationCard';
-import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
-
-const RECENT_PLACES_KEY = 'recent_places';
-const MAX_RECENTS = 5;
-
-const loadRecentPlaces = (): UpdateMyStartPlaceRequest[] => {
-  const raw = localStorage.getItem(RECENT_PLACES_KEY);
-  if (!raw) return [];
-  const parsed = JSON.parse(raw) as UpdateMyStartPlaceRequest[];
-  return Array.isArray(parsed) ? parsed : [];
-};
-
-const saveRecentPlaces = (places: UpdateMyStartPlaceRequest[]) => {
-  localStorage.setItem(RECENT_PLACES_KEY, JSON.stringify(places));
-};
-
-const upsertRecentPlace = (place: UpdateMyStartPlaceRequest): UpdateMyStartPlaceRequest[] => {
-  const current = loadRecentPlaces();
-  const next = [place, ...current.filter((p) => p.address !== place.address)].slice(0, MAX_RECENTS);
-  saveRecentPlaces(next);
-  return next;
-};
 
 type KakaoKeywordPlace = {
-  x: string; // longitude
-  y: string; // latitude
+  x: string;
+  y: string;
+  place_name: string;
   address_name: string;
-  road_address_name?: string;
+  road_address_name: string;
+};
+
+type KakaoAddressPlace = {
+  x: string;
+  y: string;
+  address_name: string;
+  road_address?: { address_name: string } | null;
+  address?: { address_name: string } | null;
 };
 
 type KakaoStatus = 'OK' | 'ZERO_RESULT' | 'ERROR';
 
-type KakaoPlacesService = {
-  keywordSearch: (
-    keyword: string,
-    callback: (data: KakaoKeywordPlace[], status: KakaoStatus) => void,
-    options?: { size?: number },
-  ) => void;
-};
-
 type KakaoMapsServices = {
-  Places: new () => KakaoPlacesService;
+  Places: new () => {
+    keywordSearch: (
+      keyword: string,
+      cb: (data: KakaoKeywordPlace[], status: KakaoStatus) => void,
+      opts?: { size?: number },
+    ) => void;
+  };
+  Geocoder: new () => {
+    addressSearch: (
+      addr: string,
+      cb: (data: KakaoAddressPlace[], status: KakaoStatus) => void,
+      opts?: { size?: number },
+    ) => void;
+  };
 };
 
-type KakaoMaps = {
-  services: KakaoMapsServices;
-};
-
-type KakaoGlobal = {
-  maps: KakaoMaps;
-};
-
-const getKakao = (): KakaoGlobal | null => {
-  const w = window as unknown as { kakao?: KakaoGlobal };
+const getKakao = () => {
+  const w = window as unknown as { kakao?: { maps: { services: KakaoMapsServices } } };
   return w.kakao ?? null;
 };
 
 export default function AddressSearchPage() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
+  const location = useLocation();
 
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<UpdateMyStartPlaceRequest[]>([]);
+  const [results, setResults] = useState<RecentPlaceItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const debounceRef = useRef<number | null>(null);
@@ -79,58 +66,80 @@ export default function AddressSearchPage() {
   const trimmed = query.trim();
   const isSearching = trimmed.length > 0;
 
-  const runSearch = (keyword: string) => {
+  // 뒤로가기 로직 고정: 무조건 PlaceInputPage로
+  const goBack = () => {
+    navigate(`/meeting/${code}/input/place`, { replace: true });
+  };
+
+  // 키워드, 주소 검색 동시 실행
+  const runSearch = async (keyword: string) => {
     const kakao = getKakao();
-    if (!kakao) {
+    if (!kakao || !kakao.maps.services) {
       setResults([]);
       return;
     }
-
-    const Places = kakao.maps.services?.Places;
-    if (!Places) {
-      // libraries=services가 안 붙었거나, SDK 초기화가 덜 된 상태
-      setResults([]);
-      return;
-    }
-
-    const places = new Places();
 
     setIsLoading(true);
-    places.keywordSearch(
-      keyword,
-      (data, status) => {
-        setIsLoading(false);
+    const places = new kakao.maps.services.Places();
+    const geocoder = new kakao.maps.services.Geocoder();
 
-        if (status !== 'OK') {
-          setResults([]);
-          return;
-        }
+    // 키워드 검색 (장소명 검색)
+    const keywordPromise = new Promise<RecentPlaceItem[]>((resolve) => {
+      places.keywordSearch(
+        keyword,
+        (data, status) => {
+          if (status === 'OK') {
+            resolve(
+              data.map((d) => ({
+                placeName: d.place_name, // "세종대학교"
+                address: d.road_address_name || d.address_name,
+                latitude: Number(d.y),
+                longitude: Number(d.x),
+                roadAddress: d.road_address_name,
+                jibunAddress: d.address_name,
+              })),
+            );
+          } else resolve([]);
+        },
+        { size: 5 },
+      );
+    });
 
-        const mapped: UpdateMyStartPlaceRequest[] = data
-          .map((d) => {
-            const address = d.road_address_name?.trim() || d.address_name?.trim() || '';
-            if (!address) return null;
+    // 주소 검색 (정확한 주소 검색)
+    const addressPromise = new Promise<RecentPlaceItem[]>((resolve) => {
+      geocoder.addressSearch(
+        keyword,
+        (data, status) => {
+          if (status === 'OK') {
+            resolve(
+              data.map((d) => ({
+                address: d.road_address?.address_name || d.address?.address_name || d.address_name,
+                latitude: Number(d.y),
+                longitude: Number(d.x),
+                roadAddress: d.road_address?.address_name,
+                jibunAddress: d.address?.address_name || d.address_name,
+              })),
+            );
+          } else resolve([]);
+        },
+        { size: 5 },
+      );
+    });
 
-            return {
-              address,
-              latitude: Number(d.y),
-              longitude: Number(d.x),
-            };
-          })
-          .filter((v): v is UpdateMyStartPlaceRequest => v !== null);
+    const [keywordResults, addressResults] = await Promise.all([keywordPromise, addressPromise]);
+    const combined = [...keywordResults, ...addressResults];
 
-        setResults(mapped);
-      },
-      { size: 10 },
-    );
+    // 중복 제거 (같은 주소면 하나만 렌더링)
+    const unique = Array.from(new Map(combined.map((item) => [item.address, item])).values());
+
+    setResults(unique);
+    setIsLoading(false);
   };
 
   const handleQueryChange = (next: string) => {
     setQuery(next);
-
     const nextTrimmed = next.trim();
 
-    // 디바운스
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
 
     if (nextTrimmed.length === 0) {
@@ -144,24 +153,28 @@ export default function AddressSearchPage() {
     }, 300);
   };
 
-  const handleSelect = (place: UpdateMyStartPlaceRequest) => {
-    // 선택 즉시 recent 반영
+  const handleSelect = (place: RecentPlaceItem) => {
+    // 최근 검색어에 추가
     upsertRecentPlace(place);
 
-    // 출발지 입력 페이지로 자동 반영 (selectedPlace)
+    // 입력 페이지로 데이터 넘기면서 이동
     navigate(`/meeting/${code}/input/place`, {
-      state: { selectedPlace: place },
+      state: { selectedPlace: place, from: location.state?.from },
+      replace: true,
     });
   };
 
   const openConfirmMap = () => {
-    navigate(`/meeting/${code}/input/place/confirm`);
+    navigate(`/meeting/${code}/input/place/confirm`, {
+      state: location.state,
+      replace: false,
+    });
   };
 
   const listToShow = useMemo(() => results, [results]);
 
   return (
-    <AppLayout header={<Header title="주소 검색" />}>
+    <AppLayout header={<Header title="주소 검색" onBack={goBack} />}>
       <div className="space-y-4">
         <h1 className="pt-2 text-lg leading-tight font-bold text-gray-900">
           출발할 주소를 검색해주세요
@@ -174,7 +187,7 @@ export default function AddressSearchPage() {
 
         {isSearching &&
           (isLoading ? (
-            <div className="rounded-xl bg-gray-50 px-4 py-5 text-sm text-gray-500">검색 중...</div>
+            <PlaceListSkeleton />
           ) : listToShow.length > 0 ? (
             <RecentPlaceList places={listToShow} onSelect={handleSelect} title="검색 결과" />
           ) : (

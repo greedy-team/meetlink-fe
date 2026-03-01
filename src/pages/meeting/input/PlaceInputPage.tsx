@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
-import { useUpdateMyStartPlace } from '@/hooks/usePlace';
+import { loadRecentPlaces, type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
+import { useGetMyStartPlace, useUpdateMyStartPlace } from '@/hooks/usePlace';
 
 import { PlaceSearchBar } from '@/features/place/ui/PlaceSearchBar';
 import { RecentPlaceList } from '@/features/place/ui/RecentPlaceList';
@@ -20,116 +21,86 @@ type LocationState = {
   from?: FromPage;
 };
 
-const RECENT_PLACES_KEY = 'recent_places';
-const MAX_RECENTS = 5;
-
-// 내 출발지 저장 키 (meeting member id 기준)
-const myStartPlaceKey = (memberId: string) => `my_start_place_${memberId}`;
-
-const loadMyStartPlaceCache = (memberId: string): UpdateMyStartPlaceRequest | null => {
-  const raw = localStorage.getItem(myStartPlaceKey(memberId));
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as UpdateMyStartPlaceRequest;
-  } catch {
-    return null;
-  }
-};
-
-const saveMyStartPlaceCache = (memberId: string, place: UpdateMyStartPlaceRequest) => {
-  localStorage.setItem(myStartPlaceKey(memberId), JSON.stringify(place));
-};
-
-const loadRecentPlaces = (): UpdateMyStartPlaceRequest[] => {
-  const raw = localStorage.getItem(RECENT_PLACES_KEY);
-  if (!raw) return [];
-  const parsed = JSON.parse(raw) as UpdateMyStartPlaceRequest[];
-  return Array.isArray(parsed) ? parsed : [];
-};
-
-const saveRecentPlaces = (places: UpdateMyStartPlaceRequest[]) => {
-  localStorage.setItem(RECENT_PLACES_KEY, JSON.stringify(places));
-};
-
-const upsertRecentPlace = (place: UpdateMyStartPlaceRequest): UpdateMyStartPlaceRequest[] => {
-  const current = loadRecentPlaces();
-  const next = [place, ...current.filter((p) => p.address !== place.address)].slice(0, MAX_RECENTS);
-  saveRecentPlaces(next);
-  return next;
-};
-
 export default function PlaceInputPage() {
-  const { selectedPlace, setSelectedPlace } = useMeetingContext();
   const navigate = useNavigate();
-  const { code } = useParams<{ code: string }>();
   const location = useLocation();
+  const { code } = useParams<{ code: string }>();
 
-  const { id } = useMeetingContext();
-  const { mutate: savePlace, isPending } = useUpdateMyStartPlace(id);
+  const { selectedPlace, setSelectedPlace } = useMeetingContext();
+
+  const { mutate: savePlace, isPending } = useUpdateMyStartPlace();
+
+  const { data: myStartPlaceData, isSuccess: isGetPlaceSuccess } = useGetMyStartPlace();
 
   const state = (location.state as LocationState | null) ?? null;
-
-  // 이전 페이지(주소 검색/지도 확인)에서 선택된 장소
+  // 이전 페이지(주소 검색/지도)에서 선택된 장소
   const incomingSelected = state?.selectedPlace ?? null;
-
-  // 어디서 왔는지
   const from: FromPage | undefined = state?.from;
 
-  // 저장된 내 출발지 캐시를 첫 렌더에서만 읽기
-  const [cachedMyPlace] = useState<UpdateMyStartPlaceRequest | null>(() =>
-    loadMyStartPlaceCache(id),
-  );
+  const [recentPlaces, setRecentPlaces] = useState<RecentPlaceItem[]>(() => loadRecentPlaces());
 
-  // 유저가 최근목록을 눌러 새로 고르면 그 값이 우선됨
-  const [picked, setPicked] = useState<UpdateMyStartPlaceRequest | null>(null);
+  useEffect(() => {
+    if (incomingSelected) {
+      // 1순위: 주소 검색/지도에서 방금 선택해서 넘어온 장소가 있으면 그걸 세팅
+      setSelectedPlace(incomingSelected);
 
-  const [recentPlaces, setRecentPlaces] = useState<UpdateMyStartPlaceRequest[]>(() =>
-    loadRecentPlaces(),
-  );
+      // 무한 덮어쓰기 방지 위해 URL에서 selectedPlace 정보 제거
+      navigate(location.pathname, {
+        replace: true,
+        state: { ...(state || {}), selectedPlace: undefined },
+      });
+    }
+    // 2순위: 고른 장소도 없고, 서버에서 내 출발지를 성공적으로 가져왔다면?
+    else if (!selectedPlace?.address && isGetPlaceSuccess && myStartPlaceData?.result?.address) {
+      setSelectedPlace({
+        address: myStartPlaceData.result.address,
+        latitude: myStartPlaceData.result.latitude,
+        longitude: myStartPlaceData.result.longitude,
+      });
+    }
+  }, [
+    incomingSelected,
+    isGetPlaceSuccess,
+    myStartPlaceData,
+    selectedPlace?.address,
+    setSelectedPlace,
+    navigate,
+    location.pathname,
+    state,
+  ]);
 
-  // 우선순위:
-  // 1) 사용자가 이번 세션에서 찍은 값(picked)
-  // 2) 검색/지도에서 넘어온 값(incomingSelected)
-  // 3) 마지막 저장된 내 출발지(cachedMyPlace)
-  setSelectedPlace(
-    picked ??
-      incomingSelected ??
-      cachedMyPlace ?? {
-        address: '',
-        latitude: 0,
-        longitude: 0,
-      },
-  );
   const handleSelectRecent = (place: UpdateMyStartPlaceRequest) => {
-    setPicked(place);
+    setSelectedPlace(place);
   };
 
   const goBackByFrom = () => {
     if (!code) return navigate(-1);
-
     if (from === 'join') return navigate(`/meeting/${code}/join`);
     if (from === 'main') return navigate(`/meeting/${code}`);
     return navigate(`/meeting/${code}`);
   };
 
   const handleSave = () => {
-    if (!selectedPlace) return;
+    if (!selectedPlace || !selectedPlace.address) return;
     const token = localStorage.getItem('meeting_token');
+
+    const next = upsertRecentPlace(selectedPlace as RecentPlaceItem);
+    setRecentPlaces(next);
+
     if (token) {
-      savePlace(selectedPlace, {
+      const requestPayload = {
+        address: selectedPlace.address,
+        latitude: selectedPlace.latitude,
+        longitude: selectedPlace.longitude,
+      };
+
+      savePlace(requestPayload, {
         onSuccess: () => {
-          // 최근 목록 갱신
-          const next = upsertRecentPlace(selectedPlace);
-          setRecentPlaces(next);
-
-          // 내 출발지 캐시 갱신 (다음에 PlaceInputPage 들어오면 이게 바로 뜸)
-          saveMyStartPlaceCache(id, selectedPlace);
-
           goBackByFrom();
         },
       });
     } else {
-      navigate(-1);
+      goBackByFrom();
     }
   };
 
@@ -147,25 +118,20 @@ export default function PlaceInputPage() {
     <AppLayout
       header={<Header title="출발지 입력" onBack={goBackByFrom} />}
       bottom={
-        <div className="-mx-4 -mb-4">
-          <div className="space-y-3 bg-gray-100 px-4 pt-3 pb-4">
-            <SelectedPlaceSummary selected={selectedPlace} />
-
-            <FixedBottomButton
-              onClick={handleSave}
-              disabled={!selectedPlace || isPending}
-              loading={isPending}
-              className="bg-greedy hover:bg-greedy/50 text-white"
-            >
-              저장하기
-            </FixedBottomButton>
-          </div>
-        </div>
+        <FixedBottomButton
+          onClick={handleSave}
+          disabled={!selectedPlace?.address || isPending}
+          loading={isPending}
+          className="bg-greedy hover:bg-greedy/50 text-white"
+        >
+          저장하기
+        </FixedBottomButton>
       }
     >
       <div className="space-y-4">
         <PlaceSearchBar onClick={goToAddressSearch} />
         <UseCurrentLocationCard onClick={goToConfirmOnMap} />
+        <SelectedPlaceSummary selected={selectedPlace} />
         <RecentPlaceList places={currentPlaceList} onSelect={handleSelectRecent} />
       </div>
     </AppLayout>

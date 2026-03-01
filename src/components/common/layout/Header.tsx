@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Settings } from 'lucide-react';
 
 type HeaderProps = {
   title: string;
@@ -41,7 +41,7 @@ export function Header({
           className="inline-flex h-10 w-10 items-center justify-center"
           aria-label="설정"
         >
-          <img src="/icons/settings.svg" alt="" aria-hidden="true" className="h-6 w-6" />
+          <Settings className="h-6 w-6" />
         </button>
       )}
     </header>
