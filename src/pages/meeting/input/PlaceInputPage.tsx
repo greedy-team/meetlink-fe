@@ -51,11 +51,11 @@ export default function PlaceInputPage() {
       });
     }
     // 2순위: 고른 장소도 없고, 서버에서 내 출발지를 성공적으로 가져왔다면?
-    else if (!selectedPlace?.address && isGetPlaceSuccess && myStartPlaceData?.address) {
+    else if (!selectedPlace?.address && isGetPlaceSuccess && myStartPlaceData?.result?.address) {
       setSelectedPlace({
-        address: myStartPlaceData.address,
-        latitude: Number(myStartPlaceData.latitude),
-        longitude: Number(myStartPlaceData.longitude),
+        address: myStartPlaceData.result.address,
+        latitude: myStartPlaceData.result.latitude,
+        longitude: myStartPlaceData.result.longitude,
       });
     }
   }, [
