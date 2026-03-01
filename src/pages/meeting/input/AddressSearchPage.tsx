@@ -11,7 +11,6 @@ import { SearchGuide } from '@/features/place/search/SearchGuide';
 import { PlaceListSkeleton } from '@/features/place/ui/PlaceListSkeleton';
 import { RecentPlaceList } from '@/features/place/ui/RecentPlaceList';
 import { UseCurrentLocationCard } from '@/features/place/ui/UseCurrentLocationCard';
-import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
 type KakaoKeywordPlace = {
   x: string;
@@ -160,7 +159,7 @@ export default function AddressSearchPage() {
 
     // 입력 페이지로 데이터 넘기면서 이동
     navigate(`/meeting/${code}/input/place`, {
-      state: { selectedPlace: place },
+      state: { selectedPlace: place, from: location.state?.from },
       replace: true,
     });
   };
