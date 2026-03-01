@@ -4,8 +4,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
-import { loadRecentPlaces, type RecentPlaceItem,upsertRecentPlace } from '@/lib/recentPlaces';
-import { useGetMyStartPlace,useUpdateMyStartPlace } from '@/hooks/usePlace';
+import { loadRecentPlaces, type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
+import { useGetMyStartPlace, useUpdateMyStartPlace } from '@/hooks/usePlace';
 
 import { PlaceSearchBar } from '@/features/place/ui/PlaceSearchBar';
 import { RecentPlaceList } from '@/features/place/ui/RecentPlaceList';
@@ -21,17 +21,12 @@ type LocationState = {
   from?: FromPage;
 };
 
-type LocalPlace = UpdateMyStartPlaceRequest & {
-  roadAddress?: string;
-  jibunAddress?: string;
-};
-
 export default function PlaceInputPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { code } = useParams<{ code: string }>();
 
-  const { selectedPlace, setSelectedPlace, id } = useMeetingContext();
+  const { selectedPlace, setSelectedPlace } = useMeetingContext();
 
   const { mutate: savePlace, isPending } = useUpdateMyStartPlace();
 
@@ -48,6 +43,12 @@ export default function PlaceInputPage() {
     if (incomingSelected) {
       // 1순위: 주소 검색/지도에서 방금 선택해서 넘어온 장소가 있으면 그걸 세팅
       setSelectedPlace(incomingSelected);
+
+      // 무한 덮어쓰기 방지 위해 URL에서 selectedPlace 정보 제거
+      navigate(location.pathname, {
+        replace: true,
+        state: { ...(state || {}), selectedPlace: undefined },
+      });
     }
     // 2순위: 고른 장소도 없고, 서버에서 내 출발지를 성공적으로 가져왔다면?
     else if (!selectedPlace?.address && isGetPlaceSuccess && myStartPlaceData?.address) {
@@ -63,6 +64,9 @@ export default function PlaceInputPage() {
     myStartPlaceData,
     selectedPlace?.address,
     setSelectedPlace,
+    navigate,
+    location.pathname,
+    state,
   ]);
 
   const handleSelectRecent = (place: UpdateMyStartPlaceRequest) => {
@@ -80,6 +84,9 @@ export default function PlaceInputPage() {
     if (!selectedPlace || !selectedPlace.address) return;
     const token = localStorage.getItem('meeting_token');
 
+    const next = upsertRecentPlace(selectedPlace as RecentPlaceItem);
+    setRecentPlaces(next);
+
     if (token) {
       const requestPayload = {
         address: selectedPlace.address,
@@ -89,13 +96,11 @@ export default function PlaceInputPage() {
 
       savePlace(requestPayload, {
         onSuccess: () => {
-          const next = upsertRecentPlace(selectedPlace as RecentPlaceItem);
-          setRecentPlaces(next);
           goBackByFrom();
         },
       });
     } else {
-      navigate(-1);
+      goBackByFrom();
     }
   };
 
