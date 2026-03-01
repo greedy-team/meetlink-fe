@@ -32,7 +32,6 @@ export default function JoinPage() {
     selectedTimeList,
     selectedPlace,
     dateType,
-    id,
   } = useMeetingContext();
 
   const participantSummary = useMemo(
@@ -59,6 +58,15 @@ export default function JoinPage() {
   const goPlaceInput = () => {
     if (!code) return;
     navigate(`/meeting/${code}/input/place`, { state: { from: 'join' } });
+  };
+
+  // 닉네임 에러 관리 상태 (중복 등))
+  const [nicknameError, setNicknameError] = useState<string>('');
+
+  // 닉네임 다시 입력하면 기존 에러 메시지 지움
+  const handleNicknameChange = (value: string) => {
+    setTempNickName(value);
+    if (nicknameError) setNicknameError('');
   };
 
   const onSubmit = async () => {
@@ -91,6 +99,25 @@ export default function JoinPage() {
       }
     } catch (error) {
       console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
+
+      // 백엔드 응답 구조
+      const err = error as {
+        response?: {
+          status?: number;
+          data?: {
+            status?: boolean;
+            code?: string;
+            message?: string;
+          };
+        };
+      };
+
+      // 상태 코드가 409이고, 에러 코드가 중복 닉네임일 때
+      if (err.response?.status === 409 && err.response?.data?.code === 'DUPLICATE_NICKNAME') {
+        setNicknameError(err.response.data.message || '이미 사용 중인 닉네임이에요');
+      } else {
+        setNicknameError('닉네임 설정에 실패했어요. 다른 닉네임으로 시도해주세요');
+      }
     }
   };
 
@@ -123,7 +150,7 @@ export default function JoinPage() {
       <div className="space-y-3">
         <MeetingInfoCard title={meetingName || '모임'} participantSummary={participantSummary} />
 
-        <NickNameInput value={tempNickName} onChange={setTempNickName} />
+        <NickNameInput value={tempNickName} onChange={handleNicknameChange} error={nicknameError} />
 
         <div className="space-y-3">
           <NotifyBox variant="emphasis">모임 참여 이후 닉네임은 변경할 수 없어요</NotifyBox>
