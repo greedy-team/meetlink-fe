@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
@@ -45,6 +45,7 @@ const getKakao = (): KakaoGlobal | null => {
 
 export default function ConfirmOnMapPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { code } = useParams<{ code: string }>();
 
   // 현재 위치 받기 전엔 null
@@ -142,7 +143,7 @@ export default function ConfirmOnMapPage() {
     upsertRecentPlace(selectedPlace);
 
     navigate(`/meeting/${code}/input/place`, {
-      state: { selectedPlace },
+      state: { selectedPlace, from: location.state?.from },
       replace: true,
     });
   };
