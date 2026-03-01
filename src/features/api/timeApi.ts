@@ -1,6 +1,6 @@
 import {
-  type GetCommonAvailableTimeResponse,
   type GetMyAvailableTimeResponse,
+  type GetWholeAvailableTimeResponse,
   type UpdateMyAvailableTimeRequest,
   type UpdateMyAvailableTimeResponse,
 } from '../../types/apiTypes';
@@ -16,10 +16,10 @@ export const getMyAvailableTime = async (code: string): Promise<GetMyAvailableTi
   return data;
 };
 
-export const getCommonAvailableTime = async (
+export const getWholeAvailableTime = async (
   code: string,
-): Promise<GetCommonAvailableTimeResponse> => {
-  const { data } = await axiosInstance.get<GetCommonAvailableTimeResponse>(
+): Promise<GetWholeAvailableTimeResponse> => {
+  const { data } = await axiosInstance.get<GetWholeAvailableTimeResponse>(
     `/meetings/${code}/availabilities/time`,
   );
   return data;

@@ -24,6 +24,9 @@ export interface MeetingOutletContext {
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
   selectedPlace: UpdateMyStartPlaceRequest;
   setSelectedPlace: React.Dispatch<React.SetStateAction<UpdateMyStartPlaceRequest>>;
+  // 임시 닉네임 보관용
+  tempNickName: string;
+  setTempNickName: React.Dispatch<React.SetStateAction<string>>;
 
   nickName: string;
   id: number;
@@ -58,6 +61,7 @@ export default function MeetingLayout() {
     latitude: 0,
     longitude: 0,
   });
+  const [tempNickName, setTempNickName] = useState<string>('');
 
   const token = localStorage.getItem('meeting_token');
 
@@ -119,6 +123,8 @@ export default function MeetingLayout() {
     setSelectedTimeList,
     selectedPlace,
     setSelectedPlace,
+    tempNickName,
+    setTempNickName,
 
     nickName: myStatusData?.result?.nickname || '',
     id: myStatusData?.result?.id || -1,

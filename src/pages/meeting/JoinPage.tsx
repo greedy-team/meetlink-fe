@@ -25,27 +25,25 @@ export default function JoinPage() {
   const {
     meetingName,
     participantStatusList,
-    nickName,
+    tempNickName,
+    setTempNickName,
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
     selectedTimeList,
     selectedPlace,
     dateType,
-    id,
   } = useMeetingContext();
-
-  const [inputNickName, setInputNickName] = useState(nickName ?? '');
 
   const participantSummary = useMemo(
     () => buildParticipantSummary(participantStatusList || []),
     [participantStatusList],
   );
 
-  const canSubmit = inputNickName.trim().length > 0;
+  const canSubmit = tempNickName.trim().length > 0;
 
-  const { mutate: join, isPending: joinPending } = useJoinMeeting();
-  const { mutate: saveTime, isPending: timePending } = useUpdateMyAvailableTime();
-  const { mutate: savePlace, isPending: placePending } = useUpdateMyStartPlace(id);
+  const { mutateAsync: joinAsync, isPending: joinPending } = useJoinMeeting();
+  const { mutateAsync: saveTimeAsync, isPending: timePending } = useUpdateMyAvailableTime();
+  const { mutateAsync: savePlaceAsync, isPending: placePending } = useUpdateMyStartPlace();
 
   const goReconnect = () => {
     if (!code) return;
@@ -62,32 +60,78 @@ export default function JoinPage() {
     navigate(`/meeting/${code}/input/place`, { state: { from: 'join' } });
   };
 
-  const onSubmit = () => {
+  // 닉네임 에러 관리 상태 (중복 등))
+  const [nicknameError, setNicknameError] = useState<string>('');
+
+  // 닉네임 다시 입력하면 기존 에러 메시지 지움
+  const handleNicknameChange = (value: string) => {
+    setTempNickName(value);
+    if (nicknameError) setNicknameError('');
+  };
+
+  const onSubmit = async () => {
     if (!code) return;
-    const trimmed = inputNickName.trim();
+    const trimmed = tempNickName.trim();
     if (!trimmed) return;
 
-    join(
-      { nickname: trimmed },
-      {
-        onSuccess: (data) => {
-          if (data.status) {
-            // 참여 성공 시에만 이동saveTime(
-            const convertedData = convertToAvailabilities(selectedTimeList, dateType);
-            saveTime({ availabilities: convertedData });
-            savePlace(selectedPlace);
-            navigate(`/meeting/${code}`, { replace: true });
-          }
-        },
-      },
-    );
+    try {
+      const joinData = await joinAsync({ nickname: trimmed });
+
+      if (joinData.status) {
+        const promises = [];
+
+        // 입력한 시간 데이터가 있는 경우
+        if (selectedTimeList && selectedTimeList.length > 0) {
+          const convertedData = convertToAvailabilities(selectedTimeList, dateType);
+          promises.push(saveTimeAsync({ availabilities: convertedData }));
+        }
+
+        // 입력한 장소 데이터가 있는 경우
+        if (selectedPlace && selectedPlace.address) {
+          promises.push(savePlaceAsync(selectedPlace));
+        }
+
+        if (promises.length > 0) {
+          await Promise.all(promises);
+        }
+
+        navigate(`/meeting/${code}`, { replace: true });
+      }
+    } catch (error) {
+      console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
+
+      const err = error as {
+        response?: {
+          status?: number;
+          data?: {
+            status?: boolean;
+            code?: string;
+            message?: string;
+            result?: {
+              nickname?: string;
+            };
+          };
+        };
+      };
+
+      const status = err.response?.status;
+      const errorCode = err.response?.data?.code;
+
+      if (status === 409 && errorCode === 'DUPLICATE_NICKNAME') {
+        setNicknameError('이미 사용 중인 닉네임이에요');
+      } else if (status === 400 && errorCode === 'VALIDATION_FAILED') {
+        setNicknameError('닉네임은 필수 입력 사항이에요');
+      } else {
+        setNicknameError('닉네임 설정에 실패했어요. 다시 시도해주세요');
+      }
+    }
   };
 
   const isPending = joinPending || timePending || placePending;
 
   return (
     <AppLayout
-      header={<Header title="모임 참여 페이지" showBackButton />}
+      header={<Header title="모임 참여 페이지" showBackButton={false} />}
       bottom={
         <div className="space-y-3">
           <button
@@ -112,7 +156,7 @@ export default function JoinPage() {
       <div className="space-y-3">
         <MeetingInfoCard title={meetingName || '모임'} participantSummary={participantSummary} />
 
-        <NickNameInput value={inputNickName} onChange={setInputNickName} />
+        <NickNameInput value={tempNickName} onChange={handleNicknameChange} error={nicknameError} />
 
         <div className="space-y-3">
           <NotifyBox variant="emphasis">모임 참여 이후 닉네임은 변경할 수 없어요</NotifyBox>

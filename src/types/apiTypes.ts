@@ -1,5 +1,3 @@
-import { type RecommendPlace, type RecommendTime, type SelectedTime } from '@/types/meetingTypes';
-
 ////////////////////////////////////////////////////////////meeting
 //모임 생성
 
@@ -16,7 +14,6 @@ export interface CreateMeetingResponse {
   status: boolean;
 
   result?: {
-    id: number;
     name: string;
     code: string;
     enableTimeRecommendation: boolean;
@@ -24,8 +21,6 @@ export interface CreateMeetingResponse {
     timeAvailabilityType: string;
     timeRangeStart: string;
     timeRangeEnd: string;
-    createdAt: string;
-    updatedAt: string;
   };
 
   code?: string;
@@ -37,7 +32,6 @@ export interface GetMeetingDetailResponse {
   status: boolean;
 
   result?: {
-    id: number;
     name: string;
     code: string;
     enableTimeRecommendation: boolean;
@@ -45,8 +39,6 @@ export interface GetMeetingDetailResponse {
     timeAvailabilityType: string;
     timeRangeStart: string;
     timeRangeEnd: string;
-    createdAt: string;
-    updatedAt: string;
   };
 
   code?: string;
@@ -67,7 +59,6 @@ export interface UpdateMeetingDetailResponse {
   status: boolean;
 
   result?: {
-    id: number;
     name: string;
     code: string;
     enableTimeRecommendation: boolean;
@@ -75,8 +66,6 @@ export interface UpdateMeetingDetailResponse {
     timeAvailabilityType: string;
     timeRangeStart: string;
     timeRangeEnd: string;
-    createdAt: string;
-    updatedAt: string;
   };
 
   code?: string;
@@ -93,7 +82,6 @@ export interface JoinMeetingResponse {
   status: boolean;
   result?: {
     token: string;
-    nickname: string;
   };
   code?: string;
   message?: string;
@@ -103,10 +91,10 @@ export interface JoinMeetingResponse {
 export interface GetParticipantListResponse {
   status: boolean;
   result?: {
-    id: number;
     nickname: string;
-    placeSubmitted: boolean;
-    timeSubmitted: boolean;
+    token?: string;
+    placeSubmitted?: boolean;
+    timeSubmitted?: boolean;
   }[];
 }
 
@@ -114,7 +102,6 @@ export interface GetParticipantListResponse {
 export interface GetMyStatusResponse {
   status: true;
   result?: {
-    id: number;
     nickname: string;
     placeSubmitted: boolean;
     timeSubmitted: boolean;
@@ -135,28 +122,26 @@ export interface GetMyAvailableTimeResponse {
     availabilities: {
       dayOfWeek: number;
       date: string;
-      startTimes: string[];
     }[];
   };
-  code: string;
-  message: string;
+  code?: string;
+  message?: string;
 }
 
-//공통 시간 조회
-export interface GetCommonAvailableTimeResponse {
+//모든 시간 조회
+export interface GetWholeAvailableTimeResponse {
   status: boolean;
   result: {
-    heatmaps: {
-      date: string;
-      dayOfWeek: number;
-      slots: {
-        startTime: string;
-        availableCount: number;
-      }[];
+    availabilities: {
+      date?: string;
+      dayOfWeek?: number;
+      startTimes: string[];
     }[];
+    nickname: string;
   };
-  code: string;
-  message: string;
+
+  code?: string;
+  message?: string;
 }
 
 //가능 시간 등록
@@ -177,12 +162,16 @@ export interface UpdateMyAvailableTimeResponse {
 ////////////////////////////////////////////////////////////place
 //출발지 조회
 export interface GetMyStartPlaceResponse {
-  code: string;
-
-  address: string;
-  latitude: string; //위도
-  longitude: string; //경도
+  status: true;
+  result: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  code?: string;
+  message?: string;
 }
+
 //출발지 등록
 export interface UpdateMyStartPlaceRequest {
   address: string;
@@ -192,17 +181,18 @@ export interface UpdateMyStartPlaceRequest {
 
 export interface UpdateMyStartPlaceResponse {
   status: boolean;
+  result?: {
+    latitude: string;
+  };
   code?: string;
   message?: string;
-  result?: Record<string, string>;
 }
 
 ////////////////////////////////////////////////////////////recommend
 //추천 시간 후보 조회
 export interface GetRecommendTimeResponse {
-  status: true;
+  status: boolean;
   result: {
-    id: number;
     date: string;
     dayOfWeek: number;
     startTime: string;
@@ -211,41 +201,47 @@ export interface GetRecommendTimeResponse {
     rank: number;
   }[];
 
-  code: string;
-  message: string;
+  code?: string;
+  message?: string;
 }
 
 //추천 장소 조회
 
 export interface GetRecommendPlaceResponse {
-  recommendPlaceList: RecommendPlace[];
+  status: boolean;
+  result: {
+    address: string;
+    avgTravelTime: number;
+    latitude: number;
+    longitude: number;
+    maxTravelTime: number;
+    name: string;
+    rank: number;
+  }[];
 }
 
 //추천 결과 조회
 export interface GetRecommendResultResponse {
   status: boolean;
   result: {
-    id: number;
+    timeCandidate: {
+      date: string;
+      dayOfWeek: number;
+      startTime: string;
+      endTime: string;
+      availableCount: number;
+      rank: number;
+    };
     placeCandidate: {
+      name: string;
       address: string;
       avgTravelTime: number;
-      id: number;
       latitude: number;
       longitude: number;
       maxTravelTime: number;
-      name: string;
       rank: number;
     };
-    timeCandidate: {
-      availableCount: number;
-      date: string;
-      dayOfWeek: number;
-      endTime: string;
-      id: number;
-      rank: number;
-      startTime: string;
-    };
-    createdAt: string;
-    updatedAt: string;
   };
+  code?: string;
+  message?: string;
 }

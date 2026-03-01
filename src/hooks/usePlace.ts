@@ -13,9 +13,19 @@ export const useGetMyStartPlace = () => {
 
   return useQuery({
     queryKey: placeKeys.my(code!, token),
-    queryFn: () => getMyStartPlace(code!, token!),
+    queryFn: () => getMyStartPlace(code!),
     enabled: !!code && !!token,
     staleTime: 1000 * 60 * 5,
+    // 404 에러(장소 입력 정보 없음)일 때 불필요한 재시도 방지
+    retry: (failureCount, error: unknown) => {
+      const err = error as { response?: { status?: number } };
+
+      if (err?.response?.status === 404) {
+        return false;
+      }
+      // 그 외 통신 에러(500 등)는 최대 3번까지 재시도
+      return failureCount < 3;
+    },
   });
 };
 
