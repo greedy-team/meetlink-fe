@@ -1,3 +1,5 @@
+import { Users } from 'lucide-react';
+
 type MeetingInfoCardProps = {
   title: string;
   participantSummary?: string; // 예: "민수 외 3명 참여 중"
@@ -10,7 +12,7 @@ export function MeetingInfoCard({ title, participantSummary }: MeetingInfoCardPr
 
       {participantSummary && (
         <div className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm">
-          <img src="/icons/participants.svg" alt="" aria-hidden="true" className="h-4 w-4" />
+          <Users className="h-4 w-4" aria-hidden="true" />
           <span>{participantSummary}</span>
         </div>
       )}
