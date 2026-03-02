@@ -88,7 +88,14 @@ export default function JoinPage() {
 
         // 입력한 장소 데이터가 있는 경우
         if (selectedPlace && selectedPlace.address) {
-          promises.push(savePlaceAsync(selectedPlace));
+          promises.push(
+            savePlaceAsync({
+              name: selectedPlace.name || selectedPlace.address,
+              address: selectedPlace.address,
+              latitude: selectedPlace.latitude,
+              longitude: selectedPlace.longitude,
+            }),
+          );
         }
 
         if (promises.length > 0) {
