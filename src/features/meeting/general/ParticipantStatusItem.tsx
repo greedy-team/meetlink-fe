@@ -9,6 +9,7 @@ interface ParticipantStatusItemProps extends ParticipantStatus {
   isLast: boolean;
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
+  isLoading?: boolean;
 }
 
 export function ParticipantStatusItem({
@@ -19,6 +20,7 @@ export function ParticipantStatusItem({
   isLast,
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
+  isLoading = false,
 }: ParticipantStatusItemProps & { isLast: boolean }) {
   return (
     <div
@@ -29,11 +31,18 @@ export function ParticipantStatusItem({
     >
       {/* 프로필 및 닉네임 */}
       <div className="flex items-center justify-center gap-3 text-base font-bold text-black">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600">
+        <div
+          className={cn(
+            'flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600',
+            isLoading ? 'bg-gray-100 text-gray-100' : '',
+          )}
+        >
           {nickName.charAt(0)}
         </div>
-        <span>{nickName}</span>
-        {isMe && <span> (나)</span>}
+        <span className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}>
+          {nickName}
+        </span>
+        {isMe && !isLoading && <span> (나)</span>}
       </div>
 
       <div className="flex items-center gap-2">
@@ -43,6 +52,7 @@ export function ParticipantStatusItem({
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
               hasTimeInput ? 'bg-greedy/10 text-greedy' : 'bg-red-100 text-red-500',
+              isLoading ? 'bg-gray-100 text-gray-100' : '',
             )}
           >
             <Clock className="h-4 w-4" />
@@ -55,6 +65,7 @@ export function ParticipantStatusItem({
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
               hasPlaceInput ? 'bg-greedy/10 text-greedy' : 'bg-red-100 text-red-500',
+              isLoading ? 'bg-gray-100 text-gray-100' : '',
             )}
           >
             <MapPin className="h-4 w-4" />

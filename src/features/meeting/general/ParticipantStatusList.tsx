@@ -13,6 +13,7 @@ interface ParticipantStatusListProps {
   className?: string;
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
+  isLoading?: boolean;
 }
 
 export function ParticipantStatusList({
@@ -20,6 +21,7 @@ export function ParticipantStatusList({
   className,
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
+  isLoading = false,
 }: ParticipantStatusListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -41,6 +43,7 @@ export function ParticipantStatusList({
               isLast={index === visibleList.length - 1 && !showExpandButton}
               isTimeRecommendEnabled={isTimeRecommendEnabled}
               isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+              isLoading={isLoading}
             />
           ))}
         </div>

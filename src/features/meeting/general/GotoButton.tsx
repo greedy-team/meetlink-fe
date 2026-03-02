@@ -11,6 +11,7 @@ interface GoToButtonProps {
   onClick: () => void;
   className?: string;
   isDone?: boolean;
+  isLoading?: boolean;
 }
 
 export function GoToButton({
@@ -20,6 +21,7 @@ export function GoToButton({
   onClick,
   className,
   isDone = false,
+  isLoading = false,
 }: GoToButtonProps) {
   return (
     <button
@@ -33,16 +35,37 @@ export function GoToButton({
       )}
     >
       <div className="flex flex-col gap-1 text-left">
-        <div className="flex items-center gap-2">
-          <Icon size={24} className="h-auto! w-auto! text-gray-900 transition-colors" />
-          <span className="text-base leading-tight font-bold text-gray-900">{title}</span>
+        <div className={cn('flex items-center gap-2')}>
+          <Icon
+            size={24}
+            className={cn(
+              'h-auto! w-auto! text-gray-900 transition-colors',
+              isLoading ? 'rounded-full bg-gray-100 text-gray-100' : '',
+            )}
+          />
+          <span
+            className={cn(
+              'text-base leading-tight font-bold text-gray-900',
+              isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
+            )}
+          >
+            {title}
+          </span>
         </div>
-        <span className="text-xs leading-relaxed font-medium text-gray-400">{description}</span>
+        <span
+          className={cn(
+            'text-xs leading-relaxed font-medium text-gray-400',
+            isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
+          )}
+        >
+          {description}
+        </span>
       </div>
-
-      <div className="rounded-2x transition-color ml-4 flex h-11 shrink-0 items-center justify-center text-gray-500">
-        <ChevronRight strokeWidth={3} className="h-6 w-6" />
-      </div>
+      {!isLoading && (
+        <div className="rounded-2x transition-color ml-4 flex h-11 shrink-0 items-center justify-center text-gray-500">
+          <ChevronRight strokeWidth={3} className="h-6 w-6" />
+        </div>
+      )}
     </button>
   );
 }

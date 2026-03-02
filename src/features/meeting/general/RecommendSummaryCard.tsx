@@ -83,6 +83,7 @@ interface RecommendSummaryCardProps {
   bestTime: BestTime | undefined;
   bestPlace: BestPlace | undefined;
   className?: string;
+  isLoading: boolean;
 }
 
 export function RecommendSummaryCard({
@@ -91,6 +92,7 @@ export function RecommendSummaryCard({
   bestTime,
   bestPlace,
   className,
+  isLoading,
 }: RecommendSummaryCardProps) {
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -127,6 +129,7 @@ export function RecommendSummaryCard({
             label="추천 시간"
             value={timeValue}
             onClick={() => handleGoToButton('recommend/time')}
+            isLoading={isLoading}
           />
         )}
 
@@ -140,6 +143,7 @@ export function RecommendSummaryCard({
             label="추천 장소"
             value={placeValue}
             onClick={() => handleGoToButton('recommend/place')}
+            isLoading={isLoading}
           />
         )}
       </div>

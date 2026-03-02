@@ -8,13 +8,13 @@ import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
-import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
 export default function MainPage() {
   const {
@@ -23,6 +23,7 @@ export default function MainPage() {
     isPlaceRecommendEnabled,
     participantStatusList,
     nickName,
+    isLoading,
   } = useMeetingContext();
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
@@ -75,13 +76,22 @@ export default function MainPage() {
 
   return (
     <AppLayout
-      header={<Header title={meetingName} showBackButton={false} showSettingButton={true} />}
+      header={
+        <Header
+          title={meetingName}
+          showBackButton={false}
+          showSettingButton={true}
+          className={cn(isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '')}
+        />
+      }
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
-            초대 링크 복사 및 공유하기
-          </FixedBottomButton>
+          {!isLoading && (
+            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
+              초대 링크 복사 및 공유하기
+            </FixedBottomButton>
+          )}
         </div>
       }
     >
@@ -92,6 +102,7 @@ export default function MainPage() {
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
+            isLoading={isLoading}
           />
         </div>
 
@@ -106,6 +117,7 @@ export default function MainPage() {
               description="모임 만남 시간을 추천하는데 활용돼요."
               onClick={() => handleGoToButton('input/time')}
               isDone={myStatus?.hasTimeInput}
+              isLoading={isLoading}
             />
           )}
           {isPlaceRecommendEnabled && (
@@ -115,6 +127,7 @@ export default function MainPage() {
               description={'모임 만남 장소를 추천하는데 활용돼요.'}
               onClick={() => navigate('input/place', { state: { from: 'main' } })}
               isDone={myStatus?.hasPlaceInput}
+              isLoading={isLoading}
             />
           )}
         </div>
@@ -127,14 +140,17 @@ export default function MainPage() {
             >
               참여자 현황
             </Label>
-            <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white shadow-sm">
-              {completedCount}/{totalCount} 입력 완료
-            </div>
+            {!isLoading && (
+              <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white shadow-sm">
+                {completedCount}/{totalCount} 입력 완료
+              </div>
+            )}
           </div>
           <ParticipantStatusList
             list={sortedParticipantStatusList || []}
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+            isLoading={isLoading}
           />
         </div>
       </div>

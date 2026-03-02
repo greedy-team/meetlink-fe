@@ -2,11 +2,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { ChevronLeft, Settings } from 'lucide-react';
 
+import { cn } from '@/lib/utils';
+
 type HeaderProps = {
   title: string;
   showBackButton?: boolean;
   showSettingButton?: boolean;
   onBack?: () => void;
+  className?: string;
 };
 
 export function Header({
@@ -14,6 +17,7 @@ export function Header({
   showBackButton = true,
   showSettingButton = false,
   onBack,
+  className,
 }: HeaderProps) {
   const navigate = useNavigate();
 
@@ -31,7 +35,7 @@ export function Header({
           </button>
         )}
 
-        <span className="text-lg font-bold">{title}</span>
+        <span className={cn('text-lg font-bold', className)}>{title}</span>
       </div>
 
       {showSettingButton && (
