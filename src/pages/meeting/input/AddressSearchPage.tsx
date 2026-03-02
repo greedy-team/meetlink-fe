@@ -91,7 +91,7 @@ export default function AddressSearchPage() {
           if (status === 'OK') {
             resolve(
               data.map((d) => ({
-                placeName: d.place_name, // "세종대학교"
+                name: d.place_name, // "세종대학교"
                 address: d.road_address_name || d.address_name,
                 latitude: Number(d.y),
                 longitude: Number(d.x),
@@ -113,6 +113,7 @@ export default function AddressSearchPage() {
           if (status === 'OK') {
             resolve(
               data.map((d) => ({
+                name: d.road_address?.address_name || d.address?.address_name || d.address_name,
                 address: d.road_address?.address_name || d.address?.address_name || d.address_name,
                 latitude: Number(d.y),
                 longitude: Number(d.x),

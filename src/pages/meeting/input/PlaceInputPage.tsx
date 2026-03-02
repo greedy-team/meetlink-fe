@@ -53,6 +53,7 @@ export default function PlaceInputPage() {
     // 2순위: 고른 장소도 없고, 서버에서 내 출발지를 성공적으로 가져왔다면?
     else if (!selectedPlace?.address && isGetPlaceSuccess && myStartPlaceData?.result?.address) {
       setSelectedPlace({
+        name: myStartPlaceData.result.name,
         address: myStartPlaceData.result.address,
         latitude: myStartPlaceData.result.latitude,
         longitude: myStartPlaceData.result.longitude,
@@ -89,6 +90,7 @@ export default function PlaceInputPage() {
 
     if (token) {
       const requestPayload = {
+        name: selectedPlace.name || selectedPlace.address,
         address: selectedPlace.address,
         latitude: selectedPlace.latitude,
         longitude: selectedPlace.longitude,

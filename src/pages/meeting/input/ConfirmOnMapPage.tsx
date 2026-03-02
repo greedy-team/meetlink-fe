@@ -133,6 +133,7 @@ export default function ConfirmOnMapPage() {
     if (!code || !canConfirm || lat === null || lng === null) return;
 
     const selectedPlace: RecentPlaceItem = {
+      name: roadAddress || jibunAddress,
       address: roadAddress || jibunAddress,
       latitude: lat,
       longitude: lng,
