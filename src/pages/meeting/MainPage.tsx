@@ -22,11 +22,12 @@ export default function MainPage() {
     isPlaceRecommendEnabled,
     participantStatusList,
     nickName,
-    isLoading,
+    isLoading: isMeetingLoading,
   } = useMeetingContext();
-  console.log(isLoading);
-  const { data: resultData } = useRecommendResult();
+  const { data: resultData, isLoading: isResultLoading } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
+
+  const isLoading = isMeetingLoading || isResultLoading;
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
