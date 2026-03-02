@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Clock } from 'lucide-react';
@@ -8,26 +7,13 @@ import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
-import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
-
-// 내 출발지 localStorage 키/로드
-const myStartPlaceKey = (memberId: string) => `my_start_place_${memberId}`;
-
-const loadMyStartPlace = (memberId: string): UpdateMyStartPlaceRequest | null => {
-  const raw = localStorage.getItem(myStartPlaceKey(memberId));
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as UpdateMyStartPlaceRequest;
-  } catch {
-    return null;
-  }
-};
 
 export default function MainPage() {
   const {
@@ -35,10 +21,13 @@ export default function MainPage() {
     isTimeRecommendEnabled,
     isPlaceRecommendEnabled,
     participantStatusList,
-    id,
+    nickName,
+    isLoading: isMeetingLoading,
   } = useMeetingContext();
-  const { data: resultData } = useRecommendResult();
+  const { data: resultData, isLoading: isResultLoading } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
+
+  const isLoading = isMeetingLoading || isResultLoading;
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -48,12 +37,27 @@ export default function MainPage() {
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
-  const completedCount = participantStatusList.filter(
+  const safeParticipantList =
+    participantStatusList && participantStatusList.length > 0
+      ? participantStatusList
+      : [
+          {
+            nickName: '안보여요',
+            hasTimeInput: false,
+            hasPlaceInput: false,
+          },
+        ];
+
+  const sortedParticipantStatusList = [
+    ...safeParticipantList.filter((p) => p.nickName === nickName),
+    ...safeParticipantList.filter((p) => p.nickName !== nickName),
+  ];
+  const myStatus = sortedParticipantStatusList[0];
+
+  const completedCount = sortedParticipantStatusList.filter(
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
-  const totalCount = participantStatusList.length;
-
-  const myStartPlace = useMemo(() => loadMyStartPlace(id), [id]);
+  const totalCount = sortedParticipantStatusList.length;
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -84,23 +88,33 @@ export default function MainPage() {
 
   return (
     <AppLayout
-      header={<Header title={meetingName} showBackButton={false} showSettingButton={true} />}
+      header={
+        <Header
+          title={meetingName}
+          showBackButton={false}
+          showSettingButton={true}
+          className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
+        />
+      }
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
-            초대 링크 복사 및 공유하기
-          </FixedBottomButton>
+          {!isLoading && (
+            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
+              초대 링크 복사 및 공유하기
+            </FixedBottomButton>
+          )}
         </div>
       }
     >
       <div className="flex flex-col gap-4">
         <div className="">
           <RecommendSummaryCard
-            isTimeRecommendEnabled={isTimeRecommendEnabled}
-            isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+            isTimeRecommendEnabled={isTimeRecommendEnabled || isLoading}
+            isPlaceRecommendEnabled={isPlaceRecommendEnabled || isLoading}
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
+            isLoading={isLoading}
           />
         </div>
 
@@ -108,20 +122,25 @@ export default function MainPage() {
           <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold text-gray-700">
             내가 할 일
           </Label>
-          {isTimeRecommendEnabled && (
+
+          {(isTimeRecommendEnabled || isLoading) && (
             <GoToButton
               icon={Clock}
               title="가능한 시간 선택하기"
               description="모임 만남 시간을 추천하는데 활용돼요."
               onClick={() => handleGoToButton('input/time')}
+              isDone={myStatus?.hasTimeInput}
+              isLoading={isLoading}
             />
           )}
-          {isPlaceRecommendEnabled && (
+          {(isPlaceRecommendEnabled || isLoading) && (
             <GoToButton
               icon={MapPin}
               title="출발지 입력하기"
               description={'모임 만남 장소를 추천하는데 활용돼요.'}
               onClick={() => navigate('input/place', { state: { from: 'main' } })}
+              isDone={myStatus?.hasPlaceInput}
+              isLoading={isLoading}
             />
           )}
         </div>
@@ -134,14 +153,17 @@ export default function MainPage() {
             >
               참여자 현황
             </Label>
-            <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white shadow-sm">
-              {completedCount}/{totalCount} 입력 완료
-            </div>
+            {!isLoading && (
+              <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white">
+                {completedCount}/{totalCount} 입력 완료
+              </div>
+            )}
           </div>
           <ParticipantStatusList
-            list={participantStatusList || []}
+            list={sortedParticipantStatusList || []}
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+            isLoading={isLoading}
           />
         </div>
       </div>

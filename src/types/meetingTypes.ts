@@ -1,8 +1,9 @@
 //참가자 현황
 export interface ParticipantStatus {
   nickName: string;
-  hasTimeInput: boolean;
-  hasPlaceInput: boolean;
+  token?: string;
+  hasTimeInput?: boolean;
+  hasPlaceInput?: boolean;
 }
 //참가자 현황 리스트
 export type ParticipantList = ParticipantStatus[];

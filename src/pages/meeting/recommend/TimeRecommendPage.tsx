@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
 import { useCalculateRecommendTime, useRecommendTime } from '@/hooks/useRecommend';
-import { useGetCommonAvailableTime } from '@/hooks/useTime';
+import { useGetWholeAvailableTime } from '@/hooks/useTime';
 
 import { convertToCommonTimeList } from '@/features/Time/timeConverter';
 import TimeHeader from '@/features/Time/TimeHeader';
@@ -13,16 +13,15 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function TimeRecommendPage() {
   const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
-  const { data: commonTimeData } = useGetCommonAvailableTime();
+  const { data: commonTimeData } = useGetWholeAvailableTime();
   const { data: timeData } = useRecommendTime();
   const { mutate: calculateRecommendTime } = useCalculateRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const participantsNum = participantStatusList.length;
-  const commonTimeList = convertToCommonTimeList(commonTimeData?.result.heatmaps);
+  //const commonTimeList = convertToCommonTimeList(commonTimeData?.result.heatmaps);
   const candidateList = timeData?.result;
 
-  console.log(commonTimeList);
   console.log(candidateList);
   useEffect(() => {
     console.log('didcalculate');
@@ -38,7 +37,7 @@ export default function TimeRecommendPage() {
             dateType={dateType}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            selectedTimeList={commonTimeList}
+            selectedTimeList={[]}
             participantsNum={participantsNum}
             timeRange={timeRange}
           />
@@ -48,10 +47,10 @@ export default function TimeRecommendPage() {
       bottom={
         <div className="space-y-3">
           <TimeRecommendModal
-            candidateList={candidateList}
+            candidateList={[]}
             participantsNum={participantsNum}
             setSelectedDate={setSelectedDate}
-            commonTimeList={commonTimeList}
+            commonTimeList={[]}
             dateType={dateType}
             timeRange={timeRange}
           />
@@ -65,7 +64,7 @@ export default function TimeRecommendPage() {
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}
-          selectedTimeList={commonTimeList}
+          selectedTimeList={[]}
           setSelectedTimeList={setSelectedTimeList}
         />
       </div>

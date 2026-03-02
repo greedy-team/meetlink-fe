@@ -122,6 +122,7 @@ export interface GetMyAvailableTimeResponse {
     availabilities: {
       dayOfWeek: number;
       date: string;
+      startTimes: string[];
     }[];
   };
   code?: string;
@@ -235,9 +236,9 @@ export interface GetRecommendResultResponse {
     placeCandidate: {
       name: string;
       address: string;
+      avgTravelTime: number;
       latitude: number;
       longitude: number;
-      avgTravelTime: number;
       maxTravelTime: number;
       rank: number;
     };

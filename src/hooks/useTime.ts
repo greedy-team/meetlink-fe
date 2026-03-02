@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { timeKeys } from './queryKeys';
+import { participantKeys, recommendKeys, timeKeys } from './queryKeys';
 
 import {
   getMyAvailableTime,
@@ -48,6 +48,16 @@ export const useUpdateMyAvailableTime = () => {
       // 내 가능 시간 리패치
       queryClient.invalidateQueries({
         queryKey: timeKeys.my(code!, token),
+      });
+
+      //참여자 현황 리패치
+      queryClient.invalidateQueries({
+        queryKey: participantKeys.list(code!, token),
+      });
+
+      //추천 결과 래패치
+      queryClient.invalidateQueries({
+        queryKey: recommendKeys.all,
       });
     },
     onError: () => {

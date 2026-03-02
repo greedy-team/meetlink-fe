@@ -30,12 +30,12 @@ export interface MeetingOutletContext {
 
   nickName: string;
 
-  // 3. 로딩 상태
-  //isLoading: boolean;
+  isLoading: boolean;
 }
 
 interface RawParticipantStatus {
   nickname: string;
+  token?: string;
   placeSubmitted?: boolean;
   timeSubmitted?: boolean;
 }
@@ -68,36 +68,34 @@ export default function MeetingLayout() {
   const isInputPage = pathname.includes('/input');
 
   useEffect(() => {
-    // 토큰이 없는 경우
-    // join 관련 페이지도 아니고, input 페이지도 아닐 때만 join으로 보냅니다.
+    //토큰이 없는데, 참가 페이지도 아니고 입력 페이지도 아님.
     if (!isJoinPage && !isInputPage && !token) {
       navigate(`/meeting/${code}/join`, { replace: true });
       return;
     }
 
-    // 서버 요청 중일 때는 판단을 유보하고 대기합니다.
+    //내 상태 요청중이라면 - 내가 이 모임에 참여되어 있는지 확인
     if (isMyStatusLoading || isMyStatusFetching) return;
 
-    // 2. 토큰은 있으나 서버에서 권한이 없다고 판단한 경우 (잘못된 토큰 등)
-    // 이 역시 input 페이지가 아닐 때만 체크하여 join으로 보냅니다.
-    if (!isJoinPage && token && (isMyStatusError || !myStatusData?.status)) {
+    //토큰은 있는데 참가 페이지가 아니고 잘못된 토큰을 가지고 있는 경우
+    if (token && !isJoinPage && (isMyStatusError || !myStatusData?.status)) {
       navigate(`/meeting/${code}/join`, { replace: true });
     }
 
-    // 3. 이미 참여 완료된 사용자가 '참여/재접속' 페이지로 접근하는 경우 메인으로 보냅니다.
-    if (isJoinPage && token && myStatusData?.status) {
+    //토큰이 있고 모임에 이미 참여했었는데 참가 페이지라면
+    if (token && isJoinPage && myStatusData?.status) {
       navigate(`/meeting/${code}`, { replace: true });
     }
   }, [
     isJoinPage,
-    isInputPage, // 의존성 배열에 추가
+    isInputPage,
     myStatusData,
     isMyStatusError,
     isMyStatusLoading,
     isMyStatusFetching,
     token,
-    navigate,
     code,
+    navigate,
   ]);
 
   const contextValue: MeetingOutletContext = {
@@ -115,8 +113,9 @@ export default function MeetingLayout() {
     participantStatusList: (participantData?.result || []).map(
       (p: RawParticipantStatus): ParticipantStatus => ({
         nickName: p.nickname,
-        hasPlaceInput: p.placeSubmitted || false,
-        hasTimeInput: p.timeSubmitted || false,
+        token: p?.token,
+        hasPlaceInput: p?.placeSubmitted,
+        hasTimeInput: p?.timeSubmitted,
       }),
     ),
     selectedTimeList,
@@ -128,22 +127,8 @@ export default function MeetingLayout() {
 
     nickName: myStatusData?.result?.nickname || '',
 
-    //isLoading: isMeetingLoading || isParticipantLoading || isTimeLoading || isPlaceLoading,
+    isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
   };
-
-  if (
-    (!isJoinPage && !isInputPage && !token) ||
-    isMyStatusLoading ||
-    isMyStatusFetching ||
-    isMeetingLoading ||
-    isParticipantLoading
-  ) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-white">
-        <span className="font-medium text-gray-500">데이터를 불러오는 중입니다...</span>
-      </div>
-    );
-  }
 
   return (
     <div>
