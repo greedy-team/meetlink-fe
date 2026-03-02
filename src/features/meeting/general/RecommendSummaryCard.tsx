@@ -109,7 +109,7 @@ export function RecommendSummaryCard({
   return (
     <div
       className={cn(
-        'w-full overflow-hidden rounded-[32px] border border-gray-200 bg-gray-50 shadow-sm',
+        'w-full overflow-hidden rounded-[32px] border border-gray-200 bg-gray-50',
         className,
       )}
     >
