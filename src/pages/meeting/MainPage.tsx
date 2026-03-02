@@ -25,6 +25,7 @@ export default function MainPage() {
     nickName,
     isLoading,
   } = useMeetingContext();
+  console.log(isLoading);
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
 
@@ -36,16 +37,27 @@ export default function MainPage() {
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
+  const safeParticipantList =
+    participantStatusList && participantStatusList.length > 0
+      ? participantStatusList
+      : [
+          {
+            nickName: '안보여요',
+            hasTimeInput: false,
+            hasPlaceInput: false,
+          },
+        ];
+
   const sortedParticipantStatusList = [
-    ...participantStatusList.filter((p) => p.nickName === nickName),
-    ...participantStatusList.filter((p) => p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.nickName === nickName),
+    ...safeParticipantList.filter((p) => p.nickName !== nickName),
   ];
   const myStatus = sortedParticipantStatusList[0];
 
-  const completedCount = participantStatusList.filter(
+  const completedCount = sortedParticipantStatusList.filter(
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
-  const totalCount = participantStatusList.length;
+  const totalCount = sortedParticipantStatusList.length;
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -81,7 +93,7 @@ export default function MainPage() {
           title={meetingName}
           showBackButton={false}
           showSettingButton={true}
-          className={cn(isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '')}
+          className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
         />
       }
       pageBackgroundClassName="bg-white"
@@ -98,8 +110,8 @@ export default function MainPage() {
       <div className="flex flex-col gap-4">
         <div className="">
           <RecommendSummaryCard
-            isTimeRecommendEnabled={isTimeRecommendEnabled}
-            isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+            isTimeRecommendEnabled={isTimeRecommendEnabled || isLoading}
+            isPlaceRecommendEnabled={isPlaceRecommendEnabled || isLoading}
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
             isLoading={isLoading}
@@ -110,7 +122,8 @@ export default function MainPage() {
           <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold text-gray-700">
             내가 할 일
           </Label>
-          {isTimeRecommendEnabled && (
+
+          {(isTimeRecommendEnabled || isLoading) && (
             <GoToButton
               icon={Clock}
               title="가능한 시간 선택하기"
@@ -120,7 +133,7 @@ export default function MainPage() {
               isLoading={isLoading}
             />
           )}
-          {isPlaceRecommendEnabled && (
+          {(isPlaceRecommendEnabled || isLoading) && (
             <GoToButton
               icon={MapPin}
               title="출발지 입력하기"
@@ -141,7 +154,7 @@ export default function MainPage() {
               참여자 현황
             </Label>
             {!isLoading && (
-              <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white shadow-sm">
+              <div className="bg-greedy/90 flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold text-white">
                 {completedCount}/{totalCount} 입력 완료
               </div>
             )}

@@ -127,7 +127,7 @@ export default function MeetingLayout() {
 
     nickName: myStatusData?.result?.nickname || '',
 
-    isLoading: isMeetingLoading || isParticipantLoading || true,
+    isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
   };
 
   return (
