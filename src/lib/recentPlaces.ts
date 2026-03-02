@@ -3,7 +3,6 @@ import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 export type RecentPlaceItem = UpdateMyStartPlaceRequest & {
   roadAddress?: string;
   jibunAddress?: string;
-  placeName?: string;
 };
 
 const RECENT_PLACES_KEY = 'recent_places';
