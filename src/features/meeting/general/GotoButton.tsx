@@ -30,7 +30,7 @@ export function GoToButton({
       className={cn(
         'group flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
         'border-gray-200 bg-gray-50 hover:bg-gray-100',
-        isDone ? 'bg-greedy/10' : '',
+        isDone ? 'bg-greedy/15 hover:bg-greedy/30' : '',
         className,
       )}
     >
@@ -40,12 +40,14 @@ export function GoToButton({
             size={24}
             className={cn(
               'h-auto! w-auto! text-gray-900 transition-colors',
+              isDone ? 'text-greedy' : '',
               isLoading ? 'rounded-full bg-gray-100 text-gray-100' : '',
             )}
           />
           <span
             className={cn(
               'text-base leading-tight font-bold text-gray-900',
+              isDone ? 'text-greedy' : '',
               isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
             )}
           >
@@ -55,6 +57,7 @@ export function GoToButton({
         <span
           className={cn(
             'text-xs leading-relaxed font-medium text-gray-400',
+            isDone ? 'text-greedy' : '',
             isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
           )}
         >
