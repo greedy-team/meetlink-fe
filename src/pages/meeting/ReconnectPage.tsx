@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
-import { storage } from '@/lib/storage';
+import { useParticipantList } from '@/hooks/useParticipant';
 
 import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { ParticipantSelectedList } from '@/features/meeting/join/ParticipantSelectedList';
@@ -16,27 +16,36 @@ export default function ReconnectPage() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
 
-  const { meetingName, participantStatusList } = useMeetingContext();
+  // Context에서 모임명 가져오기
+  const { meetingName } = useMeetingContext();
 
-  useEffect(() => {
-    if (!code) navigate('/start', { replace: true });
-  }, [code, navigate]);
+  // 참여자 목록 조회
+  const { data: participantData, isLoading } = useParticipantList();
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedInfo, setSelectedInfo] = useState<{ nickname: string; token: string } | null>(
+    null,
+  );
 
-  // 일단 mock 데이터 사용
-  const participants = useMemo(() => participantStatusList, []);
-  const participantSummary = useMemo(() => buildParticipantSummary(participants), [participants]);
+  const participants = participantData?.result || [];
+
+  // 요약 문구 생성
+  const participantSummary = buildParticipantSummary(
+    participants.map((p) => ({ nickName: p.nickname })),
+  );
 
   const onGoJoin = () => {
     if (!code) return;
     navigate(`/meeting/${code}/join`, { replace: true });
   };
 
-  // 선택 후 로컬 저장 → 메인 이동
+  // 로그인 로직: 선택된 사용자의 토큰을 저장
   const onLogin = () => {
-    if (!code || !selectedId) return;
-    storage.setParticipantId(code, selectedId);
+    if (!code || !selectedInfo) return;
+
+    // 로컬 스토리지에 토큰 저장
+    localStorage.setItem('meeting_token', selectedInfo.token);
+
+    // 메인 대시보드로 이동
     navigate(`/meeting/${code}`, { replace: true });
   };
 
@@ -46,7 +55,6 @@ export default function ReconnectPage() {
       bottom={
         <div className="space-y-3">
           <NotifyBox variant="emphasis">
-            {/* 공백 기준 줄바꿈 적용 */}
             <span className="break-keep whitespace-pre-wrap">
               본인의 닉네임이 없다면{' '}
               <button
@@ -61,7 +69,8 @@ export default function ReconnectPage() {
           </NotifyBox>
 
           <FixedBottomButton
-            disabled={!selectedId}
+            disabled={!selectedInfo || isLoading}
+            loading={isLoading}
             onClick={onLogin}
             className="bg-greedy hover:bg-greedy/50 text-white"
           >
@@ -78,13 +87,18 @@ export default function ReconnectPage() {
           <div className="text-muted-foreground text-sm">참여 중인 닉네임을 선택해주세요</div>
         </div>
 
+        {/* 참여자 목록 렌더링 (서버에서 받아온 nickname과 token 사용) */}
         <ParticipantSelectedList
-          participants={participants.map((p, idx) => ({
-            id: String(idx + 1), // mock이라 임시 id
-            nickname: p.nickName,
+          participants={participants.map((p) => ({
+            nickname: p.nickname,
           }))}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
+          selectedNickname={selectedInfo?.nickname || null}
+          onSelect={(nickname) => {
+            const found = participants.find((p) => p.nickname === nickname);
+            if (found && found.token) {
+              setSelectedInfo({ nickname: found.nickname, token: found.token });
+            }
+          }}
         />
       </div>
     </AppLayout>

@@ -1,17 +1,16 @@
 type Participant = {
-  id: string;
   nickname: string;
 };
 
 type ParticipantSelectedListProps = {
   participants: Participant[];
-  selectedId: string | null;
-  onSelect: (id: string) => void;
+  selectedNickname: string | null;
+  onSelect: (nickname: string) => void;
 };
 
 export function ParticipantSelectedList({
   participants,
-  selectedId,
+  selectedNickname,
   onSelect,
 }: ParticipantSelectedListProps) {
   return (
@@ -22,17 +21,17 @@ export function ParticipantSelectedList({
 
       <div className="mt-4 grid grid-cols-2 gap-3">
         {participants.map((p) => {
-          const active = p.id === selectedId;
+          const active = p.nickname === selectedNickname;
 
           return (
             <button
-              key={p.id}
+              key={p.nickname}
               type="button"
-              onClick={() => onSelect(p.id)}
+              onClick={() => onSelect(p.nickname)}
               className={[
                 'w-full rounded-xl px-4 py-3 text-center transition-colors',
                 active
-                  ? 'border border-[#0B5A2A]/10 bg-[#E7F3EC] ring-1 ring-[#0B5A2A]/20'
+                  ? 'border-greedy/10 ring-greedy/20 bg-greedy/10 border ring-1'
                   : 'border-muted hover:bg-muted/40 border-2',
               ].join(' ')}
             >
