@@ -5,7 +5,7 @@ import { Header } from '@/components/common/layout/Header';
 import { useCalculateRecommendTime, useRecommendTime } from '@/hooks/useRecommend';
 import { useGetWholeAvailableTime } from '@/hooks/useTime';
 
-import { convertToCommonTimeList } from '@/features/Time/timeConverter';
+import { convertToCommonTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
 import TimeHeatMap from '@/features/Time/TimeHeapMap';
 import TimeRecommendModal from '@/features/Time/TimeRecommendModal';

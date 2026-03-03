@@ -15,7 +15,7 @@ import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { NickNameInput } from '@/features/meeting/join/NickNameInput';
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
-import { convertToAvailabilities } from '@/features/Time/timeConverter';
+import { convertToAvailabilities } from '@/features/Time/timeFunctions';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function JoinPage() {

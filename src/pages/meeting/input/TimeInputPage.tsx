@@ -7,7 +7,7 @@ import { Header } from '@/components/common/layout/Header';
 import { useUpdateMyAvailableTime } from '@/hooks/useTime';
 import { useGetMyAvailableTime } from '@/hooks/useTime';
 
-import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeConverter';
+import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
 import TimeHeatMap from '@/features/Time/TimeHeapMap';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
