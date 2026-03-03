@@ -36,12 +36,12 @@ export function RecommendCheckBox({
     <div
       ref={containerRef}
       className={cn(
-        'flex flex-col rounded-3xl border-2 transition-all duration-200',
+        'flex flex-col rounded-3xl border-2 p-3 transition-all duration-200',
         checked ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
       )}
     >
       <button
-        className="flex w-full items-center justify-between p-4"
+        className="flex w-full items-center justify-between p-1 pb-4"
         type="button"
         onClick={() => onCheckedChange(!checked)}
       >
@@ -79,7 +79,7 @@ export function RecommendCheckBox({
           )}
         />
       </button>
-      {checked && <div className="mb-4 flex flex-col gap-5 border-t px-3 pt-4">{children}</div>}
+      {checked && <div className="flex flex-col gap-5 border-t pt-4">{children}</div>}
     </div>
   );
 }
