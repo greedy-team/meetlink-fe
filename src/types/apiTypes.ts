@@ -165,6 +165,7 @@ export interface UpdateMyAvailableTimeResponse {
 export interface GetMyStartPlaceResponse {
   status: true;
   result: {
+    name: string;
     address: string;
     latitude: number;
     longitude: number;
@@ -175,6 +176,7 @@ export interface GetMyStartPlaceResponse {
 
 //출발지 등록
 export interface UpdateMyStartPlaceRequest {
+  name: string;
   address: string;
   latitude: number; //위도
   longitude: number; //경도

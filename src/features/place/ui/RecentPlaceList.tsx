@@ -5,20 +5,13 @@ import type { RecentPlaceItem } from '@/lib/recentPlaces';
 type Props = {
   places: RecentPlaceItem[];
   onSelect: (place: RecentPlaceItem) => void;
-  makeTitle?: (address: string) => string;
   showTitle?: boolean;
   title?: string;
-};
-
-const defaultMakeTitle = (address: string) => {
-  const tokens = address.trim().split(/\s+/);
-  return tokens.slice(0, Math.min(tokens.length, 4)).join(' ');
 };
 
 export function RecentPlaceList({
   places,
   onSelect,
-  makeTitle = defaultMakeTitle,
   showTitle = true,
   title = '최근 위치',
 }: Props) {
@@ -39,21 +32,23 @@ export function RecentPlaceList({
 
       <div className="divide-y divide-gray-200">
         {places.map((p, idx) => {
-          const hasTwoLines = Boolean(p.roadAddress || p.jibunAddress);
+          // name이 실제 주소명인지 판단
+          const isDistinctName =
+            p.name && p.name !== p.address && p.name !== p.roadAddress && p.name !== p.jibunAddress;
 
-          // 장소 이름 > 도로명 주소
-          const titleText = p.placeName
-            ? p.placeName
-            : hasTwoLines
-              ? p.roadAddress || p.jibunAddress
-              : makeTitle(p.address);
+          // 타이틀: 실제 주소명일 경우 그대로 사용, 아닐 경우 도로명(또는 지번) 주소 사용
+          const titleText = isDistinctName
+            ? p.name
+            : p.roadAddress || p.jibunAddress || p.address || '';
 
-          // 장소 이름 있을 경우 도로명 주소, 없을 경우 지번 주소
-          const subText = p.placeName
-            ? p.roadAddress || p.jibunAddress || p.address
-            : hasTwoLines
-              ? p.jibunAddress || p.address
-              : p.address;
+          // 서브 타이틀: 실제 주소명일 경우 도로명(또는 지번) 주소 사용, 아닐 경우 지번 주소(또는 전체 주소) 사용
+          const subText = isDistinctName
+            ? p.roadAddress || p.jibunAddress || p.address || ''
+            : p.roadAddress && p.jibunAddress
+              ? p.jibunAddress
+              : p.address || '';
+
+          const isSameText = titleText === subText;
 
           return (
             <button
@@ -72,7 +67,10 @@ export function RecentPlaceList({
 
               <div className="min-w-0 flex-1">
                 <div className="truncate text-base font-semibold text-gray-900">{titleText}</div>
-                <div className="truncate text-sm text-gray-500">{subText}</div>
+                {/* 글자가 다를 때만 서브(지번) 보여줌 */}
+                {!isSameText && subText && (
+                  <div className="truncate text-sm text-gray-500">{subText}</div>
+                )}
               </div>
             </button>
           );

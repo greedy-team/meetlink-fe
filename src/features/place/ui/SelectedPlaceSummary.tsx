@@ -1,7 +1,6 @@
 import { MapPin } from 'lucide-react';
 
 import type { RecentPlaceItem } from '@/lib/recentPlaces';
-import { loadRecentPlaces } from '@/lib/recentPlaces';
 
 type Props = {
   selected: RecentPlaceItem | null;
@@ -12,26 +11,26 @@ export function SelectedPlaceSummary({ selected }: Props) {
     return null;
   }
 
-  // 서버에서 온 데이터에 로컬 데이터(장소명) 덧씌워주기
-  const recents = loadRecentPlaces();
-  const richPlace = recents.find((p) => p.address === selected.address) || selected;
+  // name이 실제 주소명인지 판단
+  const isDistinctName =
+    !!selected.name &&
+    selected.name !== selected.address &&
+    selected.name !== selected.roadAddress &&
+    selected.name !== selected.jibunAddress;
 
-  const hasTwoLines = Boolean(richPlace.roadAddress || richPlace.jibunAddress);
+  // 타이틀: 실제 주소명일 경우 그대로 사용, 아닐 경우 도로명(또는 지번) 주소 사용
+  const titleText = isDistinctName
+    ? selected.name
+    : selected.roadAddress || selected.jibunAddress || selected.address || '';
 
-  // 장소명 > 도로명 > 지번 순
-  const titleText = richPlace.placeName
-    ? richPlace.placeName
-    : hasTwoLines
-      ? richPlace.roadAddress || richPlace.jibunAddress
-      : richPlace.address;
+  // 서브 타이틀: 실제 주소명일 경우 도로명(또는 지번) 주소 사용, 아닐 경우 지번 주소(또는 전체 주소) 사용
+  const subText = isDistinctName
+    ? selected.roadAddress || selected.jibunAddress || selected.address || ''
+    : selected.roadAddress && selected.jibunAddress
+      ? selected.jibunAddress
+      : selected.address || '';
 
-  const subText = richPlace.placeName
-    ? richPlace.roadAddress || richPlace.jibunAddress || richPlace.address
-    : hasTwoLines
-      ? richPlace.jibunAddress || richPlace.address
-      : richPlace.address;
-
-  // 타이틀과 서브 텍스트가 똑같으면 두 번 띄우지 않음
+  // 위아래 글자가 똑같으면 두 번 띄우지 않음
   const isSameText = titleText === subText;
 
   return (

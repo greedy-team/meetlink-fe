@@ -56,6 +56,7 @@ export default function MeetingLayout() {
 
   const [selectedTimeList, setSelectedTimeList] = useState<SelectedTime[]>([]);
   const [selectedPlace, setSelectedPlace] = useState<UpdateMyStartPlaceRequest>({
+    name: '',
     address: '',
     latitude: 0,
     longitude: 0,
