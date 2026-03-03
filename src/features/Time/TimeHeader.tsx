@@ -141,7 +141,7 @@ export default function TimeHeader({
   };
 
   return (
-    <div className="relative z-50 w-full font-sans">
+    <div className="sticky top-0 z-50 w-full font-sans">
       {isOpen && (
         <button
           type="button"

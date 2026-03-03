@@ -47,7 +47,7 @@ export default function TimeInputPage() {
   return (
     <AppLayout
       header={
-        <div className="flex flex-col">
+        <>
           <Header title="가능 시간 선택" showBackButton={true} showSettingButton={false} />
           <TimeHeader
             dateType={dateType}
@@ -57,7 +57,7 @@ export default function TimeInputPage() {
             participantsNum={1}
             timeRange={timeRange}
           />
-        </div>
+        </>
       }
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
