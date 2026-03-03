@@ -31,7 +31,7 @@ export function ParticipantStatusList({
 
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      <div className="overflow-hidden rounded-2xl border-2 border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-2xl border-2 border-gray-200 bg-gray-50">
         <div className="flex flex-col">
           {visibleList.map((participant, index) => (
             <ParticipantStatusItem
