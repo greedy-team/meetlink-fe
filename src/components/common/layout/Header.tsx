@@ -41,7 +41,7 @@ export function Header({
       {showSettingButton && (
         <button
           type="button"
-          onClick={() => navigate('setting')}
+          onClick={() => navigate('settings')}
           className="inline-flex h-10 w-10 cursor-pointer items-center justify-center"
           aria-label="설정"
         >

@@ -160,12 +160,12 @@ export default function SettingPage() {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter className="flex-row gap-2">
-                    <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
+                    <AlertDialogCancel className="flex-1 rounded-xl border-2 bg-white hover:bg-gray-300">
                       취소
                     </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleSave}
-                      className="bg-greedy! hover:bg-greedy/50! rounded-xl text-white"
+                      className="bg-greedy! hover:bg-greedy/50! flex-1 rounded-xl text-white"
                     >
                       저장하기
                     </AlertDialogAction>

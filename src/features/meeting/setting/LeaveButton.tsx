@@ -51,12 +51,12 @@ export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
         </AlertDialogHeader>
 
         <AlertDialogFooter className="flex-row gap-2">
-          <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
+          <AlertDialogCancel className="flex-1 rounded-xl border-2 bg-white hover:bg-gray-300">
             취소
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onLeave}
-            className="rounded-xl bg-red-50 text-red-500! hover:bg-red-100! hover:text-red-600!"
+            className="flex-1 rounded-xl bg-red-50 text-red-500! hover:bg-red-100! hover:text-red-600!"
           >
             나가기
           </AlertDialogAction>
