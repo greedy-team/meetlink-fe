@@ -22,8 +22,11 @@ export function RecommendCheckBox({
   children,
 }: RecommendCheckBoxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasUserInteractedRef = useRef(false);
 
   useEffect(() => {
+    if (!hasUserInteractedRef.current) return;
+
     if (checked) {
       containerRef.current?.scrollIntoView({
         behavior: 'smooth',
@@ -43,7 +46,10 @@ export function RecommendCheckBox({
       <button
         className="flex w-full cursor-pointer items-center justify-between p-1"
         type="button"
-        onClick={() => onCheckedChange(!checked)}
+        onClick={() => {
+          hasUserInteractedRef.current = true;
+          onCheckedChange(!checked);
+        }}
       >
         <div className="flex flex-col gap-2 text-left">
           <div className="flex items-center gap-2">
