@@ -36,8 +36,8 @@ export interface MeetingOutletContext {
 interface RawParticipantStatus {
   nickname: string;
   token?: string;
-  placeSubmitted?: boolean;
-  timeSubmitted?: boolean;
+  isPlaceSubmitted?: boolean;
+  isTimeSubmitted?: boolean;
 }
 
 export default function MeetingLayout() {
@@ -114,8 +114,8 @@ export default function MeetingLayout() {
       (p: RawParticipantStatus): ParticipantStatus => ({
         nickName: p.nickname,
         token: p?.token,
-        hasPlaceInput: p?.placeSubmitted,
-        hasTimeInput: p?.timeSubmitted,
+        hasPlaceInput: p?.isPlaceSubmitted,
+        hasTimeInput: p?.isTimeSubmitted,
       }),
     ),
     selectedTimeList,

@@ -93,8 +93,8 @@ export interface GetParticipantListResponse {
   result?: {
     nickname: string;
     token?: string;
-    placeSubmitted?: boolean;
-    timeSubmitted?: boolean;
+    isPlaceSubmitted?: boolean;
+    isTimeSubmitted?: boolean;
   }[];
 }
 
