@@ -41,7 +41,7 @@ export function RecommendItem({
         <span
           className={cn(
             'text-greedy text-sm font-semibold',
-            isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '',
+            isLoading ? 'm-0.5 w-20 rounded-lg bg-gray-100 text-gray-100' : '',
           )}
         >
           {label}
@@ -50,7 +50,7 @@ export function RecommendItem({
           className={cn(
             'text-lg leading-tight font-bold',
             value ? 'text-gray-900' : 'text-gray-400',
-            isLoading ? 'w-60 rounded-md bg-gray-100 text-gray-100' : '',
+            isLoading ? 'm-0.5 w-60 rounded-lg bg-gray-100 text-gray-100' : '',
           )}
         >
           {value}

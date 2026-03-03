@@ -116,12 +116,16 @@ export function RecommendSummaryCard({
       <div className="flex flex-col">
         {isPlaceRecommendEnabled && (
           <div className="px-3 pt-3">
-            <LatLngMap
-              lat={bestPlace?.latitude ?? 37.54972}
-              lng={bestPlace?.longitude ?? 127.075475}
-              level={4}
-              className="h-40 w-full overflow-hidden rounded-2xl lg:h-50"
-            />
+            {!isLoading ? (
+              <LatLngMap
+                lat={bestPlace?.latitude ?? 37.54972}
+                lng={bestPlace?.longitude ?? 127.075475}
+                level={4}
+                className="h-40 w-full overflow-hidden rounded-2xl lg:h-50"
+              />
+            ) : (
+              <div className="h-40 rounded-2xl bg-gray-100 lg:h-50" />
+            )}
           </div>
         )}
 

@@ -43,7 +43,7 @@ export function ParticipantStatusItem({
         <span className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}>
           {nickName}
         </span>
-        {isMe && (
+        {isMe && !isLoading && (
           <Badge
             variant="secondary"
             className="bg-greedy/10 text-greedy hover:bg-greedy/10 h-5 w-5 rounded-full border-none p-3 text-xs font-bold"
