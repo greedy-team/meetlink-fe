@@ -24,7 +24,7 @@ export function RecommendItem({
     <button
       onClick={onClick}
       className={cn(
-        'flex items-start justify-between gap-4 rounded-xl p-1 transition-all duration-200',
+        'flex items-start justify-between gap-4 rounded-xl p-3 transition-all duration-200',
         onClick && 'cursor-pointer hover:bg-gray-100 active:scale-[0.98]',
         className,
       )}

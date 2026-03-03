@@ -51,7 +51,10 @@ export function ParticipantStatusList({
         {showExpandButton && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex w-full items-center justify-center border-t border-gray-100 bg-gray-50 py-1 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100"
+            className={cn(
+              'w-full cursor-pointer border-t border-gray-100 bg-gray-50 py-1 transition-colors hover:bg-gray-100',
+              'flex items-center justify-center text-sm font-medium text-gray-500',
+            )}
           >
             {isExpanded ? (
               <span className="flex items-center gap-1">
