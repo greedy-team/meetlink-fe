@@ -26,7 +26,7 @@ export function ParticipantStatusItem({
   return (
     <div
       className={cn(
-        'flex items-center justify-between px-4 py-3',
+        'mx-3 flex items-center justify-between py-3',
         !isLast && 'border-b-2 border-gray-100',
       )}
     >

@@ -25,8 +25,8 @@ createRoot(document.getElementById('root')!).render(
         <App />
         <Toaster
           richColors
-          closeButton
           position="bottom-center"
+          duration={1000}
           toastOptions={{
             className: 'rounded-2xl border-2',
             classNames: {
