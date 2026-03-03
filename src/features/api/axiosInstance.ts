@@ -35,6 +35,9 @@ axiosInstance.interceptors.response.use(
     if (status === 401 || status === 403) {
       localStorage.removeItem('meeting_token');
     }
+    if (status === 404) {
+      window.location.href = '/';
+    }
     return Promise.reject(err);
   },
 );

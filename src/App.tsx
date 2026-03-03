@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import CreatePage from './pages/create/CreatePage';
 import SharePage from './pages/create/SharePage';
@@ -41,6 +41,7 @@ function App() {
         <Route path="recommend/time" element={<TimeRecommendPage />} />
         <Route path="recommend/place" element={<PlaceRecommendPage />} />
       </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
