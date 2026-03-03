@@ -30,7 +30,7 @@ export function GoToButton({
       className={cn(
         'group flex w-full cursor-pointer items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
         'border-gray-200 bg-gray-50 hover:bg-gray-100',
-        isDone ? 'bg-greedy/15 hover:bg-greedy/30' : '',
+        isDone ? 'bg-greedy/15 hover:bg-greedy/30 border-greedy/20' : '',
         className,
       )}
     >
