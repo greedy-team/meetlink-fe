@@ -41,7 +41,7 @@ export function RecommendCheckBox({
       )}
     >
       <button
-        className="flex w-full items-center justify-between p-1 pb-4"
+        className="flex w-full cursor-pointer items-center justify-between p-1"
         type="button"
         onClick={() => onCheckedChange(!checked)}
       >
@@ -79,7 +79,7 @@ export function RecommendCheckBox({
           )}
         />
       </button>
-      {checked && <div className="flex flex-col gap-5 border-t pt-4">{children}</div>}
+      {checked && <div className="mt-4 flex flex-col gap-5 border-t pt-4">{children}</div>}
     </div>
   );
 }

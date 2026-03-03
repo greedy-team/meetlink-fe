@@ -22,10 +22,11 @@ export function SelectCardButton({
       variant="outline"
       onClick={onClick}
       className={cn(
-        'm-2 flex aspect-square h-auto flex-1 flex-col items-center justify-center gap-3 rounded-[32px] border-2 transition-colors',
+        'm-2 aspect-square h-auto flex-1 cursor-pointer rounded-[32px] border-2 transition-colors',
+        'flex flex-col items-center justify-center gap-3',
         isActive
-          ? 'border-greedy bg-greedy/5 text-greedy hover:bg-greedy/10 hover:text-greedy'
-          : 'border-gray-100 bg-white text-gray-200 hover:bg-gray-100',
+          ? 'border-greedy bg-greedy/5 text-greedy hover:bg-greedy/15 hover:text-greedy'
+          : 'border-gray-100 bg-white text-gray-200 hover:bg-gray-50 hover:text-gray-400',
       )}
     >
       <div

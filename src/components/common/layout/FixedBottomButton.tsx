@@ -32,7 +32,10 @@ export function FixedBottomButton({
       disabled={disabled || loading}
       variant={variant}
       size={size}
-      className={['h-12 w-full rounded-xl text-base font-semibold', className ?? ''].join(' ')}
+      className={[
+        'h-12 w-full cursor-pointer rounded-xl text-base font-semibold',
+        className ?? '',
+      ].join(' ')}
     >
       {/* 로딩 시 스피너 + 텍스트 */}
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
