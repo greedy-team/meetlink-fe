@@ -27,7 +27,7 @@ export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
           variant="ghost"
           className={cn(
             'bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600',
-            'my-3 h-14 w-full rounded-2xl py-3 font-semibold transition-all',
+            'my-3 h-14 w-full cursor-pointer rounded-2xl py-3 font-semibold transition-all',
             'flex flex-row items-center justify-start gap-3',
             className, // 외부에서 위치 조정을 위한 커스텀 클래스 허용
           )}
@@ -51,12 +51,12 @@ export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
         </AlertDialogHeader>
 
         <AlertDialogFooter className="flex-row gap-2">
-          <AlertDialogCancel className="h-10 flex-1 rounded-xl border-2 bg-white shadow-none! hover:bg-gray-300">
+          <AlertDialogCancel className="h-10 flex-1 cursor-pointer rounded-xl border-2 bg-white shadow-none! hover:bg-gray-100">
             취소
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onLeave}
-            className="h-10 flex-1 rounded-xl bg-red-50 text-red-500! shadow-none! hover:bg-red-100! hover:text-red-600!"
+            className="h-10 flex-1 cursor-pointer rounded-xl bg-red-50 text-red-500! shadow-none! hover:bg-red-100! hover:text-red-600!"
           >
             나가기
           </AlertDialogAction>
