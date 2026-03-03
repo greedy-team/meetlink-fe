@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
+import axios from 'axios';
+import { toast } from 'sonner';
+
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
 import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
 
@@ -45,7 +48,23 @@ export default function MeetingLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const { data: meetingData, isLoading: isMeetingLoading } = useGetMeetingDetail();
+  const {
+    data: meetingData,
+    isLoading: isMeetingLoading,
+    isError: isMeetingError,
+    error: meetingError,
+  } = useGetMeetingDetail();
+  useEffect(() => {
+    if (
+      isMeetingError &&
+      axios.isAxiosError(meetingError) &&
+      meetingError.response?.status === 404
+    ) {
+      toast.error('존재하지 않는 모임입니다.');
+      navigate('/');
+    }
+  }, [isMeetingError, meetingError, navigate]);
+
   const {
     data: myStatusData,
     isLoading: isMyStatusLoading,

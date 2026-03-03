@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
-//const BASE_URL = '/api';
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -34,9 +33,6 @@ axiosInstance.interceptors.response.use(
 
     if (status === 401 || status === 403) {
       localStorage.removeItem('meeting_token');
-    }
-    if (status === 404) {
-      window.location.href = '/';
     }
     return Promise.reject(err);
   },
