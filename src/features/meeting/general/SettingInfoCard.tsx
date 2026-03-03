@@ -20,7 +20,7 @@ export const SettingInfoCard = ({
   children,
 }: SettingInfoCardProps) => {
   return (
-    <div className="m-6 flex flex-col">
+    <div className="flex flex-col">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div

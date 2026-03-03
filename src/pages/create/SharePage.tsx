@@ -71,7 +71,10 @@ export default function SharePage() {
             <button
               type="button"
               onClick={handleJoin}
-              className="text-greedy-strong w-full text-center text-sm font-semibold underline underline-offset-4"
+              className={cn(
+                'w-full cursor-pointer underline underline-offset-4',
+                'text-greedy-strong hover:text-greedy text-center text-sm font-semibold',
+              )}
             >
               모임에 바로 참여할래요
             </button>
@@ -84,8 +87,8 @@ export default function SharePage() {
         )
       }
     >
-      <div className="mx-3 flex flex-col rounded-2xl border border-gray-100 bg-white">
-        <div className="m-6 flex flex-col gap-1.5">
+      <div className="mx-3 flex flex-col gap-6 rounded-2xl border border-gray-100 bg-white p-6">
+        <div className="flex flex-col gap-1.5">
           <Label
             className={cn(
               'text-sm font-medium text-gray-500',
