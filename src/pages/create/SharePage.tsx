@@ -84,7 +84,7 @@ export default function SharePage() {
         )
       }
     >
-      <div className="mx-3 flex flex-col rounded-2xl border border-gray-100 bg-white shadow-sm">
+      <div className="mx-3 flex flex-col rounded-2xl border border-gray-100 bg-white">
         <div className="m-6 flex flex-col gap-1.5">
           <Label
             className={cn(

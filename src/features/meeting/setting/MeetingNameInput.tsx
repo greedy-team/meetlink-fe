@@ -38,7 +38,11 @@ export function MeetingNameInput({
         onChange={onChange}
         onFocus={handleFocus}
         placeholder={placeholder}
-        className="focus-visible:ring-greedy h-12 rounded-xl border-gray-200 bg-white text-base"
+        className={cn(
+          'bg-background h-12 w-full rounded-xl border border-gray-200 px-4 text-base shadow-none outline-none',
+          'placeholder:text-muted-foreground',
+          'focus-visible:ring-greedy/20 focus-visible:border-greedy focus-visible:ring-2 focus-visible:ring-offset-0',
+        )}
       />
     </div>
   );
