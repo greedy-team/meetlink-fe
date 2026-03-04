@@ -14,7 +14,10 @@ const CustomSlider = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SliderPrimitive.Root
     ref={ref}
-    className={cn('relative flex w-full touch-none items-center select-none', className)}
+    className={cn(
+      'relative flex w-full cursor-pointer touch-none items-center select-none',
+      className,
+    )}
     {...props}
   >
     <SliderPrimitive.Track className="relative h-2.5 w-full grow overflow-hidden rounded-full bg-gray-100">
@@ -34,7 +37,7 @@ interface TimeRangeSliderProps {
 
 export function TimeRangeSlider({ value, onValueChange, className }: TimeRangeSliderProps) {
   return (
-    <div className={cn('flex w-full flex-col gap-3 px-1', className)}>
+    <div className={cn('flex w-full cursor-pointer flex-col gap-3', className)}>
       <Label className="ml-1 text-base font-semibold text-gray-700">시간 범위 선택</Label>
 
       <div className="space-y-2">

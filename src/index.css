@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+@import 'pretendard/dist/web/variable/pretendardvariable.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -8,6 +9,8 @@
 @theme inline {
   --color-greedy: #008e4c;
   --color-greedy-strong: #0b5a2a;
+
+  --font-sans: 'Pretendard Variable', sans-serif;
 }
 
 @theme inline {
@@ -125,6 +128,10 @@
     @apply border-border outline-ring/50;
   }
   body {
+    font-family: var(--font-sans);
     @apply bg-background text-foreground;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

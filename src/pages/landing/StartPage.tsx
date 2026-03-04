@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import Autoplay from 'embla-carousel-autoplay';
 import { Calendar, Clock, Link, type LucideIcon, MapPin } from 'lucide-react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
@@ -38,6 +39,9 @@ export default function StartPage() {
   //캐러셀
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+
+  //2초 마다 자동 전환
+  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
   useEffect(() => {
     if (!api) return;
@@ -82,7 +86,12 @@ export default function StartPage() {
         </div>
 
         {/* 캐러셀 */}
-        <Carousel setApi={setApi} opts={{ loop: true }} className="mt-25 w-55">
+        <Carousel
+          setApi={setApi}
+          opts={{ loop: true, duration: 50 }}
+          plugins={[plugin.current]}
+          className="mt-25 w-55"
+        >
           <CarouselContent>
             {INFO_LIST.map((item, index) => (
               <CarouselItem key={index} className="flex justify-center gap-3">
@@ -105,7 +114,7 @@ export default function StartPage() {
               key={index}
               onClick={() => api?.scrollTo(index)}
               className={cn(
-                'rounded-full transition-all duration-300',
+                'rounded-full transition-all duration-500',
                 current === index ? 'bg-greedy h-2.5 w-8' : 'h-2.5 w-2.5 bg-gray-200',
               )}
               aria-label={`${index + 1}번 슬라이드로 이동`}

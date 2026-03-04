@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import CreatePage from './pages/create/CreatePage';
 import SharePage from './pages/create/SharePage';
@@ -23,7 +23,6 @@ function App() {
     <Routes>
       <Route path="/preview/layout" element={<LayoutPreviewPage />} />
       <Route path="/" element={<StartPage />} />
-      <Route path="/start" element={<StartPage />} />
       <Route path="/create" element={<CreatePage />} />
       <Route path="/share/:code" element={<SharePage />} />
 
@@ -31,7 +30,7 @@ function App() {
         <Route index element={<MainPage />} />
         <Route path="join" element={<JoinPage />} />
         <Route path="reconnect" element={<ReconnectPage />} />
-        <Route path="setting" element={<SettingPage />} />
+        <Route path="settings" element={<SettingPage />} />
 
         <Route path="input/time" element={<TimeInputPage />} />
         <Route path="input/place" element={<PlaceInputPage />} />
@@ -41,6 +40,7 @@ function App() {
         <Route path="recommend/time" element={<TimeRecommendPage />} />
         <Route path="recommend/place" element={<PlaceRecommendPage />} />
       </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

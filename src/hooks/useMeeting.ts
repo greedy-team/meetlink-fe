@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import axios from 'axios';
+
 import { meetingKeys } from './queryKeys';
 
 import { createMeeting, getMeetingDetail, updateMeetingDetail } from '@/features/api/meetingApi';
@@ -22,6 +24,13 @@ export const useGetMeetingDetail = () => {
     queryFn: () => getMeetingDetail(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    retry: (failureCount, error) => {
+      //404 에러 일때만
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

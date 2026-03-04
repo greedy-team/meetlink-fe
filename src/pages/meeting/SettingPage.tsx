@@ -127,7 +127,7 @@ export default function SettingPage() {
         <div className="mx-3 flex flex-row gap-3 pt-2">
           <div className="flex-1">
             <FixedBottomButton
-              className="border-2 bg-white text-xl text-black hover:bg-gray-300"
+              className="border-2 bg-white text-black hover:bg-gray-100"
               onClick={() => navigate(`/meeting/${code}`)}
             >
               취소
@@ -160,12 +160,12 @@ export default function SettingPage() {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter className="flex-row gap-2">
-                    <AlertDialogCancel className="rounded-xl border-2 bg-white hover:bg-gray-300">
+                    <AlertDialogCancel className="h-10 flex-1 cursor-pointer rounded-xl border-2 bg-white shadow-none! hover:bg-gray-100">
                       취소
                     </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleSave}
-                      className="bg-greedy! hover:bg-greedy/50! rounded-xl text-white"
+                      className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
                     >
                       저장하기
                     </AlertDialogAction>

@@ -1,5 +1,6 @@
 import { Clock, MapPin } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { type ParticipantStatus } from '@/types/meetingTypes';
@@ -25,7 +26,7 @@ export function ParticipantStatusItem({
   return (
     <div
       className={cn(
-        'flex items-center justify-between px-4 py-3',
+        'mx-3 flex items-center justify-between py-3',
         !isLast && 'border-b-2 border-gray-100',
       )}
     >
@@ -42,7 +43,14 @@ export function ParticipantStatusItem({
         <span className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}>
           {nickName}
         </span>
-        {isMe && !isLoading && <span> (나)</span>}
+        {isMe && !isLoading && (
+          <Badge
+            variant="secondary"
+            className="bg-greedy/10 text-greedy hover:bg-greedy/10 h-5 w-5 rounded-full border-none p-3 text-xs font-bold"
+          >
+            나
+          </Badge>
+        )}
       </div>
 
       <div className="flex items-center gap-2">

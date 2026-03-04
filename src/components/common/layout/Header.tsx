@@ -30,7 +30,7 @@ export function Header({
     <header className="flex h-16 items-center border-b bg-white px-4">
       <div className="flex flex-1 items-center gap-2">
         {showBackButton && (
-          <button type="button" onClick={handleBack} className="flex items-center">
+          <button type="button" onClick={handleBack} className="flex cursor-pointer items-center">
             <ChevronLeft className="h-6 w-6" />
           </button>
         )}
@@ -41,8 +41,8 @@ export function Header({
       {showSettingButton && (
         <button
           type="button"
-          onClick={() => navigate('setting')}
-          className="inline-flex h-10 w-10 items-center justify-center"
+          onClick={() => navigate('settings')}
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center"
           aria-label="설정"
         >
           <Settings className="h-6 w-6" />

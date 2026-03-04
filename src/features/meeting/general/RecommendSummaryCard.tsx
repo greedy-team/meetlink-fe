@@ -113,14 +113,20 @@ export function RecommendSummaryCard({
         className,
       )}
     >
-      <div className="flex flex-col gap-2 p-3">
+      <div className="flex flex-col">
         {isPlaceRecommendEnabled && (
-          <LatLngMap
-            lat={bestPlace?.latitude ?? 37.54972}
-            lng={bestPlace?.longitude ?? 127.075475}
-            level={4}
-            className="h-40 w-full overflow-hidden rounded-t-2xl lg:h-50"
-          />
+          <div className="px-3 pt-3">
+            {!isLoading ? (
+              <LatLngMap
+                lat={bestPlace?.latitude ?? 37.54972}
+                lng={bestPlace?.longitude ?? 127.075475}
+                level={4}
+                className="h-40 w-full overflow-hidden rounded-2xl lg:h-50"
+              />
+            ) : (
+              <div className="h-40 rounded-2xl bg-gray-100 lg:h-50" />
+            )}
+          </div>
         )}
 
         {isTimeRecommendEnabled && (
@@ -134,7 +140,9 @@ export function RecommendSummaryCard({
         )}
 
         {isTimeRecommendEnabled && isPlaceRecommendEnabled && (
-          <div className="h-px w-full bg-gray-200" />
+          <div className="px-3">
+            <div className="h-px w-full bg-gray-200" />
+          </div>
         )}
 
         {isPlaceRecommendEnabled && (
