@@ -97,6 +97,18 @@ export default function TimeHeatMap({
   // 마우스 누를 때 드래그 시작 - 최소 위치 저장
   const handleMouseDown = (dayIndex: number, slotIdx: number, availableNum: number) => {
     if (mode === 'OUTPUT') return; // 출력 모드 라면 입력 안돼
+    if (dateType !== 'WEEKLY') {
+      // 지난 날짜 라면 안돼
+      const selectedDate = weekdays[dayIndex];
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+      selectedDate.setHours(0, 0, 0, 0);
+
+      if (selectedDate < today) {
+        return;
+      }
+    }
 
     //초기 선택으로 모드 설정
     const action = availableNum === 0 ? 'ADD' : 'REMOVE';
@@ -247,8 +259,8 @@ export default function TimeHeatMap({
           mode === 'INPUT' && 'touch-none', //스크롤 방지
         )}
       >
-        {weekdays.map((value, dayIndex) => {
-          const dateStr = format(value, 'yyyy-MM-dd');
+        {weekdays.map((date, dayIndex) => {
+          const dateStr = format(date, 'yyyy-MM-dd');
 
           return (
             <div
@@ -256,7 +268,12 @@ export default function TimeHeatMap({
               className="flex w-full flex-col border-r border-gray-200 last:border-r-0"
             >
               {timeSlots.map((timeStr, slotIdx) => {
-                const availableNum = getAvailableNumber(value.getDay(), dateStr, timeStr);
+                const selectedDate = date;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+
+                const isPastDate = today > selectedDate;
 
                 const isInDragBounds = // 좌표가 드래그 범위 안에 있는가?
                   mode === 'INPUT' && dragState.isDragging && dragState.start && dragState.current
@@ -267,6 +284,7 @@ export default function TimeHeatMap({
                     : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
+                const availableNum = getAvailableNumber(date.getDay(), dateStr, timeStr);
                 const newAvailableNum = isInDragBounds
                   ? dragState.action === 'ADD'
                     ? 1
@@ -301,6 +319,7 @@ export default function TimeHeatMap({
                         ? 'border-t border-gray-200'
                         : 'border-t border-dashed border-gray-100',
                       isLastSlot ? 'border-b border-gray-200' : '',
+                      isPastDate ? 'bg-gray-300' : '',
                       mode === 'INPUT' && !isSelected ? 'hover:bg-gray-50' : '',
                     )}
                   >
