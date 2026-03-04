@@ -50,10 +50,6 @@ export default function TimeHeatMap({
   const dragStateRef = useRef(dragState);
   const dataRefs = useRef({ weekdays: [] as Date[], timeSlots: [] as string[], dateType });
 
-  useEffect(() => {
-    dragStateRef.current = dragState;
-  }, [dragState]);
-
   //시간 범위에 따른 시간 단위 리스트
   const hours = useMemo(
     () => [...Array(endHour - startHour + 1)].map((_, i) => startHour + i),
@@ -81,6 +77,10 @@ export default function TimeHeatMap({
     }
   }, [selectedDate, dateType]);
 
+  // ref 값들 업데이트
+  useEffect(() => {
+    dragStateRef.current = dragState;
+  }, [dragState]);
   useEffect(() => {
     dataRefs.current = { weekdays, timeSlots, dateType };
   }, [weekdays, timeSlots, dateType]);
@@ -99,7 +99,7 @@ export default function TimeHeatMap({
     if (mode === 'OUTPUT') return; // 출력 모드 라면 입력 안돼
 
     //초기 선택으로 모드 설정
-    const action = availableNum === 0 ? 'REMOVE' : 'ADD';
+    const action = availableNum === 0 ? 'ADD' : 'REMOVE';
 
     setDragState({
       isDragging: true,
@@ -214,8 +214,8 @@ export default function TimeHeatMap({
       setDragState({ isDragging: false, start: null, current: null, action: null });
     };
 
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('mouseup', handleGlobalMouseUp); // 이벤트 등록 - 마우스 드래그 땔 때
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp); //언마운트 시
   }, [setSelectedTimeList]);
 
   return (
