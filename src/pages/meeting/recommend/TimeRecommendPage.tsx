@@ -7,7 +7,7 @@ import { useGetWholeAvailableTime } from '@/hooks/useTime';
 
 import { convertToCommonTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
-import TimeHeatMap from '@/features/Time/TimeHeapMap';
+import TimeHeatMap from '@/features/Time/TimeHeatMap';
 import TimeRecommendModal from '@/features/Time/TimeRecommendModal';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 

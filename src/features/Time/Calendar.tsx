@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { addDays, isBefore, isSameDay, isSameMonth, parseISO } from 'date-fns';
 import { ChevronDown } from 'lucide-react';

@@ -11,9 +11,6 @@ import {
   subDays,
   subMonths,
 } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
 
 import Calendar from './Calendar';
 import DateNavigator from './DateNavigator';

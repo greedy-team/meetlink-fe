@@ -9,7 +9,7 @@ import { useGetMyAvailableTime } from '@/hooks/useTime';
 
 import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
-import TimeHeatMap from '@/features/Time/TimeHeapMap';
+import TimeHeatMap from '@/features/Time/TimeHeatMap';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function TimeInputPage() {
