@@ -66,7 +66,7 @@ export default function TimeCalendar({
               const isSelectedWeek = weekIdx === selectedWeekIndex; // 선택된 주이면
 
               return (
-                <div
+                <div // 주단위 그룹
                   key={weekIdx}
                   className={cn(
                     'flex flex-row items-center justify-between text-center',
@@ -78,6 +78,7 @@ export default function TimeCalendar({
                   style={{ height: `${ROW_HEIGHT}px` }}
                 >
                   {week.map((date, dateIdx) => {
+                    // 일 별로
                     const isDisabled = isBefore(date, addDays(today, -1));
 
                     // 동일한 날짜 찾기

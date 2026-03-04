@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   addDays,
@@ -6,18 +6,17 @@ import {
   isBefore,
   isSameDay,
   isSameMonth,
-  parseISO,
   startOfMonth,
   startOfWeek,
   subDays,
   subMonths,
 } from 'date-fns';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 import TimeCalendar from './TimeCalendar';
-import { getParticipantsRatio, getWeeksInMonth } from './timeFunctions';
+import WeekdayBar from './WeekDayBar';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
@@ -31,10 +30,6 @@ interface TimeHeaderProps {
   timeRange: [number, number];
 }
 
-const DAYS: string[] = ['일', '월', '화', '수', '목', '금', '토'];
-
-// date를 포함하는 달력 배열 반환 함수
-
 export default function TimeHeader({
   dateType = 'SPECIFIC_DATE',
   selectedDate,
@@ -45,15 +40,6 @@ export default function TimeHeader({
 }: TimeHeaderProps) {
   //열고 닫고 상태
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  //요일에 따른 색상
-  const getDayColor = (dayIndex: number): string => {
-    if (dayIndex === 0) return 'text-red-500';
-    if (dayIndex === 6) return 'text-blue-500';
-    return 'text-gray-900';
-  };
-
-  //행 높이 상수
 
   //오늘, 이번주의 시작일
   const today = new Date();
@@ -142,41 +128,12 @@ export default function TimeHeader({
         )}
 
         {/* 요일 헤더 */}
-        <div
-          className={cn(
-            'flex flex-row justify-between bg-white px-10 pt-2 text-center',
-            dateType === 'WEEKLY' ? 'border-b border-gray-200 pb-2' : '', // 주간 이면 하단 보더 생성
-          )}
-        >
-          {DAYS.map((day, idx) => {
-            //일 ~ 토 순회
-            const matched =
-              dateType === 'WEEKLY' && selectedTimeList.length > 0 // 주간이고 선택된 시간들이 있을때
-                ? selectedTimeList.find((item) => Number(item.dayOfWeek) === idx) // 현재 요일과 같은 시간들
-                : null;
-
-            const ratio = getParticipantsRatio(matched, timeRange, participantsNum);
-
-            return (
-              <span
-                key={day}
-                className={cn(
-                  'mx-auto flex h-10 w-10 items-center justify-center text-center font-bold',
-                  dateType === 'WEEKLY' ? '' : getDayColor(idx),
-
-                  // 조건부 크기 및 스타일
-                  dateType === 'WEEKLY' ? 'text-lg' : 'text-sm',
-                  dateType === 'WEEKLY' && ratio > 0
-                    ? 'bg-greedy w-10 rounded-lg border text-white'
-                    : '',
-                )}
-                style={dateType === 'WEEKLY' && ratio > 0 ? { opacity: ratio } : {}}
-              >
-                {day}
-              </span>
-            );
-          })}
-        </div>
+        <WeekdayBar
+          dateType={dateType}
+          participantsNum={participantsNum}
+          selectedTimeList={selectedTimeList}
+          timeRange={timeRange}
+        />
 
         {/* 달력 - 특정 날짜 일때 */}
         {dateType === 'SPECIFIC_DATE' && (
