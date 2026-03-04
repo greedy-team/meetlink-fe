@@ -9,7 +9,7 @@ import { getParticipantsRatio, getWeeksInMonth } from './timeFunctions';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
-interface TimeCalendarProps {
+interface CalendarProps {
   isOpen: boolean;
   setIsOpen: (bool: boolean) => void;
   selectedDate: Date;
@@ -21,7 +21,7 @@ interface TimeCalendarProps {
 
 const ROW_HEIGHT = 44; // 행 높이 상수
 
-export default function TimeCalendar({
+export default function Calendar({
   isOpen,
   setIsOpen,
   selectedDate,
@@ -29,7 +29,7 @@ export default function TimeCalendar({
   selectedTimeList,
   participantsNum,
   timeRange,
-}: TimeCalendarProps) {
+}: CalendarProps) {
   // 열고 닫고 상태
 
   // 오늘 날짜

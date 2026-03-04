@@ -15,7 +15,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-import TimeCalendar from './TimeCalendar';
+import Calendar from './Calendar';
+import DateNavigator from './DateNavigator';
 import WeekdayBar from './WeekDayBar';
 
 import { type SelectedTime } from '@/types/meetingTypes';
@@ -98,36 +99,17 @@ export default function TimeHeader({
       )}
 
       <div className="relative z-20 w-full">
-        {dateType === 'SPECIFIC_DATE' && ( // 특정 날짜 일때
-          <div className="flex items-center justify-between bg-white px-26 pt-4 pb-2 text-lg font-bold text-gray-800">
-            <button // 이전 주/달 버튼
-              onClick={handlePrevClick}
-              disabled={isPrevDisabled}
-              className={cn(
-                'p-1 transition-colors',
-                isPrevDisabled
-                  ? 'cursor-not-allowed text-gray-300'
-                  : 'cursor-pointer text-gray-600 hover:text-gray-900',
-              )}
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            <span>
-              {/* 현재 년월 */}
-              {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월
-            </span>
-
-            <button // 다음 주/달 버튼
-              onClick={handleNextClick}
-              className="cursor-pointer p-1 text-gray-600 transition-colors hover:text-gray-900"
-            >
-              <ChevronRight size={24} />
-            </button>
-          </div>
+        {/* 달력 헤더 - 특정 날짜 일때 */}
+        {dateType === 'SPECIFIC_DATE' && (
+          <DateNavigator
+            handleNextClick={handleNextClick}
+            handlePrevClick={handlePrevClick}
+            isPrevDisabled={isPrevDisabled}
+            selectedDate={selectedDate}
+          />
         )}
 
-        {/* 요일 헤더 */}
+        {/* 요일 헤더 - 항상 렌더링*/}
         <WeekdayBar
           dateType={dateType}
           participantsNum={participantsNum}
@@ -137,7 +119,7 @@ export default function TimeHeader({
 
         {/* 달력 - 특정 날짜 일때 */}
         {dateType === 'SPECIFIC_DATE' && (
-          <TimeCalendar
+          <Calendar
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             selectedDate={selectedDate}
