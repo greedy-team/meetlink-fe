@@ -31,174 +31,140 @@ export default function TimeHeatMap({
 }: TimeHeatMapProps) {
   const [startHour, endHour] = timeRange;
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragAction, setDragAction] = useState<'SELECT' | 'DESELECT' | null>(null);
+  //시간 범위에 따른 시간 단위 리스트
+  const hours = useMemo(
+    () => [...Array(endHour - startHour + 1)].map((_, i) => startHour + i),
+    [startHour, endHour],
+  );
 
-  const lastToggledCell = useRef<string | null>(null);
+  //시간 범위에 따른 30분 단위 리스트 - 세로 히트맵
+  const timeSlots = useMemo(
+    () =>
+      Array.from({ length: endHour - startHour }, (_, i) => startHour + i).flatMap((hour) => {
+        const hourStr = hour.toString().padStart(2, '0');
+        return [`${hourStr}:00:00`, `${hourStr}:30:00`];
+      }),
+    [startHour, endHour],
+  );
 
-  useEffect(() => {
-    const handlePointerUpGlobal = () => {
-      setIsDragging(false);
-      setDragAction(null);
-      lastToggledCell.current = null;
-    };
-    window.addEventListener('pointerup', handlePointerUpGlobal);
-    return () => window.removeEventListener('pointerup', handlePointerUpGlobal);
-  }, []);
-
-  const hours = useMemo(() => {
-    const arr = [];
-    for (let i = startHour; i <= endHour; i++) arr.push(i);
-    return arr;
-  }, [startHour, endHour]);
-
-  const timeSlots = useMemo(() => {
-    const slots: string[] = [];
-    for (let i = startHour; i < endHour; i++) {
-      const hourStr = i.toString().padStart(2, '0');
-      slots.push(`${hourStr}:00:00`);
-      slots.push(`${hourStr}:30:00`);
+  //현재 날짜들
+  const weekdays = useMemo(() => {
+    if (dateType === 'WEEKLY') {
+      const start = startOfWeek(new Date()); // format 에러가 나지 않도록 Date 객체로 생성
+      return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
+    } else {
+      const start = startOfWeek(selectedDate);
+      return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
     }
-    return slots;
-  }, [startHour, endHour]);
+  }, [selectedDate, dateType]);
 
-  const weekDates = useMemo(() => {
-    const start = startOfWeek(selectedDate);
-    return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
-  }, [selectedDate]);
-
-  const getCellData = (dayIndex: number, dateStr: string, timeStr: string) => {
+  //해당 날짜의 시간의 가능 인원 수
+  const getAvailableNumber = (dayOfWeek: number, date: string, startTime: string) => {
     const targetDay = selectedTimeList.find((item) =>
-      dateType === 'WEEKLY' ? item.dayOfWeek === dayIndex : item.date === dateStr,
+      dateType === 'WEEKLY' ? item.dayOfWeek === dayOfWeek : item.date === date,
     );
-    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === timeStr);
+    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
     return timeInfo ? timeInfo.availableNumber : 0;
   };
 
-  const toggleTimeBlock = (
-    dayIndex: number,
-    dateStr: string,
-    timeStr: string,
-    forceMode?: 'SELECT' | 'DESELECT',
-  ) => {
-    if (mode === 'OUTPUT') return;
-
-    const availableNum = getCellData(dayIndex, dateStr, timeStr);
-    const currentlySelected = availableNum > 0;
-
-    if (forceMode === 'SELECT' && currentlySelected) return;
-    if (forceMode === 'DESELECT' && !currentlySelected) return;
+  //시간 토글 함수
+  const toggleTime = (dayOfWeek: number, date: string, startTime: string) => {
+    if (mode === 'OUTPUT') return; // 출력 모드라면 입력 안돼
 
     setSelectedTimeList((prev) => {
-      const newList = [...prev];
-      const targetIndex = newList.findIndex((item) =>
-        dateType === 'WEEKLY' ? item.dayOfWeek === dayIndex : item.date === dateStr,
+      const targetTime = prev.find(
+        (
+          selectedTime, // 클릭 한 시간의 날짜가 있나?
+        ) =>
+          dateType === 'WEEKLY' ? selectedTime.dayOfWeek === dayOfWeek : selectedTime.date === date,
       );
-
-      if (targetIndex >= 0) {
-        const target = { ...newList[targetIndex] };
-        const timeIndex = target.startTimeList.findIndex((t) => t.startTime === timeStr);
-
-        if (timeIndex >= 0) {
-          target.startTimeList = target.startTimeList.filter((_, idx) => idx !== timeIndex);
-          if (target.startTimeList.length === 0) newList.splice(targetIndex, 1);
-          else newList[targetIndex] = target;
-        } else {
-          target.startTimeList = [
-            ...target.startTimeList,
-            { startTime: timeStr, availableNumber: 1 },
-          ];
-          newList[targetIndex] = target;
-        }
-      } else if (forceMode !== 'DESELECT') {
-        newList.push({
-          date: dateType === 'WEEKLY' ? '' : dateStr,
-          dayOfWeek: dateType === 'WEEKLY' ? dayIndex : -1,
-          startTimeList: [{ startTime: timeStr, availableNumber: 1 }],
-        });
+      if (!targetTime) {
+        //없으면 시간 추가해서 반환
+        return [
+          ...prev,
+          {
+            date: dateType === 'WEEKLY' ? '' : date,
+            dayOfWeek: dateType === 'WEEKLY' ? dayOfWeek : -1,
+            startTimeList: [{ startTime, availableNumber: 1 }],
+          },
+        ];
       }
-      return newList;
+      // 클릭한 날짜에 해당 시간이 있나?
+      const isExisting = targetTime.startTimeList.find(
+        (timeInfo) => timeInfo.startTime === startTime,
+      );
+      const update = prev.map((selectedTime) => {
+        const isTarget = // 클릭한 날짜인가?
+          dateType === 'WEEKLY' ? selectedTime.dayOfWeek === dayOfWeek : selectedTime.date === date;
+        if (isTarget) {
+          // 맞음
+          return {
+            ...selectedTime,
+            startTimeList: isExisting
+              ? selectedTime.startTimeList.filter((t) => t.startTime !== startTime) // 있으면 제거
+              : [...selectedTime.startTimeList, { startTime, availableNumber: 1 }], // 없으면 추가
+          };
+        } else {
+          //아니면 패스
+          return selectedTime;
+        }
+      });
+      //제거함으로서 시작 시간이 없으면 제거
+      return update.filter((selectedTime) => selectedTime.startTimeList.length > 0);
     });
   };
 
-  const handlePointerDown = (dayIndex: number, dateStr: string, timeStr: string) => {
-    if (mode === 'OUTPUT') return;
-    setIsDragging(true);
-    const action = getCellData(dayIndex, dateStr, timeStr) > 0 ? 'DESELECT' : 'SELECT';
-    setDragAction(action);
-    lastToggledCell.current = `${dayIndex}-${timeStr}`;
-    toggleTimeBlock(dayIndex, dateStr, timeStr, action);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (mode === 'OUTPUT' || !isDragging || !dragAction || e.pointerType !== 'touch') return;
-
-    const target = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
-
-    if (target?.dataset.dayindex && target?.dataset.timestr) {
-      const dayIndex = parseInt(target.dataset.dayindex, 10);
-      const dateStr = target.dataset.datestr || '';
-      const timeStr = target.dataset.timestr;
-      const cellId = `${dayIndex}-${timeStr}`;
-
-      if (lastToggledCell.current !== cellId) {
-        lastToggledCell.current = cellId;
-        toggleTimeBlock(dayIndex, dateStr, timeStr, dragAction);
-      }
-    }
-  };
-
   return (
-    <div className="flex w-full font-sans select-none">
-      <div className="w-6 shrink-0 border-r border-gray-200 pr-2">
+    <div className="flex w-full justify-between font-sans select-none">
+      {/* 좌측 시간 */}
+      <div className="w-6 shrink-0 border-r border-gray-200">
         {hours.map((hour, idx) => (
           <div
             key={hour}
             className="relative text-right text-xs font-medium text-gray-400"
             style={{ height: idx === hours.length - 1 ? 'auto' : HOUR_HEIGHT }}
           >
-            <span className="absolute -top-[7px] right-0">{hour}</span>
+            <span className="absolute -top-1.75 right-0">{hour}</span>
           </div>
         ))}
       </div>
 
+      {/* 중앙 히트맵 시간 */}
       <div
-        className={cn('grid flex-1 grid-cols-7 bg-white', mode === 'INPUT' && 'touch-none')}
-        onPointerMove={handlePointerMove}
+        className={cn(
+          'flex w-full flex-row justify-between bg-white',
+          mode === 'INPUT' && 'touch-none',
+        )}
       >
-        {weekDates.map((date, dayIndex) => {
-          const dateStr = format(date, 'yyyy-MM-dd');
+        {weekdays.map((value, dayIndex) => {
+          const dateStr = format(value, 'yyyy-MM-dd');
 
           return (
-            <div key={dayIndex} className="flex flex-col border-r border-gray-200 last:border-r-0">
+            <div
+              key={dayIndex}
+              className="flex w-full flex-col border-r border-gray-200 last:border-r-0"
+            >
               {timeSlots.map((timeStr, slotIdx) => {
-                const availableNum = getCellData(dayIndex, dateStr, timeStr);
+                const availableNum = getAvailableNumber(value.getDay(), dateStr, timeStr);
                 const isTopHour = timeStr.endsWith(':00:00');
+                const isLastSlot = slotIdx === timeSlots.length - 1;
 
                 const opacityValue = availableNum > 0 ? availableNum / participantsNum : 0;
 
                 return (
-                  <div
+                  <button
                     key={slotIdx}
-                    data-dayindex={dayIndex}
-                    data-datestr={dateStr}
-                    data-timestr={timeStr}
-                    onPointerDown={() => handlePointerDown(dayIndex, dateStr, timeStr)}
-                    onPointerEnter={() =>
-                      mode === 'INPUT' &&
-                      isDragging &&
-                      dragAction &&
-                      toggleTimeBlock(dayIndex, dateStr, timeStr, dragAction)
-                    }
+                    onClick={() => toggleTime(value.getDay(), dateStr, timeStr)}
                     style={{
                       height: SLOT_HEIGHT,
                     }}
                     className={cn(
                       'relative transition-colors duration-100',
-                      mode === 'INPUT' && 'cursor-pointer',
+                      mode === 'INPUT' ? 'cursor-pointer' : '',
                       isTopHour
                         ? 'border-t border-gray-200'
                         : 'border-t border-dashed border-gray-100',
+                      isLastSlot ? 'border-b border-gray-200' : '',
                       mode === 'INPUT' && availableNum === 0 ? 'hover:bg-gray-50' : '',
                     )}
                   >
@@ -212,13 +178,16 @@ export default function TimeHeatMap({
                         }}
                       />
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
           );
         })}
       </div>
+
+      {/* 우측 여백 */}
+      <div className="w-6 shrink-0 border-l border-gray-200"></div>
     </div>
   );
 }
