@@ -46,14 +46,6 @@ export default function TimeHeader({
   //열고 닫고 상태
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // 선택된 날짜에 따른 해당 달력
-  const weeksInMonth = useMemo<Date[][]>(() => getWeeksInMonth(selectedDate), [selectedDate]);
-
-  //선택된 날짜와 같은 주 인데스
-  const selectedWeekIndex = useMemo(() => {
-    return weeksInMonth.findIndex((week) => week.some((d) => isSameDay(d, selectedDate)));
-  }, [weeksInMonth, selectedDate]);
-
   //요일에 따른 색상
   const getDayColor = (dayIndex: number): string => {
     if (dayIndex === 0) return 'text-red-500';
@@ -62,8 +54,6 @@ export default function TimeHeader({
   };
 
   //행 높이 상수
-  const ROW_HEIGHT = 44;
-  const contentHeight = weeksInMonth.length * ROW_HEIGHT;
 
   //오늘, 이번주의 시작일
   const today = new Date();
@@ -191,6 +181,8 @@ export default function TimeHeader({
         {/* 달력 - 특정 날짜 일때 */}
         {dateType === 'SPECIFIC_DATE' && (
           <TimeCalendar
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             selectedTimeList={selectedTimeList}

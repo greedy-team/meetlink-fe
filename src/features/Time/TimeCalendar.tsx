@@ -10,6 +10,8 @@ import { getParticipantsRatio, getWeeksInMonth } from './timeFunctions';
 import { type SelectedTime } from '@/types/meetingTypes';
 
 interface TimeCalendarProps {
+  isOpen: boolean;
+  setIsOpen: (bool: boolean) => void;
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
   selectedTimeList: SelectedTime[];
@@ -20,6 +22,8 @@ interface TimeCalendarProps {
 const ROW_HEIGHT = 44; // 행 높이 상수
 
 export default function TimeCalendar({
+  isOpen,
+  setIsOpen,
   selectedDate,
   setSelectedDate,
   selectedTimeList,
@@ -27,7 +31,6 @@ export default function TimeCalendar({
   timeRange,
 }: TimeCalendarProps) {
   // 열고 닫고 상태
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   // 오늘 날짜
   const today = useMemo(() => new Date(), []);
@@ -91,7 +94,7 @@ export default function TimeCalendar({
                         onClick={() => !isDisabled && setSelectedDate(date)}
                         className={cn(
                           'flex flex-1 cursor-pointer items-center justify-center text-lg font-bold',
-                          (!isSameMonth(date, selectedDate) || isDisabled) && 'opacity-40',
+                          (!isSameMonth(date, selectedDate) || isDisabled) && 'opacity-10',
                           isDisabled && 'cursor-not-allowed',
                         )}
                       >
