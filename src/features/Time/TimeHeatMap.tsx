@@ -119,6 +119,28 @@ export default function TimeHeatMap({
     }));
   };
 
+  // 모바일 터치 전용
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (mode === 'OUTPUT' || !dragState.isDragging) return;
+
+    // 현재 손가락의 화면 좌표 찾기
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
+
+    // 해당 좌표 아래에 있는 button을 찾고, 저장된 dataset을 읽어옴
+    const button = element?.closest('button[data-day]');
+    if (button) {
+      const dayIndex = Number(button.getAttribute('data-day'));
+      const slotIdx = Number(button.getAttribute('data-slot'));
+
+      // 이전 좌표와 다를 때만 업데이트
+      setDragState((prev) => {
+        if (prev.current?.x === dayIndex && prev.current?.y === slotIdx) return prev;
+        return { ...prev, current: { x: dayIndex, y: slotIdx } };
+      });
+    }
+  };
+
   // 드래그 종료 시 실제 데이터 반영
   useEffect(() => {
     const handleGlobalMouseUp = () => {
@@ -214,8 +236,14 @@ export default function TimeHeatMap({
       setDragState({ isDragging: false, start: null, current: null, action: null });
     };
 
-    window.addEventListener('mouseup', handleGlobalMouseUp); // 이벤트 등록 - 마우스 드래그 땔 때
-    return () => window.removeEventListener('mouseup', handleGlobalMouseUp); //언마운트 시
+    // 이벤트 등록 - 마우스 드래그 땔 때
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('touchend', handleGlobalMouseUp);
+    //언마운트 시 이벤트 제거
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('touchend', handleGlobalMouseUp);
+    };
   }, [setSelectedTimeList]);
 
   return (
@@ -237,8 +265,9 @@ export default function TimeHeatMap({
       <div
         className={cn(
           'flex w-full flex-row justify-between bg-white',
-          mode === 'INPUT' && 'touch-none',
+          mode === 'INPUT' && 'touch-none', //스크롤 방지
         )}
+        onTouchMove={handleTouchMove} // 터치 드래그 감지용 함수 등록
       >
         {weekdays.map((value, dayIndex) => {
           const dateStr = format(value, 'yyyy-MM-dd');
@@ -278,8 +307,15 @@ export default function TimeHeatMap({
                 return (
                   <button
                     key={slotIdx}
+                    // 📱 모바일에서 좌표 추적을 위해 data 속성 주입
+                    data-day={dayIndex}
+                    data-slot={slotIdx}
                     onMouseDown={(e) => {
                       e.preventDefault(); // 기본 드래그 방지
+                      handleMouseDown(dayIndex, slotIdx, availableNum);
+                    }}
+                    onTouchStart={(e) => {
+                      // 📱 모바일 터치 시작 이벤트 추가
                       handleMouseDown(dayIndex, slotIdx, availableNum);
                     }}
                     onMouseEnter={() => handleMouseEnter(dayIndex, slotIdx)}
