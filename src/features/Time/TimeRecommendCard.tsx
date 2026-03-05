@@ -16,17 +16,14 @@ const getDayText = (day: number) => {
   return days[day] ?? '';
 };
 
-const formatTime = (timeStr?: string | null) => {
-  if (!timeStr) return '';
+const formatTime = (timeStr: string) => {
+  const [hourStr, minuteStr] = timeStr.split(':');
+  let hour = parseInt(hourStr, 10);
+  const dayPart = hour < 12 ? '오전' : '오후';
 
-  const [hour] = timeStr.split(':');
-  const h = parseInt(hour, 10);
-
-  if (isNaN(h)) return '';
-
-  if (h < 12) return `오전 ${h}시`;
-  if (h === 12) return `오후 12시`;
-  return `오후 ${h - 12}시`;
+  if (hour > 12) hour -= 12;
+  if (hour === 0) hour = 12;
+  return `${dayPart} ${hour}:${minuteStr}`;
 };
 
 const getSafeDayOfWeek = (dateStr?: string | null, fallbackDay?: number) => {

@@ -23,9 +23,11 @@ export default function TimeInputPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('meeting_token');
-    if (token && isSuccess && myTimeList.result.availabilities) {
-      const converted = convertToSelectedTimeList(myTimeList.result.availabilities);
+    if (token && isSuccess && myTimeList.result) {
+      const converted = convertToSelectedTimeList(myTimeList.result);
+      console.log(myTimeList.result);
       setSelectedTimeList(converted);
+      console.log(myTimeList);
     }
   }, [isSuccess, myTimeList, setSelectedTimeList]);
 

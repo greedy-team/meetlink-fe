@@ -22,9 +22,9 @@ export default function TimeRecommendPage() {
   const commonTimeList = convertToCommonTimeList(wholeTimeData?.result);
   const candidateList = timeRecommendData?.result;
 
-  useEffect(() => {
-    calculateRecommendTime();
-  }, [calculateRecommendTime]);
+  // useEffect(() => {
+  //   calculateRecommendTime();
+  // }, [calculateRecommendTime]);
 
   return (
     <AppLayout

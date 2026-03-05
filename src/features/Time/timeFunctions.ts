@@ -91,7 +91,7 @@ export const convertToCommonTimeList = (
   participantTimeList.forEach((participant) => {
     const { nickname } = participant;
 
-    participant.availabilities.forEach((availabilities) => {
+    participant.availabilities?.forEach((availabilities) => {
       const hasDate = !!availabilities.date && availabilities.date !== '';
 
       // date와 dayOfWeek 값 설정
