@@ -22,16 +22,14 @@ export default function TimeRecommendPage() {
   const commonTimeList = convertToCommonTimeList(wholeTimeData?.result);
   const candidateList = timeRecommendData?.result;
 
-  console.log(candidateList);
   useEffect(() => {
-    console.log('didcalculate');
     calculateRecommendTime();
   }, [calculateRecommendTime]);
 
   return (
     <AppLayout
       header={
-        <div className="flex flex-col">
+        <>
           <Header title="추천 시간 후보" showBackButton={true} showSettingButton={false} />
           <TimeHeader
             dateType={dateType}
@@ -41,11 +39,11 @@ export default function TimeRecommendPage() {
             participantsNum={participantsNum}
             timeRange={timeRange}
           />
-        </div>
+        </>
       }
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
-        <div className="space-y-3">
+        <div className="relative space-y-3">
           <TimeRecommendModal
             candidateList={candidateList}
             participantsNum={participantsNum}
@@ -56,6 +54,7 @@ export default function TimeRecommendPage() {
           />
         </div>
       }
+      disableBottomPadding={true}
     >
       <div className="space-y-4">
         <TimeHeatMap

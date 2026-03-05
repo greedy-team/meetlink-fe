@@ -14,7 +14,7 @@ import {
 
 import Calendar from './Calendar';
 import DateNavigator from './DateNavigator';
-import WeekdayBar from './WeekDayBar';
+import WeekdayBar from './WeekdayBar';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
