@@ -17,7 +17,6 @@ export interface Candidate {
   date: string;
   dayOfWeek: number;
   endTime: string;
-  id: number;
   rank: number;
   startTime: string;
 }
@@ -168,7 +167,7 @@ export default function TimeRecommendModal({
               return (
                 //  분리한 카드를 가져와서 사용합니다.
                 <TimeRecommendCard
-                  key={candidate.id}
+                  key={candidate.rank}
                   candidate={candidate}
                   participantsNum={participantsNum}
                   isTopRank={isTopRank}

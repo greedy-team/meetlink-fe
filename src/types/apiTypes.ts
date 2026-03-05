@@ -139,7 +139,7 @@ export interface GetWholeAvailableTimeResponse {
       startTimes: string[];
     }[];
     nickname: string;
-  };
+  }[];
 
   code?: string;
   message?: string;

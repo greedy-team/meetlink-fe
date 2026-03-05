@@ -14,13 +14,13 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 export default function TimeRecommendPage() {
   const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
   const { data: wholeTimeData } = useGetWholeAvailableTime();
-  const { data: timeData } = useRecommendTime();
+  const { data: timeRecommendData } = useRecommendTime();
   const { mutate: calculateRecommendTime } = useCalculateRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const participantsNum = participantStatusList.length;
-  //const commonTimeList = convertToCommonTimeList(commonTimeData?.result.heatmaps);
-  const candidateList = timeData?.result;
+  const commonTimeList = convertToCommonTimeList(wholeTimeData?.result);
+  const candidateList = timeRecommendData?.result;
 
   console.log(candidateList);
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function TimeRecommendPage() {
             dateType={dateType}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            selectedTimeList={[]}
+            selectedTimeList={commonTimeList}
             participantsNum={participantsNum}
             timeRange={timeRange}
           />
@@ -47,10 +47,10 @@ export default function TimeRecommendPage() {
       bottom={
         <div className="space-y-3">
           <TimeRecommendModal
-            candidateList={[]}
+            candidateList={candidateList}
             participantsNum={participantsNum}
             setSelectedDate={setSelectedDate}
-            commonTimeList={[]}
+            commonTimeList={commonTimeList}
             dateType={dateType}
             timeRange={timeRange}
           />
@@ -64,7 +64,7 @@ export default function TimeRecommendPage() {
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}
-          selectedTimeList={[]}
+          selectedTimeList={commonTimeList}
           setSelectedTimeList={setSelectedTimeList}
         />
       </div>

@@ -7,7 +7,6 @@ export interface Candidate {
   date: string;
   dayOfWeek: number;
   endTime: string;
-  id: number;
   rank: number;
   startTime: string;
 }
