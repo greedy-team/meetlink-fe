@@ -319,7 +319,7 @@ export default function TimeHeatMap({
                         ? 'border-t border-gray-200'
                         : 'border-t border-dashed border-gray-100',
                       isLastSlot ? 'border-b border-gray-200' : '',
-                      isPastDate ? 'bg-gray-300' : '',
+                      isPastDate && dateType !== 'WEEKLY' ? 'bg-gray-300' : '',
                       mode === 'INPUT' && !isSelected ? 'hover:bg-gray-50' : '',
                     )}
                   >

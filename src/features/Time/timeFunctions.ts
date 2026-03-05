@@ -43,29 +43,17 @@ export const convertToAvailabilities = (
     });
 };
 
-export interface Heatmap {
-  date?: string;
-  dayOfWeek?: number;
-  slots: {
-    startTime: string;
-    availableCount: number;
-  }[];
-}
-
 export const convertToSelectedTimeList = (
   availabilities: Availability[] | undefined,
 ): SelectedTime[] => {
   if (!availabilities) return [];
 
   return availabilities.map((item) => {
-    // 1. startTimes 문자열 배열을 TimeInfo 객체 배열로 변환
     const startTimeList: TimeInfo[] = item.startTimes.map((time) => ({
       startTime: time,
       availableNumber: 1, // 1로 고정
     }));
 
-    // 2. 데이터 존재 여부에 따른 조건부 할당
-    // item.date가 존재하면 SPECIFIC_DATE 케이스, 아니면 WEEKLY 케이스로 간주
     const isSpecificDate = !!item.date && item.date !== '';
 
     return {
@@ -75,6 +63,15 @@ export const convertToSelectedTimeList = (
     };
   });
 };
+
+export interface Heatmap {
+  date?: string;
+  dayOfWeek?: number;
+  slots: {
+    startTime: string;
+    availableCount: number;
+  }[];
+}
 
 export const convertToCommonTimeList = (heatmaps: Heatmap[] | undefined): SelectedTime[] => {
   if (!heatmaps) return [];
