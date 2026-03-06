@@ -178,6 +178,7 @@ export default function JoinPage() {
               title="가능한 시간 선택"
               description="모임 만남 시간을 추천하는데 활용돼요"
               onClick={goTimeInput}
+              isDone={Boolean(selectedTimeList && selectedTimeList.length > 0)}
             />
           )}
 
@@ -187,6 +188,7 @@ export default function JoinPage() {
               title="출발지 입력"
               description="모임 만남 장소를 추천하는데 활용돼요"
               onClick={goPlaceInput}
+              isDone={Boolean(selectedPlace && selectedPlace.address)}
             />
           )}
         </div>

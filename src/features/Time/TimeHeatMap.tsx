@@ -4,6 +4,8 @@ import { addDays, format, startOfWeek } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 
+import { AvailableParticipantCard } from './AvailableParticipantCard';
+
 import { type SelectedTime } from '@/types/meetingTypes';
 
 // 히트맵 간격을 결정하는 스태틱 변수
@@ -92,6 +94,15 @@ export default function TimeHeatMap({
     );
     const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
     return timeInfo ? timeInfo.availableNumber : 0;
+  };
+
+  //해당 날짜의 시간의 가능 참여자 리스트
+  const getParticipantList = (dayOfWeek: number, date: string, startTime: string) => {
+    const targetDay = selectedTimeList.find((item) =>
+      dateType === 'WEEKLY' ? item.dayOfWeek === dayOfWeek : item.date === date,
+    );
+    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
+    return timeInfo ? timeInfo.participants : [];
   };
 
   // 마우스 누를 때 드래그 시작 - 최소 위치 저장
@@ -285,6 +296,7 @@ export default function TimeHeatMap({
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
                 const availableNum = getAvailableNumber(date.getDay(), dateStr, timeStr);
+                const participantList = getParticipantList(date.getDay(), dateStr, timeStr);
                 const newAvailableNum = isInDragBounds
                   ? dragState.action === 'ADD'
                     ? 1
@@ -301,39 +313,55 @@ export default function TimeHeatMap({
                 const opacityValue = mode === 'INPUT' ? 1 : newAvailableNum / participantsNum;
 
                 return (
-                  <button
+                  <AvailableParticipantCard
                     key={slotIdx}
-                    onPointerDown={(e) => {
-                      e.preventDefault(); // 기본 드래그 방지
-                      e.currentTarget.releasePointerCapture(e.pointerId); // 모바일 터치 드래그 잠금 해제
-                      handleMouseDown(dayIndex, slotIdx, availableNum);
-                    }}
-                    onPointerEnter={() => handleMouseEnter(dayIndex, slotIdx)}
-                    style={{
-                      height: SLOT_HEIGHT,
-                    }}
-                    className={cn(
-                      'relative transition-colors duration-100',
-                      mode === 'INPUT' ? 'cursor-pointer' : '',
-                      isTopHour
-                        ? 'border-t border-gray-200'
-                        : 'border-t border-dashed border-gray-100',
-                      isLastSlot ? 'border-b border-gray-200' : '',
-                      isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
-                      mode === 'INPUT' && !isSelected && !isPastDate ? 'hover:bg-gray-50' : '',
-                    )}
+                    side="right"
+                    mode={mode}
+                    isActivate={availableNum !== 0}
+                    content={
+                      <div className="flex flex-col">
+                        <span className="text-xs">가능 인원</span>
+                        <div>
+                          {participantList?.map((nickname) => {
+                            return nickname;
+                          })}
+                        </div>
+                      </div>
+                    }
                   >
-                    {/* 투명도와 배경색만 담당하는 내부 요소 */}
-                    {isSelected && (
-                      <div
-                        className="bg-greedy pointer-events-none absolute inset-0"
-                        style={{
-                          // OUTPUT 모드일 때만 비율에 따른 투명도 적용, INPUT일 때는 1(100%)
-                          opacity: opacityValue,
-                        }}
-                      />
-                    )}
-                  </button>
+                    <button
+                      onPointerDown={(e) => {
+                        e.preventDefault(); // 기본 드래그 방지
+                        e.currentTarget.releasePointerCapture(e.pointerId); // 모바일 터치 드래그 잠금 해제
+                        handleMouseDown(dayIndex, slotIdx, availableNum);
+                      }}
+                      onPointerEnter={() => handleMouseEnter(dayIndex, slotIdx)}
+                      style={{
+                        height: SLOT_HEIGHT,
+                      }}
+                      className={cn(
+                        'relative transition-colors duration-100',
+                        mode === 'INPUT' ? 'cursor-pointer' : '',
+                        isTopHour
+                          ? 'border-t border-gray-200'
+                          : 'border-t border-dashed border-gray-100',
+                        isLastSlot ? 'border-b border-gray-200' : '',
+                        isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
+                        mode === 'INPUT' && !isSelected && !isPastDate ? 'hover:bg-gray-50' : '',
+                      )}
+                    >
+                      {/* 투명도와 배경색만 담당하는 내부 요소 */}
+                      {isSelected && (
+                        <div
+                          className="bg-greedy pointer-events-none absolute inset-0"
+                          style={{
+                            // OUTPUT 모드일 때만 비율에 따른 투명도 적용, INPUT일 때는 1(100%)
+                            opacity: opacityValue,
+                          }}
+                        />
+                      )}
+                    </button>
+                  </AvailableParticipantCard>
                 );
               })}
             </div>
