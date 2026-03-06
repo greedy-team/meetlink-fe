@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -14,6 +14,7 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function TimeInputPage() {
   const { dateType, timeRange, selectedTimeList, setSelectedTimeList } = useMeetingContext();
+  const { code } = useParams<{ code: string }>();
 
   const { data: myTimeList, isSuccess } = useGetMyAvailableTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -36,12 +37,14 @@ export default function TimeInputPage() {
       saveTime(
         { availabilities: convertedData },
         {
-          onSuccess: (data) => {
-            navigate(-1);
+          onSuccess: () => {
+            navigate(`/meeting/${code}/`);
           },
-          onError: (error) => {},
+          onError: () => {},
         },
       );
+    } else {
+      navigate(`/meeting/${code}/join`);
     }
   };
 
