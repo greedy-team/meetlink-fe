@@ -24,7 +24,7 @@ export function RecommendItem({
     <button
       onClick={onClick}
       className={cn(
-        'flex items-start justify-between gap-4 rounded-xl p-3 transition-all duration-200',
+        'flex items-center justify-between gap-4 rounded-xl p-3 transition-all duration-200',
         onClick && 'cursor-pointer hover:bg-gray-100 active:scale-[0.98]',
         className,
       )}
@@ -48,7 +48,7 @@ export function RecommendItem({
         </span>
         <span
           className={cn(
-            'text-lg leading-tight font-bold',
+            'text-lg leading-tight font-bold break-keep',
             value ? 'text-gray-900' : 'text-gray-400',
             isLoading ? 'm-0.5 w-60 rounded-lg bg-gray-100 text-gray-100' : '',
           )}

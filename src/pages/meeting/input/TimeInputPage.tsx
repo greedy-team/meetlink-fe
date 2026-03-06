@@ -36,12 +36,13 @@ export default function TimeInputPage() {
       saveTime(
         { availabilities: convertedData },
         {
-          onSuccess: (data) => {},
+          onSuccess: (data) => {
+            navigate(-1);
+          },
           onError: (error) => {},
         },
       );
     }
-    navigate(-1);
   };
 
   return (
