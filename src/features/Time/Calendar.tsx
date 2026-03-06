@@ -123,7 +123,7 @@ export default function Calendar({
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
             'h-6 w-full rounded-b-xl bg-white text-gray-400 transition-colors hover:bg-gray-50',
-            'flex items-center justify-center',
+            'flex cursor-pointer items-center justify-center',
           )}
         >
           <ChevronDown
