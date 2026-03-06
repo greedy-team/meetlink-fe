@@ -56,7 +56,7 @@ export default function TimeRecommendPage() {
       }
       disableBottomPadding={true}
     >
-      <div className="space-y-4">
+      <div className="mb-10 space-y-4">
         <TimeHeatMap
           mode="OUTPUT"
           participantsNum={participantsNum}

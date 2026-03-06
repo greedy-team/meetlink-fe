@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { motion, type PanInfo, useAnimation } from 'framer-motion';
+import { animate, motion, type PanInfo, useMotionValue } from 'framer-motion';
 
 import { TimeRecommendCard } from './TimeRecommendCard';
 
@@ -11,6 +11,8 @@ const SHEET_CONFIG = {
   HALF_VH: 50,
   PEEK_PX: 70,
 };
+
+const SPRING = { type: 'spring', damping: 30, stiffness: 300, mass: 0.8 } as const;
 
 type SheetState = 'peek' | 'half' | 'full';
 
@@ -32,6 +34,22 @@ interface TimeRecommendModalProps {
   dateType: string;
 }
 
+function getSafeAreaBottom(): number {
+  if (typeof window === 'undefined') return 0;
+  const el = document.createElement('div');
+  el.style.cssText =
+    'position:fixed;bottom:0;left:0;width:0;height:0;padding-bottom:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none;';
+  document.body.appendChild(el);
+  const value = parseInt(getComputedStyle(el).paddingBottom, 10) || 0;
+  document.body.removeChild(el);
+  return value;
+}
+
+function getViewportHeight(): number {
+  if (typeof window === 'undefined') return 800;
+  return window.visualViewport?.height ?? window.innerHeight;
+}
+
 export default function TimeRecommendModal({
   candidateList,
   participantsNum,
@@ -41,60 +59,80 @@ export default function TimeRecommendModal({
   dateType,
 }: TimeRecommendModalProps) {
   const [sheetState, setSheetState] = useState<SheetState>('peek');
-  const controls = useAnimation();
-
-  const [windowHeight, setWindowHeight] = useState(
-    typeof window !== 'undefined' ? window.innerHeight : 800,
-  );
+  const [viewportHeight, setViewportHeight] = useState(getViewportHeight);
+  const [safeAreaBottom, setSafeAreaBottom] = useState(() => getSafeAreaBottom());
+  const y = useMotionValue(0);
 
   useEffect(() => {
-    const handleResize = () => setWindowHeight(window.innerHeight);
+    const handleResize = () => {
+      setViewportHeight(getViewportHeight());
+      setSafeAreaBottom(getSafeAreaBottom());
+    };
+    window.visualViewport?.addEventListener('resize', handleResize);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
-
-  useEffect(() => {
-    controls.start(sheetState);
-  }, [sheetState, controls]);
 
   useEffect(() => {
     const isOpened = sheetState !== 'peek';
     document.body.style.overflow = isOpened ? 'hidden' : '';
     document.body.style.touchAction = isOpened ? 'none' : 'auto';
-
     return () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = 'auto';
     };
   }, [sheetState]);
 
-  const variants = useMemo(() => {
-    const modalActualHeight = windowHeight * (SHEET_CONFIG.FULL_VH / 100);
+  const modalHeight = useMemo(
+    () => viewportHeight * (SHEET_CONFIG.FULL_VH / 100),
+    [viewportHeight],
+  );
+
+  const snapPoints = useMemo(() => {
+    const peekVisible = SHEET_CONFIG.PEEK_PX + safeAreaBottom;
     return {
-      full: { y: 0 },
-      half: { y: windowHeight * ((SHEET_CONFIG.FULL_VH - SHEET_CONFIG.HALF_VH) / 100) },
-      peek: { y: modalActualHeight - SHEET_CONFIG.PEEK_PX },
+      full: 0,
+      half: viewportHeight * ((SHEET_CONFIG.FULL_VH - SHEET_CONFIG.HALF_VH) / 100),
+      peek: modalHeight - peekVisible,
     };
-  }, [windowHeight]);
+  }, [viewportHeight, safeAreaBottom, modalHeight]);
+
+  useEffect(() => {
+    y.set(snapPoints[sheetState]);
+  }, [snapPoints, sheetState, y]);
+
+  useEffect(() => {
+    y.set(snapPoints.peek);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const snapTo = useCallback(
+    (state: SheetState) => {
+      setSheetState(state);
+      animate(y, snapPoints[state], SPRING);
+    },
+    [snapPoints, y],
+  );
 
   const handleDragEnd = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-      const currentY = variants[sheetState].y + info.offset.y;
+      const currentY = y.get();
       const projectedY = currentY + info.velocity.y * 0.1;
 
-      const distances = [
-        { state: 'full' as SheetState, dist: Math.abs(projectedY - variants.full.y) },
-        { state: 'half' as SheetState, dist: Math.abs(projectedY - variants.half.y) },
-        { state: 'peek' as SheetState, dist: Math.abs(projectedY - variants.peek.y) },
-      ];
+      const closest = (
+        [
+          { state: 'full' as SheetState, val: snapPoints.full },
+          { state: 'half' as SheetState, val: snapPoints.half },
+          { state: 'peek' as SheetState, val: snapPoints.peek },
+        ] as const
+      ).reduce((a, b) => (Math.abs(projectedY - a.val) <= Math.abs(projectedY - b.val) ? a : b));
 
-      distances.sort((a, b) => a.dist - b.dist);
-      const nextState = distances[0].state;
-
-      setSheetState(nextState);
-      controls.start(nextState);
+      snapTo(closest.state);
     },
-    [sheetState, variants, controls],
+    [y, snapPoints, snapTo],
   );
 
   const handleCardClick = useCallback(
@@ -102,42 +140,36 @@ export default function TimeRecommendModal({
       if (dateType !== 'WEEKLY' && candidate.date) {
         setSelectedDate(new Date(candidate.date));
       }
-      setSheetState('peek');
+      snapTo('peek');
     },
-    [dateType, setSelectedDate],
+    [dateType, setSelectedDate, snapTo],
   );
 
   if (!candidateList || candidateList.length === 0) return null;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 h-dvh overflow-hidden">
-      {/* Dim 배경 레이어 */}
       {sheetState !== 'peek' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.4 }}
           exit={{ opacity: 0 }}
-          onClick={() => setSheetState('peek')}
+          onClick={() => snapTo('peek')}
           className="pointer-events-auto absolute inset-0 cursor-pointer bg-black"
         />
       )}
 
-      {/* 바텀 시트 메인 */}
       <motion.div
-        variants={variants}
-        initial="peek"
-        animate={controls}
-        transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
+        style={{ y, height: `${modalHeight}px` }}
         drag="y"
-        dragConstraints={{ top: 0, bottom: variants.peek.y }}
-        dragElastic={0.1}
+        dragConstraints={{ top: snapPoints.full, bottom: snapPoints.peek }}
+        dragElastic={0.05}
         dragMomentum={false}
         onDragEnd={handleDragEnd}
-        style={{ height: `${SHEET_CONFIG.FULL_VH}vh` }}
         className="pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col rounded-t-4xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
       >
         <button
-          onClick={() => sheetState === 'peek' && setSheetState('half')}
+          onClick={() => sheetState === 'peek' && snapTo('half')}
           className="flex cursor-grab flex-col items-center pt-3 pb-4 active:cursor-grabbing"
           aria-label="Expand recommendation sheet"
         >
@@ -151,7 +183,8 @@ export default function TimeRecommendModal({
         </button>
 
         <div
-          className="flex flex-1 touch-pan-y flex-col gap-4 overflow-y-auto overscroll-contain px-6 pb-20"
+          className="flex flex-1 touch-pan-y flex-col gap-4 overflow-y-auto overscroll-contain px-6"
+          style={{ paddingBottom: `calc(5rem + ${safeAreaBottom}px)` }}
           onPointerDownCapture={(e) => e.stopPropagation()}
         >
           {candidateList.map((candidate, index) => (
