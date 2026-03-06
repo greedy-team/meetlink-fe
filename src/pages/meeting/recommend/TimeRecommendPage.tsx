@@ -19,7 +19,6 @@ export default function TimeRecommendPage() {
 
   const participantsNum = participantStatusList.length;
   const commonTimeList = useMemo(() => {
-    console.log(wholeTimeData);
     return convertToCommonTimeList(wholeTimeData?.result);
   }, [wholeTimeData]);
 

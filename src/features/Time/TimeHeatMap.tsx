@@ -273,7 +273,7 @@ export default function TimeHeatMap({
                 today.setHours(0, 0, 0, 0);
                 selectedDate.setHours(0, 0, 0, 0);
 
-                const isPastDate = today > selectedDate;
+                const isPastDate = today > selectedDate && dateType !== 'WEEKLY';
 
                 const isInDragBounds = // 좌표가 드래그 범위 안에 있는가?
                   mode === 'INPUT' && dragState.isDragging && dragState.start && dragState.current
@@ -319,8 +319,8 @@ export default function TimeHeatMap({
                         ? 'border-t border-gray-200'
                         : 'border-t border-dashed border-gray-100',
                       isLastSlot ? 'border-b border-gray-200' : '',
-                      isPastDate && dateType !== 'WEEKLY' ? 'bg-gray-300' : '',
-                      mode === 'INPUT' && !isSelected ? 'hover:bg-gray-50' : '',
+                      isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
+                      mode === 'INPUT' && !isSelected && !isPastDate ? 'hover:bg-gray-50' : '',
                     )}
                   >
                     {/* 투명도와 배경색만 담당하는 내부 요소 */}

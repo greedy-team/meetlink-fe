@@ -25,9 +25,7 @@ export default function TimeInputPage() {
     const token = localStorage.getItem('meeting_token');
     if (token && isSuccess && myTimeList.result) {
       const converted = convertToSelectedTimeList(myTimeList.result);
-      console.log(myTimeList.result);
       setSelectedTimeList(converted);
-      console.log(myTimeList);
     }
   }, [isSuccess, myTimeList, setSelectedTimeList]);
 
