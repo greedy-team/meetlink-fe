@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
-import { useCalculateRecommendTime, useRecommendTime } from '@/hooks/useRecommend';
+import { useRecommendTime } from '@/hooks/useRecommend';
 import { useGetWholeAvailableTime } from '@/hooks/useTime';
 
 import { convertToCommonTimeList } from '@/features/Time/timeFunctions';
@@ -15,16 +15,15 @@ export default function TimeRecommendPage() {
   const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
-  const { mutate: calculateRecommendTime } = useCalculateRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const participantsNum = participantStatusList.length;
-  const commonTimeList = convertToCommonTimeList(wholeTimeData?.result);
-  const candidateList = timeRecommendData?.result;
+  const commonTimeList = useMemo(() => {
+    console.log(wholeTimeData);
+    return convertToCommonTimeList(wholeTimeData?.result);
+  }, [wholeTimeData]);
 
-  // useEffect(() => {
-  //   calculateRecommendTime();
-  // }, [calculateRecommendTime]);
+  const candidateList = timeRecommendData?.result;
 
   return (
     <AppLayout

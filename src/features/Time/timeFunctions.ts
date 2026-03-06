@@ -48,8 +48,8 @@ export const convertToSelectedTimeList = (
 ): SelectedTime[] => {
   if (!availabilities) return [];
 
-  return availabilities.map((item) => {
-    const startTimeList: TimeInfo[] = item.startTimes.map((time) => ({
+  return availabilities?.map((item) => {
+    const startTimeList: TimeInfo[] = item.startTimes?.map((time) => ({
       startTime: time,
       availableNumber: 1, // 1로 고정
     }));
