@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { recommendKeys } from './queryKeys';
 
 import {
-  calculateRecommendPlace,
   calculateRecommendTime,
   getRecommendPlace,
   getRecommendResult,
@@ -53,25 +52,6 @@ export const useRecommendPlace = () => {
     queryFn: () => getRecommendPlace(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
-  });
-};
-
-//추천 시간 계산 요청
-export const useCalculateRecommendPlace = () => {
-  const queryClient = useQueryClient();
-  const { code } = useParams<{ code: string }>();
-  const token = localStorage.getItem('meeting_token'); // 토큰 가져오기
-
-  return useMutation({
-    mutationFn: () => calculateRecommendPlace(code!),
-
-    onSuccess: (data) => {
-      if (data.status) {
-        queryClient.invalidateQueries({
-          queryKey: recommendKeys.place(code!, token),
-        });
-      }
-    },
   });
 };
 
