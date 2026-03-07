@@ -26,23 +26,22 @@ export function PlaceRecommendOverlay({
   const selectedPlace = places.find((p) => p.rank === selectedRank);
 
   return (
-    <div className="pointer-events-none absolute inset-0">
+    <div className="pointer-events-none absolute inset-0 flex flex-col justify-between">
       {/* 상단 칩 */}
-      <div className="pointer-events-auto px-4 pt-2">
+      <div className="px-4 pt-2">
         {selectedPlace && (
-          <ParticipantChips
-            movements={selectedPlace.participantMovementList}
-            selectedNickName={selectedNickName}
-            onChangeSelected={onChangeSelectedNickName}
-          />
+          <div className="pointer-events-auto">
+            <ParticipantChips
+              movements={selectedPlace.participantMovementList}
+              selectedNickName={selectedNickName}
+              onChangeSelected={onChangeSelectedNickName}
+            />
+          </div>
         )}
       </div>
 
       {/* 하단 카드 */}
-      <div
-        className="pointer-events-auto absolute inset-x-0 bottom-0 px-4"
-        style={{ paddingBottom: bottomCtaHeightPx + 2 }}
-      >
+      <div className="pointer-events-auto px-4" style={{ paddingBottom: bottomCtaHeightPx + 2 }}>
         <PlaceCards places={places} selectedRank={selectedRank} onSelect={onSelectRank} />
       </div>
     </div>
