@@ -4,6 +4,7 @@ type OpenMapButtonProps = {
   longitude: string;
   memberStartLatitude?: string;
   memberStartLongitude?: string;
+  memberName?: string | null;
   disabled?: boolean;
 };
 
@@ -12,26 +13,54 @@ function isMobile() {
   return /Android|iPhone|iPad|iPod/i.test(ua);
 }
 
-function buildKakaoRouteUrl(params: { sp?: string; ep: string }) {
+function buildKakaoRouteUrl(params: { sp?: string; ep: string; sn?: string; en?: string }) {
   const qs = new URLSearchParams();
   if (params.sp) qs.set('sp', params.sp);
   qs.set('ep', params.ep);
+  if (params.sn) qs.set('sn', params.sn); // 출발지명(실제 주소)
+  if (params.en) qs.set('en', params.en); // 도착지명
   return `kakaomap://route?${qs.toString()}`;
 }
 
-function buildKakaoRouteMobileWebFallbackUrl(params: { sp?: string; ep: string }) {
+function buildKakaoRouteMobileWebFallbackUrl(params: {
+  sp?: string;
+  ep: string;
+  sn?: string;
+  en?: string;
+}) {
   const qs = new URLSearchParams();
   if (params.sp) qs.set('sp', params.sp);
   qs.set('ep', params.ep);
+  if (params.sn) qs.set('sn', params.sn);
+  if (params.en) qs.set('en', params.en);
   return `http://m.map.kakao.com/scheme/route?${qs.toString()}`;
 }
 
 function openWithMobileFallback(appUrl: string, fallbackUrl: string) {
   window.location.href = appUrl;
-  window.setTimeout(() => {
-    window.location.href = fallbackUrl;
-  }, 800);
+  window.setTimeout(() => (window.location.href = fallbackUrl), 800);
 }
+
+// 좌표(위도/경도) -> 실제 주소로 변환
+const getAddressFromCoords = (lat: number, lng: number): Promise<string | null> => {
+  return new Promise((resolve) => {
+    const kakao = window.kakao;
+    if (!kakao?.maps?.services?.Geocoder) {
+      resolve(null);
+      return;
+    }
+    const geocoder = new kakao.maps.services.Geocoder();
+    geocoder.coord2Address(lng, lat, (result, status) => {
+      if (status === kakao.maps.services.Status.OK && result[0]) {
+        // 도로명 주소가 있으면 우선 사용, 없으면 지번 주소 사용
+        const address = result[0].road_address?.address_name || result[0].address?.address_name;
+        resolve(address || null);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+};
 
 export function OpenMapButton({
   placeName,
@@ -39,50 +68,65 @@ export function OpenMapButton({
   longitude,
   memberStartLatitude,
   memberStartLongitude,
+  memberName,
   disabled,
 }: OpenMapButtonProps) {
   const isDisabled = disabled || !latitude || !longitude;
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (isDisabled) return;
 
     const ep = `${latitude},${longitude}`;
+    const en = placeName; // 도착지 이름은 장소명으로 고정
 
-    // 경로 표시 중이면 멤버 출발좌표 사용
-    if (memberStartLatitude && memberStartLongitude) {
-      const sp = `${memberStartLatitude},${memberStartLongitude}`;
-      const appUrl = buildKakaoRouteUrl({ sp, ep });
-      const fallbackUrl = buildKakaoRouteMobileWebFallbackUrl({ sp, ep });
+    // 데스크탑 팝업 차단 우회: 클릭 즉시 빈 새 창을 먼저 띄워둠
+    const newWindow = !isMobile() ? window.open('', '_blank') : null;
 
-      if (isMobile()) openWithMobileFallback(appUrl, fallbackUrl);
-      else window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+    const executeMap = (sp: string | undefined, sn: string | undefined) => {
+      const appUrl = buildKakaoRouteUrl({ sp, ep, sn, en });
+      const fallbackUrl = buildKakaoRouteMobileWebFallbackUrl({ sp, ep, sn, en });
+
+      if (isMobile()) {
+        if (newWindow) newWindow.close(); // 모바일이면 새 창 닫고 앱 열기
+        openWithMobileFallback(appUrl, fallbackUrl);
+      } else if (newWindow) {
+        newWindow.location.href = fallbackUrl; // 데스크탑은 띄워둔 새 창을 카카오맵으로 바꿈
+      }
+    };
+
+    // 멤버 경로가 있을 때
+    if (memberStartLatitude && memberStartLongitude && memberName) {
+      const lat = Number(memberStartLatitude);
+      const lng = Number(memberStartLongitude);
+      const sp = `${lat},${lng}`;
+
+      // 멤버 좌표 -> 실제 주소 변환
+      const address = await getAddressFromCoords(lat, lng);
+      const sn = address || `${memberName} 출발지`;
+
+      executeMap(sp, sn);
       return;
     }
 
-    // 경로 없으면 현재 위치를 sp로 시도
-    const openWithoutSp = () => {
-      const appUrl = buildKakaoRouteUrl({ ep });
-      const fallbackUrl = buildKakaoRouteMobileWebFallbackUrl({ ep });
-
-      if (isMobile()) openWithMobileFallback(appUrl, fallbackUrl);
-      else window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
-    };
-
+    // 경로 없을 때 (장소 카드만 선택 하면 현재 내 위치에서 길찾기)
     if (!navigator.geolocation) {
-      openWithoutSp();
+      executeMap(undefined, undefined);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const sp = `${pos.coords.latitude},${pos.coords.longitude}`;
-        const appUrl = buildKakaoRouteUrl({ sp, ep });
-        const fallbackUrl = buildKakaoRouteMobileWebFallbackUrl({ sp, ep });
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const sp = `${lat},${lng}`;
 
-        if (isMobile()) openWithMobileFallback(appUrl, fallbackUrl);
-        else window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+        // 내 GPS 좌표로 실제 주소 번역
+        const address = await getAddressFromCoords(lat, lng);
+        const sn = address || '내 위치';
+
+        executeMap(sp, sn);
       },
-      () => openWithoutSp(),
+      () => executeMap(undefined, undefined), // GPS 동의 거절 시 도착지만 넘김
       { enableHighAccuracy: true, timeout: 5000, maximumAge: 30_000 },
     );
   };
