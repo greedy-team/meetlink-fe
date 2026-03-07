@@ -127,7 +127,7 @@ export default function Calendar({
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            'h-6 w-full rounded-b-xl bg-white text-gray-400 transition-colors hover:bg-gray-50',
+            '-mt-px h-6 w-full rounded-b-xl bg-white text-gray-400 transition-colors hover:bg-gray-50',
             'flex cursor-pointer items-center justify-center',
           )}
         >
