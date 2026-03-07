@@ -2,88 +2,115 @@ import { useMemo, useState } from 'react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
+import { useRecommendPlace } from '@/hooks/useRecommend';
 
 import { KakaoMapView } from '@/features/place/ui/KakaoMapView';
 import { OpenMapButton } from '@/features/place/ui/OpenMapButton';
 import { PlaceRecommendOverlay } from '@/features/place/ui/PlaceRecommendOverlay';
-import { type RecommendPlace } from '@/types/meetingTypes';
+import { type PathSegment, type RecommendPlace } from '@/types/meetingTypes';
 
-const MOCK_RECOMMEND_PLACES: RecommendPlace[] = [
-  {
-    rank: 1,
-    placeName: '강남역 11번 출구',
-    placeAddress: '서울 서초구 강남대로 405',
-    latitude: '37.497942',
-    longitude: '127.027621',
-    averageTime: 34,
-    maxTime: 47,
-    participantMovementList: [
-      {
-        nickName: '민수 (나)',
-        takenTime: 25,
-        movementData: '',
-        movementPath: [
-          { lat: 37.501, lng: 127.035 },
-          { lat: 37.499, lng: 127.031 },
-          { lat: 37.4982, lng: 127.0288 },
-        ],
-      },
-      { nickName: '민지', takenTime: 25, movementData: '', movementPath: [] },
-      { nickName: '민준', takenTime: 25, movementData: '', movementPath: [] },
-      { nickName: '민성', takenTime: 25, movementData: '', movementPath: [] },
-    ],
-  },
-  {
-    rank: 2,
-    placeName: '선릉역 5번 출구',
-    placeAddress: '서울 강남구 테헤란로 340',
-    latitude: '37.504503',
-    longitude: '127.048954',
-    averageTime: 36,
-    maxTime: 50,
-    participantMovementList: [
-      { nickName: '민수 (나)', takenTime: 27, movementData: '', movementPath: [] },
-      { nickName: '민지', takenTime: 26, movementData: '', movementPath: [] },
-      { nickName: '민준', takenTime: 33, movementData: '', movementPath: [] },
-      { nickName: '민성', takenTime: 29, movementData: '', movementPath: [] },
-    ],
-  },
-];
+interface RawSegment {
+  coordinates?: [number, number][]; // [위도, 경도] 형태의 숫자 배열
+  mode?: string;
+}
+
+interface RawRoute {
+  nickname: string;
+  travelTime: number;
+  segments?: RawSegment[];
+}
+
+interface RawRecommendPlaceItem {
+  rank: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  avgTravelTime: number;
+  maxTravelTime: number;
+  routes?: RawRoute[];
+}
 
 export default function PlaceRecommendPage() {
-  const places = MOCK_RECOMMEND_PLACES;
+  const { data, isLoading } = useRecommendPlace();
 
-  const initialRank = places[0]?.rank ?? 1;
-  const [selectedRank, setSelectedRank] = useState<number>(initialRank);
+  const places: RecommendPlace[] = useMemo(() => {
+    if (!data?.result) return [];
+
+    return data.result.map((item: RawRecommendPlaceItem) => ({
+      rank: item.rank,
+      placeName: item.name,
+      placeAddress: item.address,
+      latitude: item.latitude.toString(),
+      longitude: item.longitude.toString(),
+      averageTime: Math.round(item.avgTravelTime / 60),
+      maxTime: Math.round(item.maxTravelTime / 60),
+      participantMovementList: (item.routes || []).map((route: RawRoute) => {
+        const flatPath: { lat: number; lng: number }[] = [];
+        const mappedSegments: PathSegment[] = [];
+
+        if (route.segments) {
+          route.segments.forEach((seg: RawSegment) => {
+            if (seg.coordinates && seg.coordinates.length > 0) {
+              const currentSegPath = seg.coordinates.map((coord) => ({
+                lat: coord[0],
+                lng: coord[1],
+              }));
+
+              flatPath.push(...currentSegPath);
+
+              mappedSegments.push({
+                mode: seg.mode || 'WALK',
+                path: currentSegPath,
+              });
+            }
+          });
+        }
+
+        return {
+          nickName: route.nickname,
+          takenTime: Math.round(route.travelTime / 60),
+          movementData: route.segments?.[0]?.mode || 'WALK',
+          movementPath: flatPath,
+          segments: mappedSegments,
+        };
+      }),
+    }));
+  }, [data]);
+
+  const [selectedRank, setSelectedRank] = useState<number>(1);
   const [selectedNickName, setSelectedNickName] = useState<string | null>(null);
 
+  const activeRank = places.some((p) => p.rank === selectedRank)
+    ? selectedRank
+    : (places[0]?.rank ?? 1);
+
   const selectedPlace = useMemo(
-    () => places.find((p) => p.rank === selectedRank) ?? places[0],
-    [places, selectedRank],
+    () => places.find((p) => p.rank === activeRank) ?? places[0],
+    [places, activeRank],
   );
 
-  const center = useMemo(
-    () => ({
+  const center = useMemo(() => {
+    if (!selectedPlace) return { lat: 37.5665, lng: 126.978 };
+    return {
       lat: Number(selectedPlace.latitude),
       lng: Number(selectedPlace.longitude),
-    }),
-    [selectedPlace.latitude, selectedPlace.longitude],
-  );
+    };
+  }, [selectedPlace]);
 
-  const level = selectedRank === 1 ? 3 : 4;
+  const level = activeRank === 1 ? 3 : 4;
 
-  // 선택된 멤버의 movementPath → routePath
-  const routePath = useMemo(() => {
-    if (!selectedNickName) return null;
-
-    const movement = selectedPlace.participantMovementList.find(
-      (m) => m.nickName === selectedNickName,
+  // 멤버의 이동 정보 전체를 먼저 찾고 (activeMovement)
+  const activeMovement = useMemo(() => {
+    if (!selectedNickName || !selectedPlace) return null;
+    return (
+      selectedPlace.participantMovementList?.find((m) => m.nickName === selectedNickName) || null
     );
-
-    return movement?.movementPath && movement.movementPath.length >= 2
-      ? movement.movementPath
-      : null;
   }, [selectedPlace, selectedNickName]);
+
+  // 그 다음 activeMovement에서 segments와 movementPath를 추출 (routeSegments, routePath)
+  const routeSegments = activeMovement?.segments ?? null;
+  const routePath = activeMovement?.movementPath ?? null;
 
   return (
     <AppLayout
@@ -101,6 +128,7 @@ export default function PlaceRecommendPage() {
             longitude={selectedPlace?.longitude ?? ''}
             memberStartLatitude={routePath?.[0]?.lat?.toString()}
             memberStartLongitude={routePath?.[0]?.lng?.toString()}
+            memberName={selectedNickName}
             disabled={!selectedPlace}
           />
         </div>
@@ -108,21 +136,29 @@ export default function PlaceRecommendPage() {
     >
       <div className="relative min-h-0 w-full flex-1 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gray-100">
-          <KakaoMapView center={center} level={level} routePath={routePath} />
+          {isLoading ? (
+            <div className="flex h-full items-center justify-center font-medium text-gray-500">
+              최적의 모임 장소를 계산 중이에요... 잠시만 기다려주세요!
+            </div>
+          ) : (
+            <KakaoMapView center={center} level={level} routeSegments={routeSegments} />
+          )}
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-10">
-          <PlaceRecommendOverlay
-            places={places}
-            selectedRank={selectedRank}
-            onSelectRank={(rank) => {
-              setSelectedRank(rank);
-              setSelectedNickName(null); // 장소 바꾸면 멤버 선택 초기화
-            }}
-            selectedNickName={selectedNickName}
-            onChangeSelectedNickName={setSelectedNickName}
-            bottomCtaHeightPx={64}
-          />
+          {places.length > 0 && (
+            <PlaceRecommendOverlay
+              places={places}
+              selectedRank={activeRank}
+              onSelectRank={(rank) => {
+                setSelectedRank(rank);
+                setSelectedNickName(null);
+              }}
+              selectedNickName={selectedNickName}
+              onChangeSelectedNickName={setSelectedNickName}
+              bottomCtaHeightPx={64}
+            />
+          )}
         </div>
       </div>
     </AppLayout>
