@@ -70,7 +70,7 @@ export default function Calendar({
                   key={weekIdx}
                   className={cn(
                     'flex flex-row items-center justify-between text-center',
-                    'cursor-pointer transition-colors duration-200',
+                    'transition-colors duration-200',
                     isSelectedWeek && isOpen
                       ? 'rounded-xl bg-gray-400/10'
                       : 'rounded-xl hover:bg-gray-50',
@@ -92,11 +92,16 @@ export default function Calendar({
                       <button
                         key={dateIdx}
                         type="button"
-                        onClick={() => !isDisabled && setSelectedDate(date)}
+                        onClick={() => {
+                          if (!isDisabled) {
+                            setSelectedDate(date);
+                            setIsOpen(false);
+                          }
+                        }}
                         className={cn(
-                          'flex flex-1 cursor-pointer items-center justify-center text-lg font-bold',
+                          'flex flex-1 items-center justify-center text-lg font-bold',
                           (!isSameMonth(date, selectedDate) || isDisabled) && 'opacity-10',
-                          isDisabled && 'cursor-not-allowed',
+                          isDisabled ? 'pointer-events-none' : 'cursor-pointer',
                         )}
                       >
                         <span

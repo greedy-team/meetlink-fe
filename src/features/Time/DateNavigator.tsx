@@ -25,7 +25,7 @@ export default function DateNavigator({
         className={cn(
           'p-1 transition-colors',
           isPrevDisabled
-            ? 'cursor-not-allowed text-gray-300'
+            ? 'pointer-events-none text-gray-300'
             : 'cursor-pointer text-gray-600 hover:text-gray-900',
         )}
       >
