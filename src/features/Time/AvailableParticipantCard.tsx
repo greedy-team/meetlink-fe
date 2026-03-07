@@ -23,7 +23,7 @@ export function AvailableParticipantCard({
 
   if (inputType === 'mouse') {
     return (
-      <HoverCard openDelay={0} closeDelay={100}>
+      <HoverCard openDelay={0} closeDelay={0}>
         <HoverCardTrigger asChild>{children}</HoverCardTrigger>
         <HoverCardContent side={side} className={contentClasses}>
           {content}

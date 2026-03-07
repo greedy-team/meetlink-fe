@@ -319,9 +319,12 @@ export default function TimeHeatMap({
                     mode={mode}
                     isActivate={availableNum !== 0}
                     content={
+                      // 출력 모드 - 호버, 클릭 가능 인원 보기
                       <div className="flex flex-col">
-                        <span className="text-xs">가능 인원</span>
-                        <div>
+                        <span className="flex text-xs">
+                          가능 인원({availableNum}/{participantsNum})
+                        </span>
+                        <div className="text-md">
                           {participantList?.map((nickname) => {
                             return nickname;
                           })}
