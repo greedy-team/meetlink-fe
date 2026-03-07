@@ -28,7 +28,7 @@ export function PlaceRecommendOverlay({
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col justify-between">
       {/* 상단 칩 */}
-      <div className="px-4 pt-2">
+      <div className="pt-2">
         {selectedPlace && (
           <div className="pointer-events-auto">
             <ParticipantChips
@@ -41,7 +41,7 @@ export function PlaceRecommendOverlay({
       </div>
 
       {/* 하단 카드 */}
-      <div className="pointer-events-auto px-4" style={{ paddingBottom: bottomCtaHeightPx + 2 }}>
+      <div className="pointer-events-auto" style={{ paddingBottom: bottomCtaHeightPx + 2 }}>
         <PlaceCards places={places} selectedRank={selectedRank} onSelect={onSelectRank} />
       </div>
     </div>
