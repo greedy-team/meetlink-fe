@@ -18,7 +18,7 @@ export function AppLayout({
   children,
   bottom,
   pageBackgroundClassName = 'bg-white',
-  maxWidthClassName = 'max-w-full md:max-w-[30rem] lg:max-w-[35rem]',
+  maxWidthClassName = 'max-w-full md:max-w-[35rem] lg:max-w-[45rem]',
   disableMainPadding = false,
   disableMainMaxWidth = false,
   disableBottomPadding = false,
