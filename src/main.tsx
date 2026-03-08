@@ -25,9 +25,10 @@ createRoot(document.getElementById('root')!).render(
         <App />
         <Toaster
           richColors
+          theme="light"
           position="bottom-center"
           duration={2000}
-          offset={80}
+          offset={100}
           toastOptions={{
             className: 'rounded-2xl border-2',
             classNames: {
