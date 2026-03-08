@@ -1,70 +1,67 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
-import { useCalculateRecommendTime, useRecommendTime } from '@/hooks/useRecommend';
+import { useRecommendTime } from '@/hooks/useRecommend';
 import { useGetWholeAvailableTime } from '@/hooks/useTime';
 
-import { convertToCommonTimeList } from '@/features/Time/timeConverter';
+import { convertToCommonTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
-import TimeHeatMap from '@/features/Time/TimeHeapMap';
+import TimeHeatMap from '@/features/Time/TimeHeatMap';
 import TimeRecommendModal from '@/features/Time/TimeRecommendModal';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function TimeRecommendPage() {
   const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
-  const { data: commonTimeData } = useGetWholeAvailableTime();
-  const { data: timeData } = useRecommendTime();
-  const { mutate: calculateRecommendTime } = useCalculateRecommendTime();
+  const { data: wholeTimeData } = useGetWholeAvailableTime();
+  const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const participantsNum = participantStatusList.length;
-  //const commonTimeList = convertToCommonTimeList(commonTimeData?.result.heatmaps);
-  const candidateList = timeData?.result;
+  const commonTimeList = useMemo(() => {
+    return convertToCommonTimeList(wholeTimeData?.result);
+  }, [wholeTimeData]);
 
-  console.log(candidateList);
-  useEffect(() => {
-    console.log('didcalculate');
-    calculateRecommendTime();
-  }, [calculateRecommendTime]);
+  const candidateList = timeRecommendData?.result;
 
   return (
     <AppLayout
       header={
-        <div className="flex flex-col">
+        <>
           <Header title="추천 시간 후보" showBackButton={true} showSettingButton={false} />
           <TimeHeader
             dateType={dateType}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            selectedTimeList={[]}
+            selectedTimeList={commonTimeList}
             participantsNum={participantsNum}
             timeRange={timeRange}
           />
-        </div>
+        </>
       }
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
-        <div className="space-y-3">
+        <div className="relative space-y-3">
           <TimeRecommendModal
-            candidateList={[]}
+            candidateList={candidateList}
             participantsNum={participantsNum}
             setSelectedDate={setSelectedDate}
-            commonTimeList={[]}
+            commonTimeList={commonTimeList}
             dateType={dateType}
             timeRange={timeRange}
           />
         </div>
       }
+      disableBottomPadding={true}
     >
-      <div className="space-y-4">
+      <div className="mb-10 space-y-4">
         <TimeHeatMap
           mode="OUTPUT"
           participantsNum={participantsNum}
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}
-          selectedTimeList={[]}
+          selectedTimeList={commonTimeList}
           setSelectedTimeList={setSelectedTimeList}
         />
       </div>

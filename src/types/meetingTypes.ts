@@ -12,6 +12,7 @@ export type ParticipantList = ParticipantStatus[];
 export interface TimeInfo {
   startTime: string;
   availableNumber: number;
+  participants?: string[];
 }
 
 //시간 정보 리스트

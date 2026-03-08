@@ -11,6 +11,7 @@ interface RecommendCheckBoxProps {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   children: React.ReactNode;
+  isLoading?: boolean;
 }
 
 export function RecommendCheckBox({
@@ -20,6 +21,7 @@ export function RecommendCheckBox({
   checked,
   onCheckedChange,
   children,
+  isLoading = false,
 }: RecommendCheckBoxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasUserInteractedRef = useRef(false);
@@ -58,19 +60,24 @@ export function RecommendCheckBox({
               className={cn(
                 'h-auto! w-auto! transition-colors',
                 checked ? 'text-greedy' : 'text-gray-900',
+                isLoading && 'rounded-full bg-gray-100 text-gray-100',
               )}
             />
             <span //제목
               className={cn(
                 'text-base font-bold transition-colors',
                 checked ? 'text-greedy' : 'text-gray-900',
+                isLoading && 'rounded-lg bg-gray-100 text-gray-100',
               )}
             >
               {title}
             </span>
           </div>
           <div //설명
-            className="text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400"
+            className={cn(
+              'text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400',
+              isLoading && 'rounded-lg bg-gray-100 text-gray-100',
+            )}
           >
             {description}
           </div>

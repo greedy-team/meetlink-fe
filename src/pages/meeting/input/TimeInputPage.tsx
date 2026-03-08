@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -7,13 +7,14 @@ import { Header } from '@/components/common/layout/Header';
 import { useUpdateMyAvailableTime } from '@/hooks/useTime';
 import { useGetMyAvailableTime } from '@/hooks/useTime';
 
-import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeConverter';
+import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
-import TimeHeatMap from '@/features/Time/TimeHeapMap';
+import TimeHeatMap from '@/features/Time/TimeHeatMap';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function TimeInputPage() {
   const { dateType, timeRange, selectedTimeList, setSelectedTimeList } = useMeetingContext();
+  const { code } = useParams<{ code: string }>();
 
   const { data: myTimeList, isSuccess } = useGetMyAvailableTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -23,8 +24,8 @@ export default function TimeInputPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('meeting_token');
-    if (token && isSuccess && myTimeList.result.availabilities) {
-      const converted = convertToSelectedTimeList(myTimeList.result.availabilities);
+    if (token && isSuccess && myTimeList.result) {
+      const converted = convertToSelectedTimeList(myTimeList.result);
       setSelectedTimeList(converted);
     }
   }, [isSuccess, myTimeList, setSelectedTimeList]);
@@ -36,18 +37,21 @@ export default function TimeInputPage() {
       saveTime(
         { availabilities: convertedData },
         {
-          onSuccess: (data) => {},
-          onError: (error) => {},
+          onSuccess: () => {
+            navigate(`/meeting/${code}/`);
+          },
+          onError: () => {},
         },
       );
+    } else {
+      navigate(`/meeting/${code}/join`);
     }
-    navigate(-1);
   };
 
   return (
     <AppLayout
       header={
-        <div className="flex flex-col">
+        <>
           <Header title="가능 시간 선택" showBackButton={true} showSettingButton={false} />
           <TimeHeader
             dateType={dateType}
@@ -57,7 +61,7 @@ export default function TimeInputPage() {
             participantsNum={1}
             timeRange={timeRange}
           />
-        </div>
+        </>
       }
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
