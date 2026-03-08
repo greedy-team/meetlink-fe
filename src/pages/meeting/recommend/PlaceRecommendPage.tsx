@@ -137,27 +137,41 @@ export default function PlaceRecommendPage() {
       <div className="relative min-h-0 w-full flex-1 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gray-100">
           {isLoading ? (
-            <div className="flex h-full items-center justify-center font-medium text-gray-500">
-              최적의 모임 장소를 계산 중이에요... 잠시만 기다려주세요!
-            </div>
+            <div className="h-full w-full animate-pulse bg-gray-200" />
           ) : (
             <KakaoMapView center={center} level={level} routeSegments={routeSegments} />
           )}
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-10">
-          {places.length > 0 && (
-            <PlaceRecommendOverlay
-              places={places}
-              selectedRank={activeRank}
-              onSelectRank={(rank) => {
-                setSelectedRank(rank);
-                setSelectedNickName(null);
-              }}
-              selectedNickName={selectedNickName}
-              onChangeSelectedNickName={setSelectedNickName}
-              bottomCtaHeightPx={64}
-            />
+          {isLoading ? (
+            <div className="flex h-full flex-col justify-between pb-16.5">
+              {/* 상단 칩 스켈레톤 */}
+              <div className="flex gap-2 overflow-hidden pt-2 pb-1">
+                <div className="ml-4 h-13 w-23 shrink-0 animate-pulse rounded-2xl border-2 border-transparent bg-gray-300/60 shadow-sm" />
+                <div className="h-13 w-23 shrink-0 animate-pulse rounded-2xl border-2 border-transparent bg-gray-300/60 shadow-sm" />
+                <div className="h-13 w-23 shrink-0 animate-pulse rounded-2xl border-2 border-transparent bg-gray-300/60 shadow-sm" />
+              </div>
+
+              {/* 하단 장소 카드 스켈레톤 (2개) */}
+              <div className="flex gap-3 overflow-hidden pb-2">
+                <div className="ml-4 h-32.5 min-w-70 shrink-0 animate-pulse rounded-2xl border-2 border-transparent bg-gray-300/60 shadow-md" />
+                <div className="h-32.5 min-w-70 shrink-0 animate-pulse rounded-2xl border-2 border-transparent bg-gray-300/60 shadow-md" />
+              </div>
+            </div>
+          ) : (
+            places.length > 0 && (
+              <PlaceRecommendOverlay
+                places={places}
+                selectedRank={activeRank}
+                onSelectRank={(rank) => {
+                  setSelectedRank(rank);
+                }}
+                selectedNickName={selectedNickName}
+                onChangeSelectedNickName={setSelectedNickName}
+                bottomCtaHeightPx={64}
+              />
+            )
           )}
         </div>
       </div>
