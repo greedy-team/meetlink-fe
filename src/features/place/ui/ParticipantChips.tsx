@@ -33,7 +33,7 @@ export function ParticipantChips({
               type="button"
               onClick={withClickPrevention(() => onChangeSelected(isSelected ? null : m.nickName))}
               className={[
-                'min-w-23 shrink-0 rounded-2xl border-2 bg-white px-2 py-1 shadow-sm first:ml-4 last:mr-4',
+                'min-w-23 shrink-0 cursor-pointer rounded-2xl border-2 bg-white px-2 py-1 shadow-sm first:ml-4 last:mr-4',
                 isSelected ? 'border-greedy' : 'border-gray-200',
               ].join(' ')}
             >

@@ -29,7 +29,7 @@ export function PlaceCards({ places, selectedRank, onSelect }: PlaceCardsProps) 
               type="button"
               onClick={withClickPrevention(() => onSelect(place.rank))}
               className={[
-                'min-w-70 shrink-0 rounded-2xl border-2 bg-white px-4 py-4 text-left shadow-sm first:ml-4 last:mr-4',
+                'min-w-70 shrink-0 cursor-pointer rounded-2xl border-2 bg-white px-4 py-4 text-left shadow-sm first:ml-4 last:mr-4',
                 isSelected ? 'border-greedy' : 'border-gray-200',
               ].join(' ')}
             >

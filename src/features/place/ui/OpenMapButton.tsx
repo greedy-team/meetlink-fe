@@ -137,7 +137,7 @@ export function OpenMapButton({
       onClick={handleClick}
       disabled={isDisabled}
       className={[
-        'w-full rounded-none px-4 py-4 text-base font-semibold',
+        'w-full cursor-pointer rounded-none px-4 py-4 text-base font-semibold',
         isDisabled ? 'bg-gray-200 text-gray-500' : 'bg-greedy text-white active:opacity-90',
       ].join(' ')}
       aria-label={`${placeName}까지 카카오맵 길찾기 열기`}
