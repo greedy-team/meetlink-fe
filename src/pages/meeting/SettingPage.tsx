@@ -199,6 +199,7 @@ export default function SettingPage() {
           description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
           checked={isTimeRecommendEnabled}
           onCheckedChange={setIsTimeRecommendEnabled}
+          isLoading={isLoading}
         >
           <DateTypeSelector value={dateType} onChange={setDateType} />
           <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
@@ -210,15 +211,19 @@ export default function SettingPage() {
           description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
           checked={isPlaceRecommendEnabled}
           onCheckedChange={setIsPlaceRecommendEnabled}
+          isLoading={isLoading}
         >
           <PlaceTypeSelector value={placeType} onChange={setPlaceType} />
         </RecommendCheckBox>
 
-        <NotifyBox variant="emphasis" className="mt-3">
-          변경 사항은 모두에게 적용되니 주의해주세요
-        </NotifyBox>
-
-        <LeaveButton onLeave={handleLeave} />
+        {!isLoading && (
+          <>
+            <NotifyBox variant="emphasis" className="mt-3">
+              변경 사항은 모두에게 적용되니 주의해주세요
+            </NotifyBox>
+            <LeaveButton onLeave={handleLeave} />
+          </>
+        )}
       </div>
     </AppLayout>
   );
