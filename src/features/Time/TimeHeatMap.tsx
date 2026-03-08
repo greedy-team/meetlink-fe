@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addDays, format, startOfWeek } from 'date-fns';
 
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { AvailableParticipantCard } from './AvailableParticipantCard';
@@ -321,12 +322,19 @@ export default function TimeHeatMap({
                     content={
                       // 출력 모드 - 호버, 클릭 가능 인원 보기
                       <div className="flex flex-col">
-                        <span className="flex text-xs">
+                        <span className="flex text-xs font-bold">
                           가능 인원({availableNum}/{participantsNum})
                         </span>
                         <div className="text-md">
                           {participantList?.map((nickname) => {
-                            return nickname;
+                            return (
+                              <Badge
+                                variant="secondary"
+                                className="bg-greedy/10 text-greedy hover:bg-greedy/10 rounded-full border-none px-2 font-bold"
+                              >
+                                {nickname}
+                              </Badge>
+                            );
                           })}
                         </div>
                       </div>
