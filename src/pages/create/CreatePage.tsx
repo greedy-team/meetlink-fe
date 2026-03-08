@@ -58,8 +58,8 @@ export default function CreatePage() {
       enableTimeRecommendation: isTimeRecommendEnabled,
       enablePlaceRecommendation: isPlaceRecommendEnabled,
       timeAvailabilityType: dateType,
-      timeRangeStart: formatTime(timeRange[0]),
-      timeRangeEnd: formatTime(timeRange[1]),
+      timeRangeStart: timeRange[0].toString(),
+      timeRangeEnd: timeRange[1].toString(),
     };
 
     createMeeting(requestData, {
