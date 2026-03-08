@@ -8,7 +8,6 @@ type AppLayoutProps = {
   maxWidthClassName?: string;
   // 지도 페이지용
   disableMainPadding?: boolean;
-  disableMainMaxWidth?: boolean;
   disableBottomPadding?: boolean;
   disableBottomSpacer?: boolean;
 };
@@ -20,19 +19,12 @@ export function AppLayout({
   pageBackgroundClassName = 'bg-white',
   maxWidthClassName = 'max-w-full md:max-w-[30rem] lg:max-w-[35rem]',
   disableMainPadding = false,
-  disableMainMaxWidth = false,
   disableBottomPadding = false,
   disableBottomSpacer = false,
 }: AppLayoutProps) {
   return (
     <div className={`flex min-h-dvh w-full flex-col ${pageBackgroundClassName}`}>
-      <div
-        className={[
-          'flex w-full flex-1 flex-col',
-          disableMainMaxWidth ? '' : 'mx-auto',
-          disableMainMaxWidth ? '' : maxWidthClassName,
-        ].join(' ')}
-      >
+      <div className={['mx-auto flex w-full flex-1 flex-col', maxWidthClassName].join(' ')}>
         {header}
         <main
           className={['flex min-h-0 flex-1 flex-col', disableMainPadding ? '' : 'px-4 py-4'].join(
@@ -60,9 +52,8 @@ export function AppLayout({
         <div className="fixed right-0 bottom-0 left-0 z-50 bg-white shadow-sm">
           <div
             className={[
-              'w-full',
-              disableMainMaxWidth ? '' : 'mx-auto',
-              disableMainMaxWidth ? '' : maxWidthClassName,
+              'mx-auto w-full',
+              maxWidthClassName,
               disableBottomPadding ? '' : 'px-4 pt-3',
               disableBottomPadding
                 ? 'pb-[env(safe-area-inset-bottom)]'

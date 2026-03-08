@@ -160,6 +160,7 @@ export default function ConfirmOnMapPage() {
                   lat={lat}
                   lng={lng}
                   level={4}
+                  className="h-full w-full"
                   onCenterChange={(nextLat, nextLng) => {
                     setLat(nextLat);
                     setLng(nextLng);

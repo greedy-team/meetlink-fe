@@ -117,7 +117,6 @@ export default function PlaceRecommendPage() {
       header={<Header title="추천 장소 후보" showBackButton />}
       pageBackgroundClassName="bg-white"
       disableMainPadding
-      disableMainMaxWidth
       disableBottomPadding
       disableBottomSpacer
       bottom={
