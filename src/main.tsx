@@ -28,7 +28,7 @@ createRoot(document.getElementById('root')!).render(
           theme="light"
           position="bottom-center"
           duration={2000}
-          offset={80}
+          offset={85}
           toastOptions={{
             className: 'rounded-2xl border-2',
             classNames: {
