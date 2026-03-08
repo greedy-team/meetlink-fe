@@ -3,6 +3,14 @@
 @import 'shadcn/tailwind.css';
 @import 'pretendard/dist/web/variable/pretendardvariable.css';
 
+/* Sonner 모바일 높이 강제 설정 */
+@media (max-width: 600px) {
+  [data-sonner-toaster][data-y-position='bottom'] {
+    /* 원하시는 200px + 모바일 기기 하단 바 높이 */
+    bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* 커스텀 */
