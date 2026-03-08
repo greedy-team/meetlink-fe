@@ -15,25 +15,11 @@ export const getRecommendTime = async (code: string): Promise<GetRecommendTimeRe
   return data;
 };
 
-export const calculateRecommendTime = async (code: string): Promise<GetRecommendTimeResponse> => {
-  const { data } = await axiosInstance.post<GetRecommendTimeResponse>(
-    `/meetings/${code}/candidates/time`,
-  );
-  return data;
-};
-
 //추천 장소 조회
 //요청 X
 //반환 GetRecommendTimeResponse
 export const getRecommendPlace = async (code: string): Promise<GetRecommendPlaceResponse> => {
   const { data } = await axiosInstance.get<GetRecommendPlaceResponse>(
-    `/meetings/${code}/candidates/place`,
-  );
-  return data;
-};
-
-export const calculateRecommendPlace = async (code: string): Promise<GetRecommendPlaceResponse> => {
-  const { data } = await axiosInstance.post<GetRecommendPlaceResponse>(
     `/meetings/${code}/candidates/place`,
   );
   return data;
