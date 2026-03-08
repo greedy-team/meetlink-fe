@@ -58,7 +58,8 @@ const makeTimeDescription = (bestTime: BestTime | undefined): string => {
 const makePlaceDescription = (bestPlace: BestPlace | undefined): string => {
   if (!bestPlace) return '장소 정보가 없습니다';
 
-  const { name, address } = bestPlace;
+  const name = bestPlace.name.replaceAll(' ', '\u00A0');
+  const address = bestPlace.address.replaceAll(' ', '\u00A0');
 
   return `${name} (${address})`;
 };

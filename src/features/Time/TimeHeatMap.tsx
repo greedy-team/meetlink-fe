@@ -279,7 +279,7 @@ export default function TimeHeatMap({
               key={dayIndex}
               className="flex w-full flex-col border-r border-gray-200 last:border-r-0"
             >
-              {timeSlots.map((timeStr, slotIdx) => {
+              {timeSlots.map((startTime, slotIdx) => {
                 const selectedDate = date;
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -296,15 +296,15 @@ export default function TimeHeatMap({
                     : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
-                const availableNum = getAvailableNumber(date.getDay(), dateStr, timeStr);
-                const participantList = getParticipantList(date.getDay(), dateStr, timeStr);
+                const availableNum = getAvailableNumber(date.getDay(), dateStr, startTime);
+                const participantList = getParticipantList(date.getDay(), dateStr, startTime);
                 const newAvailableNum = isInDragBounds
                   ? dragState.action === 'ADD'
                     ? 1
                     : 0
                   : availableNum;
 
-                const isTopHour = timeStr.endsWith(':00:00');
+                const isTopHour = startTime.endsWith(':00:00');
                 const isLastSlot = slotIdx === timeSlots.length - 1;
 
                 //가능 인원이 1 이상이면 선택된 것
@@ -315,20 +315,21 @@ export default function TimeHeatMap({
 
                 return (
                   <AvailableParticipantCard
-                    key={slotIdx}
+                    key={startTime}
                     side="right"
                     mode={mode}
                     isActivate={availableNum !== 0}
                     content={
                       // 출력 모드 - 호버, 클릭 가능 인원 보기
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-1">
                         <span className="flex text-xs font-bold">
                           가능 인원({availableNum}/{participantsNum})
                         </span>
-                        <div className="text-md">
+                        <div className="text-md flex flex-col gap-1">
                           {participantList?.map((nickname) => {
                             return (
                               <Badge
+                                key={nickname}
                                 variant="secondary"
                                 className="bg-greedy/10 text-greedy hover:bg-greedy/10 rounded-full border-none px-2 font-bold"
                               >
