@@ -38,8 +38,10 @@ export function FixedBottomButton({
       ].join(' ')}
     >
       {/* 로딩 시 스피너 + 텍스트 */}
-      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      {children}
+      <span className="relative flex items-center justify-center">
+        {loading && <Loader2 className="absolute -left-6 h-4 w-4 animate-spin text-white/70" />}
+        <span>{children}</span>
+      </span>
     </Button>
   );
 }
