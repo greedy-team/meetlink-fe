@@ -119,12 +119,11 @@ export interface LeaveMeetingResponse {
 export interface GetMyAvailableTimeResponse {
   status: boolean;
   result: {
-    availabilities: {
-      dayOfWeek: number;
-      date: string;
-      startTimes: string[];
-    }[];
-  };
+    dayOfWeek: number;
+    date: string;
+    startTimes: string[];
+  }[];
+
   code?: string;
   message?: string;
 }
@@ -139,7 +138,7 @@ export interface GetWholeAvailableTimeResponse {
       startTimes: string[];
     }[];
     nickname: string;
-  };
+  }[];
 
   code?: string;
   message?: string;

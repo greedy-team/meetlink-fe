@@ -1,4 +1,5 @@
-import { getDate, getDay, getMonth, isValid, parseISO } from 'date-fns';
+import { getDay } from 'date-fns';
+import { Users } from 'lucide-react';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
@@ -7,7 +8,6 @@ export interface Candidate {
   date: string;
   dayOfWeek: number;
   endTime: string;
-  id: number;
   rank: number;
   startTime: string;
 }
@@ -17,27 +17,21 @@ const getDayText = (day: number) => {
   return days[day] ?? '';
 };
 
-const formatTime = (timeStr?: string | null) => {
-  if (!timeStr) return '';
+const formatTime = (timeStr: string) => {
+  const [hourStr, minuteStr] = timeStr.split(':');
+  let hour = parseInt(hourStr, 10);
+  const dayPart = hour < 12 ? '오전' : '오후';
 
-  const [hour] = timeStr.split(':');
-  const h = parseInt(hour, 10);
-
-  if (isNaN(h)) return '';
-
-  if (h < 12) return `오전 ${h}시`;
-  if (h === 12) return `오후 12시`;
-  return `오후 ${h - 12}시`;
+  if (hour > 12) hour -= 12;
+  if (hour === 0) hour = 12;
+  return `${dayPart} ${hour}:${minuteStr}`;
 };
 
-const getSafeDayOfWeek = (dateStr?: string | null, fallbackDay?: number) => {
-  if (dateStr && dateStr.trim() !== '') {
-    const parsedDate = parseISO(dateStr);
-    if (isValid(parsedDate)) {
-      return getDay(parsedDate);
-    }
-  }
-  return Number(fallbackDay);
+const findAvailableNum = (startTime: string, timeData: SelectedTime | undefined) => {
+  if (!timeData) return undefined;
+  const timeInfo = timeData.startTimeList.find((timeInfo) => timeInfo.startTime === startTime);
+  if (!timeInfo) return 0;
+  return timeInfo.availableNumber;
 };
 
 interface TimeRecommendCardProps {
@@ -59,50 +53,32 @@ export function TimeRecommendCard({
   commonTimeList,
   dateType,
 }: TimeRecommendCardProps) {
-  const parsedCandidateDate = candidate.date ? parseISO(candidate.date) : new Date();
-  const isValidDate = isValid(parsedCandidateDate);
-
-  const month = isValidDate ? getMonth(parsedCandidateDate) + 1 : 1;
-  const day = isValidDate ? getDate(parsedCandidateDate) : 1;
-
-  const candidateDay = getSafeDayOfWeek(candidate.date, candidate.dayOfWeek);
+  const month = String(Number(candidate.date?.substring(5, 7)));
+  const day = String(Number(candidate.date?.substring(8, 10)));
 
   const titleText =
     dateType === 'SPECIFIC_DATE'
-      ? `${month}월 ${day}일 (${getDayText(candidateDay)})`
-      : `${getDayText(candidateDay)}요일`;
+      ? `${month}월 ${day}일 (${getDayText(getDay(new Date(candidate.date)))})`
+      : `${getDayText(candidate.dayOfWeek)}요일`;
 
   const timeSlots: string[] = [];
   const [startHour, endHour] = timeRange;
   for (let h = startHour; h < endHour; h++) {
     const hourStr = h.toString().padStart(2, '0');
-    timeSlots.push(`${hourStr}:00`);
-    timeSlots.push(`${hourStr}:30`);
+    timeSlots.push(`${hourStr}:00:00`);
+    timeSlots.push(`${hourStr}:30:00`);
   }
 
-  const matchedTimeData = commonTimeList.find((item) => {
-    if (dateType === 'SPECIFIC_DATE') {
-      return item.date?.trim() === candidate.date?.trim();
-    }
-    const itemDay = getSafeDayOfWeek(item.date, item.dayOfWeek);
-    return itemDay === candidateDay;
-  });
-
-  const countMap: Record<string, number> = {};
-  if (matchedTimeData && matchedTimeData.startTimeList) {
-    matchedTimeData.startTimeList.forEach((info) => {
-      if (info.startTime) {
-        const timeKey = info.startTime.substring(0, 5);
-        countMap[timeKey] = info.availableNumber;
-      }
-    });
-  }
+  const matchedTimeData =
+    dateType === 'WEEKLY'
+      ? commonTimeList.find((selectedTime) => selectedTime.dayOfWeek === candidate.dayOfWeek)
+      : commonTimeList.find((selectedTime) => selectedTime.date === candidate.date);
 
   return (
     <button
       onClick={() => onClick(candidate.date)}
-      className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border p-5 transition-colors ${
-        isTopRank ? 'border-green-600 bg-green-50/30' : 'border-gray-200 bg-white hover:bg-gray-50'
+      className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border-2 p-5 transition-colors ${
+        isTopRank ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-white hover:bg-gray-50'
       }`}
     >
       <div className="flex items-start justify-between">
@@ -110,45 +86,43 @@ export function TimeRecommendCard({
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-gray-900">{titleText}</span>
             {isTopRank && (
-              <span className="rounded bg-green-600 px-2 py-0.5 text-xs font-medium text-white">
+              <span className="bg-greedy rounded-lg px-2 py-0.5 text-xs font-medium text-white">
                 추천
               </span>
             )}
           </div>
-          <div className="mt-1 text-sm font-medium text-gray-600">
+          <div className="text-md mt-1 font-medium text-gray-600">
             {formatTime(candidate.startTime)}{' '}
             {candidate.endTime ? `~ ${formatTime(candidate.endTime)}` : ''}
           </div>
         </div>
-        <div className="flex items-center gap-1 text-sm font-medium text-gray-500">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-            />
-          </svg>
+        <div className="text-md flex items-center gap-1.5 font-medium text-gray-500">
+          <Users className="h-5 w-5" strokeWidth={2} />
           {candidate.availableCount}/{participantsNum}
         </div>
       </div>
+      <div className="flex flex-col gap-1">
+        <div className="flex w-full items-center gap-px px-2">
+          {timeSlots.map((slot) => {
+            const count = findAvailableNum(slot, matchedTimeData) || 0;
+            const ratio = participantsNum > 0 ? count / participantsNum : 0;
 
-      <div className="flex w-full items-center gap-[2px]">
-        {timeSlots.map((slot) => {
-          const count = countMap[slot] || 0;
-          const ratio = participantsNum > 0 ? count / participantsNum : 0;
-
-          return (
-            <div
-              key={slot}
-              className={`h-2 flex-1 rounded-sm ${count === 0 ? 'bg-gray-100' : 'bg-greedy'}`}
-              style={{
-                opacity: count === 0 ? 1 : Math.max(0.15, ratio),
-              }}
-              title={`${slot} - ${count}명 가능`}
-            />
-          );
-        })}
+            return (
+              <div
+                key={slot}
+                className={`h-8 flex-1 ${count === 0 ? 'bg-gray-100' : 'bg-greedy'}`}
+                style={{
+                  opacity: count === 0 ? 1 : Math.max(0.15, ratio),
+                }}
+                title={`${slot} - ${count}명 가능`}
+              />
+            );
+          })}
+        </div>
+        <div className="flex flex-row justify-between text-xs font-medium text-gray-400">
+          <span>{`${timeRange[0]}시`}</span>
+          <span>{`${timeRange[1]}시`}</span>
+        </div>
       </div>
     </button>
   );

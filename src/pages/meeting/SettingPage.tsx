@@ -40,6 +40,7 @@ export default function SettingPage() {
     dateType: initialDateType,
     timeRange: initialTimeRange,
     //placeType: initialPlaceType,
+    isLoading,
   } = useMeetingContext();
   const { mutate: updateMeeting } = useUpdateMeetingDetail();
   const { mutate: leaveMeeting } = useLeaveMeeting();
@@ -124,61 +125,67 @@ export default function SettingPage() {
       header={<Header title="모임 설정" showBackButton={true} showSettingButton={false} />}
       pageBackgroundClassName="bg-white"
       bottom={
-        <div className="mx-3 flex flex-row gap-3 pt-2">
-          <div className="flex-1">
-            <FixedBottomButton
-              className="border-2 bg-white text-black hover:bg-gray-100"
-              onClick={() => navigate(`/meeting/${code}`)}
-            >
-              취소
-            </FixedBottomButton>
-          </div>
-          <div className="flex-1">
-            {!isFormValid ? (
-              <FixedBottomButton className="pointer-events-none bg-gray-300 opacity-50" disabled>
-                완료
-              </FixedBottomButton>
-            ) : !hasChanges ? (
+        !isLoading && (
+          <div className="mx-3 flex flex-row gap-3 pt-2">
+            <div className="flex-1">
               <FixedBottomButton
-                className="bg-greedy hover:bg-greedy/50"
+                className="border-2 bg-white text-black hover:bg-gray-100"
                 onClick={() => navigate(`/meeting/${code}`)}
               >
-                완료
+                취소
               </FixedBottomButton>
-            ) : (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
-                    완료
-                  </FixedBottomButton>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="w-[90%] rounded-2xl">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>변경된 설정을 저장할까요?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      변경하신 정보는 모든 사용자에게 적용돼요
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter className="flex-row gap-2">
-                    <AlertDialogCancel className="h-10 flex-1 cursor-pointer rounded-xl border-2 bg-white shadow-none! hover:bg-gray-100">
-                      취소
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleSave}
-                      className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
-                    >
-                      저장하기
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
+            </div>
+            <div className="flex-1">
+              {!isFormValid ? (
+                <FixedBottomButton className="pointer-events-none bg-gray-300 opacity-50" disabled>
+                  완료
+                </FixedBottomButton>
+              ) : !hasChanges ? (
+                <FixedBottomButton
+                  className="bg-greedy hover:bg-greedy/50"
+                  onClick={() => navigate(`/meeting/${code}`)}
+                >
+                  완료
+                </FixedBottomButton>
+              ) : (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
+                      완료
+                    </FixedBottomButton>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="w-[90%] rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>변경된 설정을 저장할까요?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        변경하신 정보는 모든 사용자에게 적용돼요
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-row gap-2">
+                      <AlertDialogCancel className="h-10 flex-1 cursor-pointer rounded-xl border-2 bg-white shadow-none! hover:bg-gray-100">
+                        취소
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleSave}
+                        className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
+                      >
+                        저장하기
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
           </div>
-        </div>
+        )
       }
     >
       <div className="flex flex-col gap-2">
-        <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
+        <MeetingNameInput
+          value={meetingName}
+          onChange={(e) => setMeetingName(e.target.value)}
+          isLoading={isLoading}
+        />
 
         <div className="h-2" />
 
@@ -192,6 +199,7 @@ export default function SettingPage() {
           description="참여자들의 가능 시간을 바탕으로 만남 시각을 추천해요"
           checked={isTimeRecommendEnabled}
           onCheckedChange={setIsTimeRecommendEnabled}
+          isLoading={isLoading}
         >
           <DateTypeSelector value={dateType} onChange={setDateType} />
           <TimeRangeSlider value={timeRange} onValueChange={setTimeRange} />
@@ -203,15 +211,19 @@ export default function SettingPage() {
           description="참여자들의 출발지를 바탕으로 만남 장소를 추천해요"
           checked={isPlaceRecommendEnabled}
           onCheckedChange={setIsPlaceRecommendEnabled}
+          isLoading={isLoading}
         >
           <PlaceTypeSelector value={placeType} onChange={setPlaceType} />
         </RecommendCheckBox>
 
-        <NotifyBox variant="emphasis" className="mt-3">
-          변경 사항은 모두에게 적용되니 주의해주세요
-        </NotifyBox>
-
-        <LeaveButton onLeave={handleLeave} />
+        {!isLoading && (
+          <>
+            <NotifyBox variant="emphasis" className="mt-3">
+              변경 사항은 모두에게 적용되니 주의해주세요
+            </NotifyBox>
+            <LeaveButton onLeave={handleLeave} />
+          </>
+        )}
       </div>
     </AppLayout>
   );

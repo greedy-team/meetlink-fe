@@ -152,7 +152,7 @@ export default function MeetingLayout() {
 
   return (
     <div>
-      <Outlet context={contextValue} />
+      <Outlet context={contextValue} key={contextValue.isLoading ? 'loading' : 'ready'} />
     </div>
   );
 }

@@ -30,51 +30,38 @@ interface BestPlace {
 //추천 스크립트 제작 함수
 const makeTimeDescription = (bestTime: BestTime | undefined): string => {
   if (!bestTime) return '시간 정보가 없습니다';
+
   const { date, dayOfWeek, startTime, endTime } = bestTime;
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
-  let datePart = '';
-  if (date && date !== '') {
-    const dateObj = new Date(date);
-    const dayName = dayNames[dateObj.getDay()];
-    datePart = `${date} (${dayName})`;
-  } else if (dayOfWeek !== -1) {
-    datePart = `${dayNames[dayOfWeek]}요일`;
-  }
+  const datePart =
+    date && date !== ''
+      ? `${date}\u00A0(${dayNames[new Date(date).getDay()]})` // 날짜가 있을 때
+      : `${dayNames[dayOfWeek]}요일`; // 요일
 
   const formatTime = (timeStr: string) => {
     const [hourStr, minuteStr] = timeStr.split(':');
-    let hour = parseInt(hourStr, 10);
-    const dayPart = hour < 12 ? '오전' : '오후';
+    const rawHour = parseInt(hourStr, 10);
+    const dayPart = rawHour < 12 ? '오전' : '오후';
 
-    if (hour > 12) hour -= 12;
-    if (hour === 0) hour = 12;
-    return `${dayPart} ${hour}:${minuteStr}`;
+    const hour = rawHour > 12 ? rawHour - 12 : rawHour === 0 ? 12 : rawHour;
+
+    return `${dayPart}\u00A0${hour}:${minuteStr}`;
   };
+
   const startFormatted = formatTime(startTime);
   const endFormatted = formatTime(endTime);
 
-  return `${datePart} ${startFormatted} ~ ${endFormatted}`;
+  // 날짜(datePart) 뒤의 일반 공백(' ')에서만 줄바꿈이 일어납니다.
+  return `${datePart} ${startFormatted}\u00A0~\u00A0${endFormatted}`;
 };
-
 const makePlaceDescription = (bestPlace: BestPlace | undefined): string => {
   if (!bestPlace) return '장소 정보가 없습니다';
 
-  const { name, address, avgTravelTime, maxTravelTime } = bestPlace;
+  const name = bestPlace.name.replaceAll(' ', '\u00A0');
+  const address = bestPlace.address.replaceAll(' ', '\u00A0');
 
-  const formatDuration = (mins: number) => {
-    if (mins < 60) return `${mins}분`;
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return m === 0 ? `${h}시간` : `${h}시간 ${m}분`;
-  };
-
-  const avgFormatted = formatDuration(avgTravelTime);
-  const maxFormatted = formatDuration(maxTravelTime);
-  //짧은 버전
-  //const shortAddress = address.split(' ').slice(0, 2).join(' ');
-
-  return `${name} (${address}) | 평균 ${avgFormatted} 소요 (최대 ${maxFormatted})`;
+  return `${name} (${address})`;
 };
 
 interface RecommendSummaryCardProps {

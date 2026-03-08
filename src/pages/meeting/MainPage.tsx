@@ -72,11 +72,9 @@ export default function MainPage() {
       // 1. 브라우저가 Web Share API를 지원하고, 데이터 공유가 가능한지 확인
       if (navigator.share && navigator.canShare?.(shareData)) {
         await navigator.share(shareData);
-        console.log('공유 성공!');
       } else {
         // 2. 지원하지 않는 브라우저(예: 일부 PC 브라우저)일 경우 클립보드 복사
         await navigator.clipboard.writeText(shareData.url);
-        console.log('클립보드 복사 완료');
       }
     } catch (err) {
       // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크

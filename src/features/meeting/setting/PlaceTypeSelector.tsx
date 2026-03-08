@@ -19,15 +19,16 @@ export function PlaceTypeSelector({ value, onChange }: PlaceTypeSelectorProps) {
           icon={Repeat}
           title="공평한 만남"
           description="시간이 공평해요"
-          isActive={value === 'FAIR'}
+          isSelected={value === 'FAIR'}
           onClick={() => onChange('FAIR')}
         />
         <SelectCardButton
           icon={Calendar}
           title="빠른 만남"
           description="가장 빨리 만나요"
-          isActive={value === 'FAST'}
+          isSelected={value === 'FAST'}
           onClick={() => onChange('FAST')}
+          isDisable={true}
         />
       </div>
     </div>

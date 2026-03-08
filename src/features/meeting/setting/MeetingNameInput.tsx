@@ -9,6 +9,7 @@ type MeetingNameInputProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
+  isLoading?: boolean;
 };
 
 export function MeetingNameInput({
@@ -16,6 +17,7 @@ export function MeetingNameInput({
   onChange,
   placeholder = '예: 동아리 정기 모임',
   className,
+  isLoading = false,
 }: MeetingNameInputProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -34,14 +36,17 @@ export function MeetingNameInput({
       <Input
         type="text"
         id="meeting-name"
+        maxLength={15}
         value={value}
         onChange={onChange}
         onFocus={handleFocus}
         placeholder={placeholder}
+        disabled={isLoading}
         className={cn(
           'bg-background h-12 w-full rounded-xl border border-gray-200 px-4 text-base shadow-none outline-none',
           'placeholder:text-muted-foreground',
           'focus-visible:ring-greedy/20 focus-visible:border-greedy focus-visible:ring-2 focus-visible:ring-offset-0',
+          isLoading && 'bg-gray-100 text-gray-100',
         )}
       />
     </div>

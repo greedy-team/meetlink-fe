@@ -15,7 +15,7 @@ import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
 import { NickNameInput } from '@/features/meeting/join/NickNameInput';
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
-import { convertToAvailabilities } from '@/features/Time/timeConverter';
+import { convertToAvailabilities } from '@/features/Time/timeFunctions';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function JoinPage() {
@@ -178,6 +178,7 @@ export default function JoinPage() {
               title="가능한 시간 선택"
               description="모임 만남 시간을 추천하는데 활용돼요"
               onClick={goTimeInput}
+              isDone={Boolean(selectedTimeList && selectedTimeList.length > 0)}
             />
           )}
 
@@ -187,6 +188,7 @@ export default function JoinPage() {
               title="출발지 입력"
               description="모임 만남 장소를 추천하는데 활용돼요"
               onClick={goPlaceInput}
+              isDone={Boolean(selectedPlace && selectedPlace.address)}
             />
           )}
         </div>

@@ -19,14 +19,14 @@ export const participantKeys = {
 //시간 쿼리 (토큰 추가)
 export const timeKeys = {
   all: ['times'] as const,
-  my: (code: string, token: string | null) => [...timeKeys.all, code, token] as const,
-  whole: (code: string, token: string | null) => [...timeKeys.all, code, token] as const,
+  my: (code: string, token: string | null) => [...timeKeys.all, 'my', code, token] as const,
+  whole: (code: string, token: string | null) => [...timeKeys.all, 'whole', code, token] as const,
 };
 
 //장소 쿼리 (토큰 추가)
 export const placeKeys = {
   all: ['places'] as const,
-  my: (code: string, token: string | null) => [...placeKeys.all, code, token] as const,
+  my: (code: string, token: string | null) => [...placeKeys.all, 'my', code, token] as const,
 };
 
 //추천 쿼리

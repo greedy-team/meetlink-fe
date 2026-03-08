@@ -7,24 +7,27 @@ type SelectCardButtonProps = {
   icon: LucideIcon;
   title: string;
   description: string;
-  isActive: boolean;
+  isSelected: boolean;
   onClick: () => void;
+  isDisable?: boolean;
 };
 export function SelectCardButton({
   icon: Icon,
   title,
   description,
-  isActive,
+  isSelected,
   onClick,
+  isDisable = false,
 }: SelectCardButtonProps) {
   return (
     <Button
       variant="outline"
       onClick={onClick}
+      disabled={isDisable}
       className={cn(
         'm-2 aspect-square h-auto flex-1 cursor-pointer rounded-[32px] border-2 transition-colors',
         'flex flex-col items-center justify-center gap-3',
-        isActive
+        isSelected
           ? 'border-greedy bg-greedy/5 text-greedy hover:bg-greedy/15 hover:text-greedy'
           : 'border-gray-100 bg-white text-gray-200 hover:bg-gray-50 hover:text-gray-400',
       )}
@@ -32,7 +35,7 @@ export function SelectCardButton({
       <div
         className={cn(
           'flex h-14 w-14 items-center justify-center rounded-2xl transition-colors',
-          isActive ? 'bg-greedy/10' : 'bg-gray-100',
+          isSelected ? 'bg-greedy/10' : 'bg-gray-100',
         )}
       >
         <Icon
@@ -40,7 +43,7 @@ export function SelectCardButton({
           strokeWidth={2.5}
           className={cn(
             'h-auto! w-auto! shrink-0 transition-colors',
-            isActive ? 'text-greedy' : 'text-gray-800',
+            isSelected ? 'text-greedy' : 'text-gray-800',
           )}
         />
       </div>
