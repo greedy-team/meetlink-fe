@@ -1,5 +1,7 @@
 import { Clock } from 'lucide-react';
 
+import { useDragScroll } from '@/hooks/useDragScroll';
+
 import type { ParticipantMovement } from '@/types/meetingTypes';
 
 type ParticipantChipsProps = {
@@ -13,9 +15,15 @@ export function ParticipantChips({
   selectedNickName,
   onChangeSelected,
 }: ParticipantChipsProps) {
+  const { scrollRef, events, withClickPrevention } = useDragScroll();
+
   return (
     <section className="w-full">
-      <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div
+        ref={scrollRef}
+        {...events}
+        className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {movements.map((m) => {
           const isSelected = selectedNickName === m.nickName;
 
@@ -23,7 +31,7 @@ export function ParticipantChips({
             <button
               key={m.nickName}
               type="button"
-              onClick={() => onChangeSelected(isSelected ? null : m.nickName)}
+              onClick={withClickPrevention(() => onChangeSelected(isSelected ? null : m.nickName))}
               className={[
                 'min-w-23 shrink-0 rounded-2xl border-2 bg-white px-2 py-1 shadow-sm first:ml-4 last:mr-4',
                 isSelected ? 'border-greedy' : 'border-gray-200',
