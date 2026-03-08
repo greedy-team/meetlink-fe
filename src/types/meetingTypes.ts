@@ -36,8 +36,8 @@ export interface ParticipantMovement {
   nickName: string;
   takenTime: number;
   movementData: string;
-  // 프론트 렌더링용 (polyline 그리기)
-  movementPath?: { lat: number; lng: number }[];
+  movementPath?: { lat: number; lng: number }[]; // 경로 정보
+  segments?: PathSegment[]; // 이동 수단별(도보/대중교통) 경로 구분 정보
 }
 
 //추천 장소
@@ -50,4 +50,9 @@ export interface RecommendPlace {
   averageTime: number;
   maxTime: number;
   participantMovementList: ParticipantMovement[];
+}
+
+export interface PathSegment {
+  mode: string; // 'WALK', 'BUS', 'SUBWAY' 등
+  path: { lat: number; lng: number }[];
 }

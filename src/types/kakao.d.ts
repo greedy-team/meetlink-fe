@@ -18,14 +18,49 @@ declare global {
     relayout?(): void;
   };
 
+  type KakaoSize = {
+    width: number;
+    height: number;
+  };
+
+  type KakaoPoint = {
+    x: number;
+    y: number;
+  };
+
+  type KakaoMarkerImageOptions = {
+    offset?: KakaoPoint;
+    alt?: string;
+    shape?: string;
+    coords?: string;
+  };
+
+  type KakaoMarkerImage = {
+    src: string;
+    size: KakaoSize;
+    options?: KakaoMarkerImageOptions;
+  };
+
   type KakaoMarker = {
     setMap(map: KakaoMap | null): void;
     setPosition(pos: KakaoLatLng): void;
+    setImage(image: KakaoMarkerImage): void;
+  };
+
+  type KakaoCustomOverlay = {
+    setMap(map: KakaoMap | null): void;
+    setPosition(pos: KakaoLatLng): void;
+    setContent(content: string | HTMLElement): void;
   };
 
   type KakaoPolyline = {
     setMap(map: KakaoMap | null): void;
     setPath(path: KakaoLatLng[]): void;
+  };
+
+  type KakaoCoord2AddressResult = {
+    address: { address_name: string } | null;
+    road_address: { address_name: string } | null;
   };
 
   interface Window {
@@ -35,11 +70,28 @@ declare global {
             load(cb: () => void): void;
             LatLng: new (lat: number, lng: number) => KakaoLatLng;
             LatLngBounds: new () => KakaoLatLngBounds;
+            Size: new (width: number, height: number) => KakaoSize;
+            Point: new (x: number, y: number) => KakaoPoint;
+            MarkerImage: new (
+              src: string,
+              size: KakaoSize,
+              options?: KakaoMarkerImageOptions,
+            ) => KakaoMarkerImage;
             Map: new (
               container: HTMLElement,
               options: { center: KakaoLatLng; level: number },
             ) => KakaoMap;
-            Marker: new (options: { position: KakaoLatLng }) => KakaoMarker;
+            Marker: new (options: {
+              position: KakaoLatLng;
+              image?: KakaoMarkerImage;
+            }) => KakaoMarker;
+            CustomOverlay: new (options: {
+              position: KakaoLatLng;
+              content: string | HTMLElement;
+              xAnchor?: number;
+              yAnchor?: number;
+              zIndex?: number;
+            }) => KakaoCustomOverlay;
             Polyline: new (options: {
               path: KakaoLatLng[];
               strokeWeight?: number;
@@ -49,6 +101,16 @@ declare global {
             }) => KakaoPolyline;
             event: {
               addListener(target: unknown, type: string, handler: () => void): void;
+            };
+            services: {
+              Geocoder: new () => {
+                coord2Address(
+                  x: number,
+                  y: number,
+                  callback: (result: KakaoCoord2AddressResult[], status: string) => void,
+                ): void;
+              };
+              Status: { OK: string };
             };
           };
         }
