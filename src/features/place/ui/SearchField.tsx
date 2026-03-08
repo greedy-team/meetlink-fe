@@ -47,7 +47,7 @@ export function SearchField({
         disabled={disabled}
         className={[
           base,
-          'text-left',
+          'cursor-pointer text-left',
           'focus:border-greedy focus:ring-greedy/20 focus:ring-2',
           !disabled ? 'hover:bg-gray-50' : '',
         ].join(' ')}
@@ -75,7 +75,7 @@ export function SearchField({
         <button
           type="button"
           onClick={() => onChange?.('')}
-          className="grid h-8 w-8 place-items-center rounded-full hover:bg-gray-100"
+          className="grid h-8 w-8 cursor-pointer place-items-center rounded-full hover:bg-gray-100"
           aria-label="clear"
         >
           <X className="h-4 w-4 text-gray-400" />

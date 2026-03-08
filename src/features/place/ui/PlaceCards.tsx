@@ -1,3 +1,5 @@
+import { useDragScroll } from '@/hooks/useDragScroll';
+
 import type { RecommendPlace } from '@/types/meetingTypes';
 
 type PlaceCardsProps = {
@@ -7,11 +9,16 @@ type PlaceCardsProps = {
 };
 
 export function PlaceCards({ places, selectedRank, onSelect }: PlaceCardsProps) {
+  const { scrollRef, events, withClickPrevention } = useDragScroll();
   const sorted = [...places].sort((a, b) => a.rank - b.rank);
 
   return (
     <section className="w-full">
-      <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div
+        ref={scrollRef}
+        {...events}
+        className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {sorted.map((place) => {
           const isSelected = place.rank === selectedRank;
           const showBadge = place.rank === 1;
@@ -20,9 +27,9 @@ export function PlaceCards({ places, selectedRank, onSelect }: PlaceCardsProps) 
             <button
               key={place.rank}
               type="button"
-              onClick={() => onSelect(place.rank)}
+              onClick={withClickPrevention(() => onSelect(place.rank))}
               className={[
-                'min-w-70 shrink-0 rounded-2xl border bg-white px-4 py-4 text-left shadow-sm',
+                'min-w-70 shrink-0 cursor-pointer rounded-2xl border-2 bg-white px-4 py-4 text-left shadow-sm first:ml-4 last:mr-4',
                 isSelected ? 'border-greedy' : 'border-gray-200',
               ].join(' ')}
             >
