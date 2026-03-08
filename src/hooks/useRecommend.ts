@@ -19,6 +19,7 @@ export const useRecommendTime = () => {
     queryFn: () => getRecommendTime(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 10000,
   });
 };
 
@@ -32,6 +33,7 @@ export const useRecommendPlace = () => {
     queryFn: () => getRecommendPlace(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 10000,
   });
 };
 

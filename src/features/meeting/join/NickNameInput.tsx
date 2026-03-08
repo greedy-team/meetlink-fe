@@ -42,7 +42,7 @@ export function NickNameInput({
         />
       </div>
 
-      {/* ✨ 에러가 있거나 글자 수가 초과된 경우 */}
+      {/* 에러가 있거나 글자 수가 초과된 경우 */}
       {error || value.length > 10 ? (
         <p className="text-destructive mt-2 ml-1 text-xs">
           {value.length > 10 ? '최대 10자까지 입력할 수 있어요.' : error}

@@ -44,6 +44,7 @@ export const useParticipantList = () => {
     queryFn: () => getParticipantList(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 5000,
   });
 };
 
