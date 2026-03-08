@@ -9,7 +9,7 @@ type MeetingNameInputProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 export function MeetingNameInput({
@@ -36,6 +36,7 @@ export function MeetingNameInput({
       <Input
         type="text"
         id="meeting-name"
+        maxLength={15}
         value={value}
         onChange={onChange}
         onFocus={handleFocus}

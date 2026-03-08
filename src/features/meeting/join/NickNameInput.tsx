@@ -28,6 +28,7 @@ export function NickNameInput({
       <div className="mt-2">
         <input
           value={value}
+          maxLength={10}
           onChange={handleChange}
           disabled={disabled}
           placeholder="모임에서 사용할 닉네임을 입력해주세요"

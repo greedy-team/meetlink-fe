@@ -11,7 +11,7 @@ interface RecommendCheckBoxProps {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   children: React.ReactNode;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 export function RecommendCheckBox({
