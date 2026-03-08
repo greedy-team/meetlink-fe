@@ -119,6 +119,7 @@ export default function PlaceRecommendPage() {
       disableMainPadding
       disableBottomPadding
       disableBottomSpacer
+      controlBottomBg
       bottom={
         <div className="w-full">
           <OpenMapButton
