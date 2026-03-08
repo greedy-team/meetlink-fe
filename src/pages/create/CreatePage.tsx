@@ -46,14 +46,15 @@ export default function CreatePage() {
 
   //모임 생성 버튼 클릭 핸들
   const handleCreateClick = () => {
+    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
     //서버 요청 데이터 - 모임 설정값
     const requestData = {
       name: meetingName,
       enableTimeRecommendation: isTimeRecommendEnabled,
       enablePlaceRecommendation: isPlaceRecommendEnabled,
       timeAvailabilityType: dateType,
-      timeRangeStart: `${String(timeRange[0]).padStart(2, '0')}:00:00`,
-      timeRangeEnd: `${String(timeRange[1]).padStart(2, '0')}:00:00`,
+      timeRangeStart: formatTime(timeRange[0]),
+      timeRangeEnd: formatTime(timeRange[1]),
     };
 
     createMeeting(requestData, {

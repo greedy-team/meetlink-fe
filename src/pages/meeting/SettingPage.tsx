@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import axios from 'axios';
 import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -67,12 +68,20 @@ export default function SettingPage() {
         });
         navigate(`/meeting/${code}/join`);
       },
-      onError: () => {
-        // 사용자에게 에러 알리기
-        toast.error('오류가 발생했어요', {
-          description: '인터넷 연결 상태를 확인해보세요!',
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
       },
     });
   };
@@ -85,7 +94,7 @@ export default function SettingPage() {
       enablePlaceRecommendation: isPlaceRecommendEnabled,
       timeAvailabilityType: dateType,
       timeRangeStart: formatTime(timeRange[0]),
-      timeRangeEnd: timeRange[1] === 24 ? '23:59:59' : formatTime(timeRange[1]),
+      timeRangeEnd: formatTime(timeRange[1]),
     };
 
     // mutate 호출 시 콜백 추가
@@ -97,11 +106,20 @@ export default function SettingPage() {
         });
         navigate(`/meeting/${code}`);
       },
-      onError: () => {
-        toast.error('오류가 발생했어요', {
-          description: '인터넷 연결 상태를 확인해보세요!',
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
       },
     });
   };
