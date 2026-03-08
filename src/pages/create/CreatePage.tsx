@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import axios from 'axios';
 import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -45,11 +46,7 @@ export default function CreatePage() {
 
   //모임 생성 버튼 클릭 핸들
   const handleCreateClick = () => {
-    const formatTime = (hour: number) => {
-      const adjustedHour = hour >= 24 ? 23 : hour; // 24:00:00 시간이 존재하지 않는 오류 방지
-      return `${String(adjustedHour).padStart(2, '0')}:00:00`;
-    };
-
+    const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
     //서버 요청 데이터 - 모임 설정값
     const requestData = {
       name: meetingName,
@@ -77,12 +74,20 @@ export default function CreatePage() {
         });
         navigate(`/share/${data.result.code}`);
       },
-      onError: () => {
-        //실패 토스트
-        toast.error('오류가 발생했어요', {
-          description: '인터넷 연결 상태를 확인해보세요!',
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
       },
     });
   };

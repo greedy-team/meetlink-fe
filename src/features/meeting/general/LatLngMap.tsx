@@ -6,21 +6,12 @@ type LatLngMapProps = {
   level?: number;
   className?: string;
   onCenterChange?: (nextLat: number, nextLng: number) => void;
-  showMarker?: boolean;
 };
 
-export function LatLngMap({
-  lat,
-  lng,
-  level = 4,
-  className,
-  onCenterChange,
-  showMarker = true,
-}: LatLngMapProps) {
+export function LatLngMap({ lat, lng, level = 4, className, onCenterChange }: LatLngMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const mapRef = useRef<KakaoMap | null>(null);
-  const markerRef = useRef<KakaoMarker | null>(null);
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const programmaticMoveRef = useRef(false);
@@ -40,14 +31,7 @@ export function LatLngMap({
       const center = new kakao.maps.LatLng(lat, lng);
       const map = new kakao.maps.Map(containerRef.current, { center, level });
 
-      let marker: KakaoMarker | null = null;
-      if (showMarker) {
-        marker = new kakao.maps.Marker({ position: center });
-        marker.setMap(map);
-      }
-
       mapRef.current = map;
-      markerRef.current = marker;
 
       // 이벤트 리스너 등록
       if (kakao.maps.event) {
@@ -79,7 +63,6 @@ export function LatLngMap({
 
     const kakao = window.kakao;
     const map = mapRef.current;
-    const marker = markerRef.current;
 
     if (!kakao?.maps || !map) return;
 
@@ -87,10 +70,6 @@ export function LatLngMap({
 
     programmaticMoveRef.current = true;
     map.setCenter(next);
-
-    if (marker) {
-      marker.setPosition(next);
-    }
   }, [lat, lng, isMapLoaded]);
 
   return (

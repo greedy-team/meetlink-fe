@@ -56,12 +56,12 @@ export function RecentPlaceList({
               type="button"
               onClick={() => onSelect(p)}
               className={[
-                'flex w-full items-start gap-3 px-2 py-4 text-left transition-colors',
+                'flex w-full cursor-pointer items-center gap-3 px-2 py-4 text-left transition-colors',
                 'hover:bg-gray-100',
                 'active:scale-[0.98] active:bg-gray-100',
               ].join(' ')}
             >
-              <div className="mt-0.5 grid h-8 w-8 place-items-center rounded-full bg-gray-100">
+              <div className="grid h-8 w-8 place-items-center rounded-full bg-gray-100">
                 <MapPin className="h-4 w-4 text-gray-500" />
               </div>
 

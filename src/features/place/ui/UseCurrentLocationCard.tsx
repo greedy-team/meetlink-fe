@@ -9,7 +9,7 @@ export function UseCurrentLocationCard({ onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="bg-greedy/10 flex w-full items-center justify-between rounded-xl px-4 py-4"
+      className="bg-greedy/10 flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-4"
     >
       <div className="flex items-center gap-3">
         <div className="bg-greedy/20 grid h-10 w-10 place-items-center rounded-lg">

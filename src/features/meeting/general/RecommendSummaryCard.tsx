@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 import { LatLngMap } from './LatLngMap';
 import { RecommendItem } from './RecommendItem';
 
+import { CenterPin } from '@/features/place/confirm/CenterPin';
+
 interface BestTime {
   availableCount: number;
   date: string;
@@ -104,12 +106,17 @@ export function RecommendSummaryCard({
         {isPlaceRecommendEnabled && (
           <div className="px-3 pt-3">
             {!isLoading ? (
-              <LatLngMap
-                lat={bestPlace?.latitude ?? 37.54972}
-                lng={bestPlace?.longitude ?? 127.075475}
-                level={4}
-                className="h-40 w-full overflow-hidden rounded-2xl lg:h-50"
-              />
+              <div className="relative h-40 w-full overflow-hidden rounded-2xl lg:h-50">
+                <LatLngMap
+                  lat={bestPlace?.latitude ?? 37.54972}
+                  lng={bestPlace?.longitude ?? 127.075475}
+                  level={4}
+                  className="h-full w-full"
+                />
+                <div className="pointer-events-none absolute inset-0 z-10">
+                  <CenterPin />
+                </div>
+              </div>
             ) : (
               <div className="h-40 rounded-2xl bg-gray-100 lg:h-50" />
             )}

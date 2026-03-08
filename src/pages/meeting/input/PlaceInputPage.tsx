@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import axios from 'axios';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
@@ -98,7 +102,26 @@ export default function PlaceInputPage() {
 
       savePlace(requestPayload, {
         onSuccess: () => {
+          toast.success('출발지 등록 완료!', {
+            description: '출발지가 정상적으로 등록되었습니다',
+            icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+          });
           goBackByFrom();
+        },
+        onError: (error) => {
+          if (axios.isAxiosError(error)) {
+            //실패 토스트
+            toast.error('오류 발생!', {
+              description: error.message,
+              icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+            });
+          } else {
+            //실패 토스트
+            toast.error('오류 발생!', {
+              description: '인터넷 연결 상태를 확인해보세요!',
+              icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+            });
+          }
         },
       });
     } else {

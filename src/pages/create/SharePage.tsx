@@ -78,11 +78,9 @@ export default function SharePage() {
             >
               모임에 바로 참여할래요
             </button>
-            <div className="flex flex-col items-center px-6 pb-6">
-              <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
-                초대 링크 복사 및 공유하기
-              </FixedBottomButton>
-            </div>
+            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
+              초대 링크 복사 및 공유하기
+            </FixedBottomButton>
           </div>
         )
       }

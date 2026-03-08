@@ -125,7 +125,6 @@ export default function MeetingLayout() {
     dateType: meetingData?.result?.timeAvailabilityType || '',
     timeRange: [
       parseInt(meetingData?.result?.timeRangeStart?.split(':')[0] || '6', 10),
-      // End Time 파싱 로직: 23이면 24로 올림 처리
       ((hour: number) => (hour === 23 ? 24 : hour))(
         parseInt(meetingData?.result?.timeRangeEnd?.split(':')[0] || '24', 10),
       ),
