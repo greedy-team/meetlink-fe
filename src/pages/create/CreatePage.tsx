@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import axios from 'axios';
 import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -16,6 +17,7 @@ import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
 import { PlaceTypeSelector } from '@/features/meeting/setting/PlaceTypeSelector';
 import { RecommendCheckBox } from '@/features/meeting/setting/RecommendCheckBox';
 import { TimeRangeSlider } from '@/features/meeting/setting/TimeRangeSlider';
+import { type CreateMeetingResponse } from '@/types/apiTypes';
 
 export default function CreatePage() {
   //모임 설정값
@@ -77,12 +79,20 @@ export default function CreatePage() {
         });
         navigate(`/share/${data.result.code}`);
       },
-      onError: () => {
-        //실패 토스트
-        toast.error('오류가 발생했어요', {
-          description: '인터넷 연결 상태를 확인해보세요!',
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-        });
+      onError: (error) => {
+        if (axios.isAxiosError<CreateMeetingResponse>(error)) {
+          //실패 토스트
+          toast.error('오류가 발생했어요', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류가 발생했어요', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
       },
     });
   };
