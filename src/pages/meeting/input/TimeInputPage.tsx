@@ -17,7 +17,8 @@ import TimeHeatMap from '@/features/Time/TimeHeatMap';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
 export default function TimeInputPage() {
-  const { dateType, timeRange, selectedTimeList, setSelectedTimeList } = useMeetingContext();
+  const { dateType, timeRange, selectedTimeList, setSelectedTimeList, isLoading } =
+    useMeetingContext();
   const { code } = useParams<{ code: string }>();
 
   const { data: myTimeList, isSuccess } = useGetMyAvailableTime();
@@ -88,13 +89,15 @@ export default function TimeInputPage() {
       pageBackgroundClassName="bg-gray-100/70"
       bottom={
         <div className="space-y-3">
-          <FixedBottomButton
-            className="bg-greedy hover:bg-greedy/50"
-            loading={isPending}
-            onClick={handleSave}
-          >
-            저장하기
-          </FixedBottomButton>
+          {!isLoading && (
+            <FixedBottomButton
+              className="bg-greedy hover:bg-greedy/50"
+              loading={isPending}
+              onClick={handleSave}
+            >
+              저장하기
+            </FixedBottomButton>
+          )}
         </div>
       }
     >
