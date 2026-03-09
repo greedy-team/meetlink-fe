@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { addDays, format, startOfWeek } from 'date-fns';
+import { addDays, format, isSameDay, parseISO, startOfWeek } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { AvailableParticipantCard } from './AvailableParticipantCard';
+import { getMaxAvailableNum } from './timeFunctions';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
@@ -280,12 +281,11 @@ export default function TimeHeatMap({
               className="flex w-full flex-col border-r border-gray-200 last:border-r-0"
             >
               {timeSlots.map((startTime, slotIdx) => {
-                const selectedDate = date;
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                selectedDate.setHours(0, 0, 0, 0);
+                date.setHours(0, 0, 0, 0);
 
-                const isPastDate = today > selectedDate && dateType !== 'WEEKLY';
+                const isPastDate = today > date && dateType !== 'WEEKLY';
 
                 const isInDragBounds = // 좌표가 드래그 범위 안에 있는가?
                   mode === 'INPUT' && dragState.isDragging && dragState.start && dragState.current
@@ -296,22 +296,18 @@ export default function TimeHeatMap({
                     : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
-                const availableNum = getAvailableNumber(date.getDay(), dateStr, startTime);
                 const participantList = getParticipantList(date.getDay(), dateStr, startTime);
-                const newAvailableNum = isInDragBounds
+                const availableNum = isInDragBounds
                   ? dragState.action === 'ADD'
                     ? 1
                     : 0
-                  : availableNum;
+                  : getAvailableNumber(date.getDay(), dateStr, startTime);
 
                 const isTopHour = startTime.endsWith(':00:00');
                 const isLastSlot = slotIdx === timeSlots.length - 1;
 
-                //가능 인원이 1 이상이면 선택된 것
-                const isSelected = newAvailableNum > 0;
-
                 // INPUT 모드면 무조건 100% OUTPUT 모드면 비율 계산
-                const opacityValue = mode === 'INPUT' ? 1 : newAvailableNum / participantsNum;
+                const opacityValue = mode === 'INPUT' ? 1 : availableNum / participantsNum;
 
                 return (
                   <AvailableParticipantCard
@@ -359,11 +355,13 @@ export default function TimeHeatMap({
                           : 'border-t border-dashed border-gray-100',
                         isLastSlot ? 'border-b border-gray-200' : '',
                         isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
-                        mode === 'INPUT' && !isSelected && !isPastDate ? 'hover:bg-gray-50' : '',
+                        mode === 'INPUT' && availableNum == 0 && !isPastDate
+                          ? 'hover:bg-gray-50'
+                          : '',
                       )}
                     >
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
-                      {isSelected && (
+                      {availableNum > 0 && (
                         <div
                           className="bg-greedy pointer-events-none absolute inset-0"
                           style={{

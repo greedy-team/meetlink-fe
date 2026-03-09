@@ -163,17 +163,26 @@ export const isTimeInRange = (time: string, [startHour, endHour]: [number, numbe
   return hour >= startHour && hour < endHour;
 };
 
-//참여자 비율 계산 함수
-export const getParticipantsRatio = (
+export const getMaxAvailableNum = (
   selectedTime: SelectedTime | undefined | null,
   timeRange: [number, number],
-  participantsNum: number,
 ): number => {
   const validTimes =
     selectedTime?.startTimeList?.filter((st) => isTimeInRange(st.startTime, timeRange)) || [];
 
   const maxCount =
     validTimes.length > 0 ? Math.max(...validTimes.map((st) => st.availableNumber)) : 0;
+
+  return maxCount;
+};
+
+//참여자 비율 계산 함수
+export const getParticipantsRatio = (
+  selectedTime: SelectedTime | undefined | null,
+  timeRange: [number, number],
+  participantsNum: number,
+): number => {
+  const maxCount = getMaxAvailableNum(selectedTime, timeRange);
 
   return participantsNum > 0 ? maxCount / participantsNum : 0;
 };
