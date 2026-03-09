@@ -117,7 +117,7 @@ export default function MainPage() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold text-gray-700">
+          <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold">
             내가 할 일
           </Label>
 
@@ -145,10 +145,7 @@ export default function MainPage() {
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between px-1">
-            <Label
-              htmlFor="meeting-participant"
-              className="ml-1 text-base font-semibold text-gray-700"
-            >
+            <Label htmlFor="meeting-participant" className="ml-1 text-base font-semibold">
               참여자 현황
             </Label>
             {!isLoading && (

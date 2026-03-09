@@ -12,7 +12,7 @@ type PlaceTypeSelectorProps = {
 export function PlaceTypeSelector({ value, onChange }: PlaceTypeSelectorProps) {
   return (
     <div className={cn('w-full gap-2')}>
-      <Label className="ml-1 text-base font-semibold text-gray-700">장소 유형 선택</Label>
+      <Label className="text-greedy ml-1 text-base font-semibold">장소 유형 선택</Label>
 
       <div className="flex gap-1">
         <SelectCardButton

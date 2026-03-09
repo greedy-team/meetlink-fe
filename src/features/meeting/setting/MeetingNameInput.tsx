@@ -29,7 +29,7 @@ export function MeetingNameInput({
   };
   return (
     <div ref={containerRef} className={cn('mb-2 grid w-full items-center gap-2', className)}>
-      <Label htmlFor="meeting-name" className="ml-1 text-base font-semibold text-gray-700">
+      <Label htmlFor="meeting-name" className="ml-1 text-base font-semibold">
         모임 이름
       </Label>
 
@@ -43,7 +43,7 @@ export function MeetingNameInput({
         placeholder={placeholder}
         disabled={isLoading}
         className={cn(
-          'bg-background h-12 w-full rounded-xl border border-gray-200 px-4 text-base shadow-none outline-none',
+          'bg-background h-12 w-full rounded-xl border border-gray-200 px-4 text-base! shadow-none outline-none',
           'placeholder:text-muted-foreground',
           'focus-visible:ring-greedy/20 focus-visible:border-greedy focus-visible:ring-2 focus-visible:ring-offset-0',
           isLoading && 'bg-gray-100 text-gray-100',

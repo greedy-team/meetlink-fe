@@ -207,7 +207,7 @@ export default function SettingPage() {
 
         <div className="h-2" />
 
-        <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
+        <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold">
           모임 설정
         </Label>
 

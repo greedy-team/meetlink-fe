@@ -59,7 +59,7 @@ export default function SharePage() {
   return (
     <AppLayout
       header={
-        <div className="mx-8 mt-8 mb-5 flex flex-col gap-2 text-left">
+        <div className="mx-5 mt-8 mb-5 flex flex-col gap-2 text-left">
           <div className="text-3xl font-bold tracking-tight text-gray-900">링크 공유하기</div>
           <div className="text-gray-500">생성한 모임 정보를 확인하고 초대하세요!</div>
         </div>
@@ -85,7 +85,7 @@ export default function SharePage() {
         )
       }
     >
-      <div className="mx-3 flex flex-col gap-6 rounded-2xl border border-gray-200 bg-gray-50 p-6">
+      <div className="mx-1 flex flex-col gap-6 rounded-2xl border border-gray-200 bg-gray-50 p-6">
         <div className="flex flex-col gap-1.5">
           <Label
             className={cn(
