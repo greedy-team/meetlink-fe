@@ -21,7 +21,7 @@ export function NickNameInput({
 
   return (
     <div className="mt-6">
-      <label className="text-sm font-semibold">
+      <label className="text-base font-semibold">
         닉네임{required ? <span className="text-destructive">*</span> : null}
       </label>
 
@@ -42,7 +42,12 @@ export function NickNameInput({
         />
       </div>
 
-      {error ? <p className="text-destructive mt-2 text-xs">{error}</p> : null}
+      {/* 에러가 있거나 글자 수가 초과된 경우 */}
+      {error || value.length > 10 ? (
+        <p className="text-destructive mt-2 ml-1 text-xs">
+          {value.length > 10 ? '최대 10자까지 입력할 수 있어요.' : error}
+        </p>
+      ) : null}
     </div>
   );
 }

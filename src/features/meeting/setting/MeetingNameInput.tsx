@@ -49,6 +49,10 @@ export function MeetingNameInput({
           isLoading && 'bg-gray-100 text-gray-100',
         )}
       />
+      {/* 글자수 초과했을 경우 에러 스타일 문구 */}
+      {value.length > 15 && (
+        <p className="text-destructive ml-1 text-xs">최대 15자까지 입력할 수 있어요.</p>
+      )}
     </div>
   );
 }

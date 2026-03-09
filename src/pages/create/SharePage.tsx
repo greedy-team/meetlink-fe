@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { CalendarDays, Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -59,15 +59,15 @@ export default function SharePage() {
   return (
     <AppLayout
       header={
-        <div className="mx-8 mt-12 mb-2 flex flex-col gap-2 text-left">
+        <div className="mx-8 mt-8 mb-5 flex flex-col gap-2 text-left">
           <div className="text-3xl font-bold tracking-tight text-gray-900">링크 공유하기</div>
           <div className="text-gray-500">생성한 모임 정보를 확인하고 초대하세요!</div>
         </div>
       }
-      pageBackgroundClassName="bg-gray-50"
+      pageBackgroundClassName="bg-white"
       bottom={
         isSuccess && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <button
               type="button"
               onClick={handleJoin}
@@ -85,11 +85,11 @@ export default function SharePage() {
         )
       }
     >
-      <div className="mx-3 flex flex-col gap-6 rounded-2xl border border-gray-100 bg-white p-6">
+      <div className="mx-3 flex flex-col gap-6 rounded-2xl border border-gray-200 bg-gray-50 p-6">
         <div className="flex flex-col gap-1.5">
           <Label
             className={cn(
-              'text-sm font-medium text-gray-500',
+              'text-sm font-medium text-gray-600',
               isLoading ? 'w-15 rounded-lg bg-gray-100 text-gray-100' : '',
             )}
           >
@@ -105,7 +105,7 @@ export default function SharePage() {
           </div>
         </div>
 
-        <div className="h-px w-full bg-gray-100" />
+        <div className="h-px w-full bg-gray-200" />
 
         <SettingInfoCard
           isEnabled={isTimeRecommendEnabled}
@@ -113,17 +113,11 @@ export default function SharePage() {
           icon={Clock}
           isLoading={isLoading}
         >
-          <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <CalendarDays className="h-4 w-4 text-gray-400" />
-              <span className="font-medium">{dateType}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Clock className="h-4 w-4 text-gray-400" />
-              <span className="font-medium">
-                {timeRange[0]} ~ {timeRange[1]}
-              </span>
-            </div>
+          <div className="ml-13 flex flex-col gap-1 text-sm font-medium text-gray-600">
+            <span>{dateType}</span>
+            <span>
+              {timeRange[0]} ~ {timeRange[1]}
+            </span>
           </div>
         </SettingInfoCard>
         <SettingInfoCard
@@ -132,11 +126,8 @@ export default function SharePage() {
           icon={MapPin}
           isLoading={isLoading}
         >
-          <div className="ml-13 flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <MapPin className="h-4 w-4 text-gray-400" />
-              <span className="font-medium">{placeType}</span>
-            </div>
+          <div className="ml-13 flex flex-col gap-1 text-sm font-medium text-gray-600">
+            <span>{placeType}</span>
           </div>
         </SettingInfoCard>
       </div>

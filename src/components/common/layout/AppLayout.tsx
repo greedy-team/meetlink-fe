@@ -10,6 +10,7 @@ type AppLayoutProps = {
   disableMainPadding?: boolean;
   disableBottomPadding?: boolean;
   disableBottomSpacer?: boolean;
+  controlBottomBg?: boolean;
 };
 
 export function AppLayout({
@@ -21,6 +22,7 @@ export function AppLayout({
   disableMainPadding = false,
   disableBottomPadding = false,
   disableBottomSpacer = false,
+  controlBottomBg = false,
 }: AppLayoutProps) {
   return (
     <div className={`flex min-h-dvh w-full flex-col ${pageBackgroundClassName}`}>
@@ -49,11 +51,18 @@ export function AppLayout({
 
       {/* 하단 고정 영역 */}
       {bottom && (
-        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white shadow-sm">
+        <div
+          className={[
+            'fixed bottom-0 z-50 bg-white shadow-sm',
+            controlBottomBg
+              ? `left-1/2 w-full -translate-x-1/2 ${maxWidthClassName}` // 가운데 정렬하고 배경 넓이 제한
+              : 'right-0 left-0', // 기존처럼 화면 전체 채움
+          ].join(' ')}
+        >
           <div
             className={[
               'mx-auto w-full',
-              maxWidthClassName,
+              controlBottomBg ? '' : maxWidthClassName, // 바깥에서 넓이를 제한했다면 안쪽은 비움
               disableBottomPadding ? '' : 'px-4 pt-3',
               disableBottomPadding
                 ? 'pb-[env(safe-area-inset-bottom)]'

@@ -109,8 +109,8 @@ export default function CreatePage() {
       }
       pageBackgroundClassName="bg-white"
       bottom={
-        <div className="flex flex-col items-center">
-          {isCreateButtonEnabled && (
+        isCreateButtonEnabled ? (
+          <div className="flex flex-col items-center">
             <FixedBottomButton
               className="bg-greedy hover:bg-greedy/50"
               onClick={handleCreateClick}
@@ -119,8 +119,8 @@ export default function CreatePage() {
             >
               모임 생성하기
             </FixedBottomButton>
-          )}
-        </div>
+          </div>
+        ) : null
       }
     >
       <div className="mx-3 flex flex-col gap-2">

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import axios from 'axios';
 
-import { meetingKeys, recommendKeys } from './queryKeys';
+import { meetingKeys, participantKeys, recommendKeys } from './queryKeys';
 
 import { createMeeting, getMeetingDetail, updateMeetingDetail } from '@/features/api/meetingApi';
 import { type UpdateMeetingDetailRequest } from '@/types/apiTypes';
@@ -48,6 +48,9 @@ export const useUpdateMeetingDetail = () => {
       });
       queryClient.invalidateQueries({
         queryKey: recommendKeys.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: participantKeys.all,
       });
     },
     onError: () => {

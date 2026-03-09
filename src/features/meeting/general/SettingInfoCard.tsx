@@ -20,13 +20,13 @@ export const SettingInfoCard = ({
   children,
 }: SettingInfoCardProps) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-full',
-              isEnabled ? 'bg-greedy/10 text-greedy' : 'bg-red-100 text-red-500',
+              'flex h-10 w-10 items-center justify-center rounded-xl',
+              isEnabled ? 'bg-greedy/10 text-greedy' : 'bg-gray-200/70 text-gray-400',
               isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
             )}
           >
@@ -46,13 +46,13 @@ export const SettingInfoCard = ({
             <>
               <CheckCircle2
                 className={cn(
-                  'text-greedy/70 h-5 w-5',
+                  'text-greedy h-5 w-5',
                   isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
                 )}
               />
               <span
                 className={cn(
-                  'text-greedy/70 text-sm font-medium',
+                  'text-greedy text-sm font-medium',
                   isLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
                 )}
               >
@@ -63,13 +63,13 @@ export const SettingInfoCard = ({
             <>
               <XCircle
                 className={cn(
-                  'h-5 w-5 text-red-500',
+                  'h-5 w-5 text-gray-400',
                   isLoading ? 'rounded-xl bg-gray-100 text-gray-100' : '',
                 )}
               />
               <span
                 className={cn(
-                  'text-sm font-medium text-red-500',
+                  'text-sm font-medium text-gray-500',
                   isLoading ? 'rounded-xl bg-gray-100 text-gray-100' : '',
                 )}
               >

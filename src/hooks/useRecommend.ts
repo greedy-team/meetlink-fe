@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { recommendKeys } from './queryKeys';
 
@@ -19,6 +19,7 @@ export const useRecommendTime = () => {
     queryFn: () => getRecommendTime(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 10000,
   });
 };
 
@@ -32,6 +33,7 @@ export const useRecommendPlace = () => {
     queryFn: () => getRecommendPlace(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 10000,
   });
 };
 
@@ -44,5 +46,6 @@ export const useRecommendResult = () => {
     queryFn: () => getRecommendResult(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 5000,
   });
 };

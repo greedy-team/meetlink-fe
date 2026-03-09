@@ -33,6 +33,7 @@ export const useGetWholeAvailableTime = () => {
     queryFn: () => getWholeAvailableTime(code!),
     enabled: !!code,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 10000,
   });
 };
 
