@@ -36,30 +36,6 @@ interface TimeRangeSliderProps {
 }
 
 export function TimeRangeSlider({ value, onValueChange, className }: TimeRangeSliderProps) {
-  // 시간 라벨 클릭 시 해당 시간으로 슬라이더 이동
-  const handleTimeClick = (e: React.MouseEvent<HTMLButtonElement>, time: number) => {
-    const [start, end] = value;
-    const distStart = Math.abs(time - start);
-    const distEnd = Math.abs(time - end);
-
-    // 가까운 쪽의 핸들 이동, 거리가 같으면 클릭 위치에 따라 결정
-    if (distStart < distEnd) {
-      onValueChange([time, end]);
-    } else if (distStart > distEnd) {
-      onValueChange([start, time]);
-    } else {
-      // 거리가 같을 때: 글씨 왼쪽/오른쪽 클릭 픽셀로 판별
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-
-      if (clickX < rect.width / 2) {
-        onValueChange([time, end]); // 글씨 왼쪽: 앞쪽 당기기
-      } else {
-        onValueChange([start, time]); // 글씨 오른쪽: 뒤쪽 당기기
-      }
-    }
-  };
-
   return (
     <div className={cn('flex w-full flex-col gap-3', className)}>
       <Label className="ml-1 text-base font-semibold text-gray-700">시간 범위 선택</Label>
@@ -77,41 +53,11 @@ export function TimeRangeSlider({ value, onValueChange, className }: TimeRangeSl
           />
         </div>
         <div className="flex justify-between text-sm font-medium text-gray-500">
-          <button
-            type="button"
-            className="w-10 cursor-pointer text-center"
-            onClick={(e) => handleTimeClick(e, 0)}
-          >
-            0시
-          </button>
-          <button
-            type="button"
-            className="w-10 cursor-pointer text-center"
-            onClick={(e) => handleTimeClick(e, 6)}
-          >
-            6시
-          </button>
-          <button
-            type="button"
-            className="w-10 cursor-pointer text-center"
-            onClick={(e) => handleTimeClick(e, 12)}
-          >
-            12시
-          </button>
-          <button
-            type="button"
-            className="w-10 cursor-pointer text-center"
-            onClick={(e) => handleTimeClick(e, 18)}
-          >
-            18시
-          </button>
-          <button
-            type="button"
-            className="w-10 cursor-pointer text-center"
-            onClick={(e) => handleTimeClick(e, 24)}
-          >
-            24시
-          </button>
+          <span className="w-10 text-center">0시</span>
+          <span className="w-10 text-center">6시</span>
+          <span className="w-10 text-center">12시</span>
+          <span className="w-10 text-center">18시</span>
+          <span className="w-10 text-center">24시</span>
         </div>
       </div>
     </div>
