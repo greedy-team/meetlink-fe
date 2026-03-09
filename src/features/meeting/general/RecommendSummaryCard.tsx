@@ -112,6 +112,7 @@ export function RecommendSummaryCard({
                   lng={bestPlace?.longitude ?? 127.075475}
                   level={4}
                   className="h-full w-full"
+                  isInteractive={false}
                 />
                 <div className="pointer-events-none absolute inset-0 z-10">
                   <CenterPin />
