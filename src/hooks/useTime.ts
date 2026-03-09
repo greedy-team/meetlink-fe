@@ -48,7 +48,7 @@ export const useUpdateMyAvailableTime = () => {
     onSuccess: () => {
       // 내 가능 시간 리패치
       queryClient.invalidateQueries({
-        queryKey: timeKeys.my(code!, token),
+        queryKey: timeKeys.all,
       });
 
       //참여자 현황 리패치

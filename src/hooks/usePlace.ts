@@ -40,7 +40,7 @@ export const useUpdateMyStartPlace = () => {
     onSuccess: () => {
       //내 출발지 리패치
       queryClient.invalidateQueries({
-        queryKey: placeKeys.my(code!, token),
+        queryKey: placeKeys.all,
       });
 
       //참여자 현황 리패치
