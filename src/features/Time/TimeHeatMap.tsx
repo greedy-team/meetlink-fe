@@ -22,6 +22,7 @@ interface TimeHeatMapProps {
   selectedDate: Date;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
+  selectedRecommendDate: Date | undefined;
 }
 
 interface DragState {
@@ -39,6 +40,7 @@ export default function TimeHeatMap({
   selectedDate,
   selectedTimeList,
   setSelectedTimeList,
+  selectedRecommendDate,
 }: TimeHeatMapProps) {
   const [startHour, endHour] = timeRange;
 
@@ -274,7 +276,9 @@ export default function TimeHeatMap({
       >
         {weekdays.map((date, dayIndex) => {
           const dateStr = format(date, 'yyyy-MM-dd');
-          const isSelectedDate = isSameDay(date, selectedDate);
+          const isSelectedDate = selectedRecommendDate
+            ? isSameDay(date, selectedRecommendDate)
+            : false;
           const matched = selectedTimeList.find((item) =>
             item.date ? isSameDay(parseISO(item.date), date) : false,
           );

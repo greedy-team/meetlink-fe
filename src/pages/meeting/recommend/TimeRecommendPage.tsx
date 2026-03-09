@@ -16,6 +16,7 @@ export default function TimeRecommendPage() {
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedRecommendDate, setSelectedRecommendDate] = useState<Date>();
 
   const participantsNum = participantStatusList.length;
   const commonTimeList = useMemo(() => {
@@ -49,6 +50,7 @@ export default function TimeRecommendPage() {
             commonTimeList={commonTimeList}
             dateType={dateType}
             timeRange={timeRange}
+            setSelectedRecommendDate={setSelectedRecommendDate}
           />
         </div>
       }
@@ -63,6 +65,7 @@ export default function TimeRecommendPage() {
           selectedDate={selectedDate}
           selectedTimeList={commonTimeList}
           setSelectedTimeList={setSelectedTimeList}
+          selectedRecommendDate={selectedRecommendDate}
         />
       </div>
     </AppLayout>
