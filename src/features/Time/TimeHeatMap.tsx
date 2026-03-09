@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { addDays, format, isSameDay, parseISO, startOfWeek } from 'date-fns';
+import { addDays, format, isBefore, isSameDay, parseISO, startOfDay, startOfWeek } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -22,7 +22,7 @@ interface TimeHeatMapProps {
   selectedDate: Date;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
-  selectedRecommendDate: Date | undefined;
+  selectedRecommendDate: string | number | undefined;
 }
 
 interface DragState {
@@ -91,23 +91,24 @@ export default function TimeHeatMap({
     dataRefs.current = { weekdays, timeSlots, dateType };
   }, [weekdays, timeSlots, dateType]);
 
-  //해당 날짜의 시간의 가능 인원 수
-  const getAvailableNumber = (dayOfWeek: number, date: string, startTime: string) => {
-    const targetDay = selectedTimeList.find((item) =>
-      dateType === 'WEEKLY' ? item.dayOfWeek === dayOfWeek : item.date === date,
-    );
-    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
-    return timeInfo ? timeInfo.availableNumber : 0;
-  };
+  const timeDataMap = useMemo(() => {
+    const map: Record<
+      string | number,
+      Record<string, { availableNumber: number; participants: string[] }>
+    > = {};
 
-  //해당 날짜의 시간의 가능 참여자 리스트
-  const getParticipantList = (dayOfWeek: number, date: string, startTime: string) => {
-    const targetDay = selectedTimeList.find((item) =>
-      dateType === 'WEEKLY' ? item.dayOfWeek === dayOfWeek : item.date === date,
-    );
-    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
-    return timeInfo ? timeInfo.participants : [];
-  };
+    selectedTimeList.forEach((day) => {
+      const key = dateType === 'WEEKLY' ? day.dayOfWeek : day.date;
+      map[key] = {};
+      day.startTimeList.forEach((time) => {
+        map[key][time.startTime] = {
+          availableNumber: time.availableNumber,
+          participants: time.participants || [],
+        };
+      });
+    });
+    return map;
+  }, [selectedTimeList, dateType]);
 
   // 마우스 누를 때 드래그 시작 - 최소 위치 저장
   const handleMouseDown = (dayIndex: number, slotIdx: number, availableNum: number) => {
@@ -276,13 +277,26 @@ export default function TimeHeatMap({
       >
         {weekdays.map((date, dayIndex) => {
           const dateStr = format(date, 'yyyy-MM-dd');
-          const isSelectedDate = selectedRecommendDate
-            ? isSameDay(date, selectedRecommendDate)
-            : false;
+          const isSelectedDate = (() => {
+            if (selectedRecommendDate === undefined || selectedRecommendDate === null) return false;
+
+            if (dateType === 'WEEKLY') {
+              return dayIndex === selectedRecommendDate;
+            } else {
+              return isSameDay(date, parseISO(String(selectedRecommendDate)));
+            }
+          })();
           const matched = selectedTimeList.find((item) =>
-            item.date ? isSameDay(parseISO(item.date), date) : false,
+            dateType === 'WEEKLY'
+              ? item.dayOfWeek === dayIndex
+              : item.date
+                ? isSameDay(parseISO(item.date), date)
+                : false,
           );
           const maxAvailableNum = getMaxAvailableNum(matched, timeRange);
+          const todayStart = startOfDay(new Date());
+          const currentDayStart = startOfDay(date);
+          const isPastDate = dateType !== 'WEEKLY' && isBefore(currentDayStart, todayStart);
 
           return (
             <div
@@ -290,12 +304,7 @@ export default function TimeHeatMap({
               className="flex w-full flex-col border-r border-gray-200 last:border-r-0"
             >
               {timeSlots.map((startTime, slotIdx) => {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                date.setHours(0, 0, 0, 0);
-
-                const isPastDate = today > date && dateType !== 'WEEKLY';
-
+                const mapKey = dateType === 'WEEKLY' ? dayIndex : dateStr;
                 const isInDragBounds = // 좌표가 드래그 범위 안에 있는가?
                   mode === 'INPUT' && dragState.isDragging && dragState.start && dragState.current
                     ? dayIndex >= Math.min(dragState.start.x, dragState.current.x) &&
@@ -305,22 +314,20 @@ export default function TimeHeatMap({
                     : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
-                const participantList = getParticipantList(date.getDay(), dateStr, startTime);
+                const participantList = timeDataMap[mapKey]?.[startTime]?.participants || [];
+
                 const availableNum = isInDragBounds
                   ? dragState.action === 'ADD'
                     ? 1
                     : 0
-                  : getAvailableNumber(date.getDay(), dateStr, startTime);
+                  : timeDataMap[mapKey]?.[startTime]?.availableNumber || 0;
 
                 const isStart = (() => {
                   if (!isSelectedDate) return false; // 선택된 날이 아니면
                   const prevStartTime = timeSlots[slotIdx - 1];
                   if (!prevStartTime) return true; // 이전 타임이 없다면
-                  const prevAvailableNum = getAvailableNumber(
-                    date.getDay(),
-                    dateStr,
-                    prevStartTime,
-                  );
+                  const prevAvailableNum =
+                    timeDataMap[mapKey]?.[prevStartTime]?.availableNumber || 0;
 
                   if (prevAvailableNum === availableNum) return false; // 이전 타임과 가능 인원이 같으면
                   return true;
@@ -329,11 +336,8 @@ export default function TimeHeatMap({
                   if (!isSelectedDate) return false; // 선택된 날이 아니면
                   const nextStartTime = timeSlots[slotIdx + 1];
                   if (!nextStartTime) return true; // 다음 타임이 없다면
-                  const nextAvailableNum = getAvailableNumber(
-                    date.getDay(),
-                    dateStr,
-                    nextStartTime,
-                  );
+                  const nextAvailableNum =
+                    timeDataMap[mapKey]?.[nextStartTime]?.availableNumber || 0;
 
                   if (nextAvailableNum === availableNum) return false; // 다음 타임과 가능 인원이 같으면
                   return true;

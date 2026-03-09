@@ -32,7 +32,7 @@ interface TimeRecommendModalProps {
   timeRange: [number, number];
   commonTimeList: SelectedTime[];
   dateType: string;
-  setSelectedRecommendDate: (date: Date) => void;
+  setSelectedRecommendDate: (date: string | number) => void;
 }
 
 function getSafeAreaBottom(): number {
@@ -142,7 +142,11 @@ export default function TimeRecommendModal({
       if (dateType !== 'WEEKLY' && candidate.date) {
         setSelectedDate(new Date(candidate.date));
       }
-      setSelectedRecommendDate(new Date(candidate.date));
+      if (dateType === 'WEEKLY') {
+        setSelectedRecommendDate(candidate.dayOfWeek);
+      } else {
+        setSelectedRecommendDate(candidate.date);
+      }
       snapTo('peek');
     },
     [dateType, setSelectedDate, snapTo, setSelectedRecommendDate],

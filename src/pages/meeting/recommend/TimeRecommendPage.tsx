@@ -16,7 +16,7 @@ export default function TimeRecommendPage() {
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedRecommendDate, setSelectedRecommendDate] = useState<Date>();
+  const [selectedRecommendDate, setSelectedRecommendDate] = useState<string | number>();
 
   const participantsNum = participantStatusList.length;
   const commonTimeList = useMemo(() => {
