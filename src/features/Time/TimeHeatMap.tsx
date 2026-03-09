@@ -274,6 +274,11 @@ export default function TimeHeatMap({
       >
         {weekdays.map((date, dayIndex) => {
           const dateStr = format(date, 'yyyy-MM-dd');
+          const isSelectedDate = isSameDay(date, selectedDate);
+          const matched = selectedTimeList.find((item) =>
+            item.date ? isSameDay(parseISO(item.date), date) : false,
+          );
+          const maxAvailableNum = getMaxAvailableNum(matched, timeRange);
 
           return (
             <div
@@ -302,6 +307,33 @@ export default function TimeHeatMap({
                     ? 1
                     : 0
                   : getAvailableNumber(date.getDay(), dateStr, startTime);
+
+                const isStart = (() => {
+                  if (!isSelectedDate) return false; // 선택된 날이 아니면
+                  const prevStartTime = timeSlots[slotIdx - 1];
+                  if (!prevStartTime) return true; // 이전 타임이 없다면
+                  const prevAvailableNum = getAvailableNumber(
+                    date.getDay(),
+                    dateStr,
+                    prevStartTime,
+                  );
+
+                  if (prevAvailableNum === availableNum) return false; // 이전 타임과 가능 인원이 같으면
+                  return true;
+                })();
+                const isEnd = (() => {
+                  if (!isSelectedDate) return false; // 선택된 날이 아니면
+                  const nextStartTime = timeSlots[slotIdx + 1];
+                  if (!nextStartTime) return true; // 다음 타임이 없다면
+                  const nextAvailableNum = getAvailableNumber(
+                    date.getDay(),
+                    dateStr,
+                    nextStartTime,
+                  );
+
+                  if (nextAvailableNum === availableNum) return false; // 다음 타임과 가능 인원이 같으면
+                  return true;
+                })();
 
                 const isTopHour = startTime.endsWith(':00:00');
                 const isLastSlot = slotIdx === timeSlots.length - 1;
@@ -355,9 +387,24 @@ export default function TimeHeatMap({
                           : 'border-t border-dashed border-gray-100',
                         isLastSlot ? 'border-b border-gray-200' : '',
                         isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
-                        mode === 'INPUT' && availableNum == 0 && !isPastDate
+                        mode === 'INPUT' && availableNum === 0 && !isPastDate
                           ? 'hover:bg-gray-50'
                           : '',
+                        mode === 'OUTPUT' &&
+                          availableNum === maxAvailableNum &&
+                          isSelectedDate &&
+                          availableNum !== 0 &&
+                          'border-r-2 border-l-2 border-solid border-r-black border-l-black',
+                        mode === 'OUTPUT' &&
+                          availableNum !== 0 &&
+                          availableNum === maxAvailableNum &&
+                          isStart &&
+                          'border-t-2 border-solid border-t-black',
+                        mode === 'OUTPUT' &&
+                          availableNum !== 0 &&
+                          availableNum === maxAvailableNum &&
+                          isEnd &&
+                          'border-b-2 border-solid border-b-black',
                       )}
                     >
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
