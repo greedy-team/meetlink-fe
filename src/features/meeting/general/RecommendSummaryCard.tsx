@@ -92,8 +92,12 @@ export function RecommendSummaryCard({
     navigate(url);
   };
 
-  const timeValue = makeTimeDescription(bestTime);
-  const placeValue = makePlaceDescription(bestPlace);
+  const timeValue = !isTimeCalculating
+    ? makeTimeDescription(bestTime)
+    : '추천 시간을 계산 중입니다!';
+  const placeValue = !isPlaceCalculating
+    ? makePlaceDescription(bestPlace)
+    : '추천 장소를 계산 중입니다!';
 
   if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
     return null; // 혹시나 방지
