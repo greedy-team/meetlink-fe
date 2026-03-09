@@ -22,7 +22,7 @@ interface TimeHeatMapProps {
   selectedDate: Date;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
-  selectedRecommendDate: string | number | undefined;
+  selectedRecommendDate?: string | number | undefined;
 }
 
 interface DragState {
@@ -40,7 +40,7 @@ export default function TimeHeatMap({
   selectedDate,
   selectedTimeList,
   setSelectedTimeList,
-  selectedRecommendDate,
+  selectedRecommendDate = undefined,
 }: TimeHeatMapProps) {
   const [startHour, endHour] = timeRange;
 
