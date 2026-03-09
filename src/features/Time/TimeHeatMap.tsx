@@ -253,6 +253,17 @@ export default function TimeHeatMap({
     };
   }, [setSelectedTimeList]);
 
+  const dragBounds = useMemo(() => {
+    if (mode !== 'INPUT' || !dragState.isDragging || !dragState.start || !dragState.current)
+      return null;
+    return {
+      minX: Math.min(dragState.start.x, dragState.current.x),
+      maxX: Math.max(dragState.start.x, dragState.current.x),
+      minY: Math.min(dragState.start.y, dragState.current.y),
+      maxY: Math.max(dragState.start.y, dragState.current.y),
+    };
+  }, [mode, dragState]);
+
   return (
     <div className="flex w-full justify-between font-sans select-none">
       {/* 좌측 시간 */}
@@ -305,13 +316,13 @@ export default function TimeHeatMap({
             >
               {timeSlots.map((startTime, slotIdx) => {
                 const mapKey = dateType === 'WEEKLY' ? dayIndex : dateStr;
-                const isInDragBounds = // 좌표가 드래그 범위 안에 있는가?
-                  mode === 'INPUT' && dragState.isDragging && dragState.start && dragState.current
-                    ? dayIndex >= Math.min(dragState.start.x, dragState.current.x) &&
-                      dayIndex <= Math.max(dragState.start.x, dragState.current.x) &&
-                      slotIdx >= Math.min(dragState.start.y, dragState.current.y) &&
-                      slotIdx <= Math.max(dragState.start.y, dragState.current.y)
-                    : false;
+
+                const isInDragBounds = dragBounds // 좌표가 드래그 범위 안에 있는가?
+                  ? dayIndex >= dragBounds.minX &&
+                    dayIndex <= dragBounds.maxX &&
+                    slotIdx >= dragBounds.minY &&
+                    slotIdx <= dragBounds.maxY
+                  : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
                 const participantList = timeDataMap[mapKey]?.[startTime]?.participants || [];
@@ -322,25 +333,24 @@ export default function TimeHeatMap({
                     : 0
                   : timeDataMap[mapKey]?.[startTime]?.availableNumber || 0;
 
+                const isMaxAvailableSlot =
+                  mode === 'OUTPUT' && availableNum > 0 && availableNum === maxAvailableNum;
+
                 const isStart = (() => {
-                  if (!isSelectedDate) return false; // 선택된 날이 아니면
+                  if (!isSelectedDate || !isMaxAvailableSlot) return false;
                   const prevStartTime = timeSlots[slotIdx - 1];
-                  if (!prevStartTime) return true; // 이전 타임이 없다면
+                  if (!prevStartTime) return true;
                   const prevAvailableNum =
                     timeDataMap[mapKey]?.[prevStartTime]?.availableNumber || 0;
-
-                  if (prevAvailableNum === availableNum) return false; // 이전 타임과 가능 인원이 같으면
-                  return true;
+                  return prevAvailableNum !== availableNum;
                 })();
                 const isEnd = (() => {
-                  if (!isSelectedDate) return false; // 선택된 날이 아니면
+                  if (!isSelectedDate || !isMaxAvailableSlot) return false;
                   const nextStartTime = timeSlots[slotIdx + 1];
-                  if (!nextStartTime) return true; // 다음 타임이 없다면
+                  if (!nextStartTime) return true;
                   const nextAvailableNum =
                     timeDataMap[mapKey]?.[nextStartTime]?.availableNumber || 0;
-
-                  if (nextAvailableNum === availableNum) return false; // 다음 타임과 가능 인원이 같으면
-                  return true;
+                  return nextAvailableNum !== availableNum;
                 })();
 
                 const isTopHour = startTime.endsWith(':00:00');
@@ -398,21 +408,11 @@ export default function TimeHeatMap({
                         mode === 'INPUT' && availableNum === 0 && !isPastDate
                           ? 'hover:bg-gray-50'
                           : '',
-                        mode === 'OUTPUT' &&
-                          availableNum === maxAvailableNum &&
+                        isMaxAvailableSlot &&
                           isSelectedDate &&
-                          availableNum !== 0 &&
                           'border-r-2 border-l-2 border-solid border-r-black border-l-black',
-                        mode === 'OUTPUT' &&
-                          availableNum !== 0 &&
-                          availableNum === maxAvailableNum &&
-                          isStart &&
-                          'border-t-2 border-solid border-t-black',
-                        mode === 'OUTPUT' &&
-                          availableNum !== 0 &&
-                          availableNum === maxAvailableNum &&
-                          isEnd &&
-                          'border-b-2 border-solid border-b-black',
+                        isMaxAvailableSlot && isStart && 'border-t-2 border-solid border-t-black',
+                        isMaxAvailableSlot && isEnd && 'border-b-2 border-solid border-b-black',
                       )}
                     >
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
