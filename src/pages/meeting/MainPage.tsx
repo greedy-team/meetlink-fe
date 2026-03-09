@@ -24,10 +24,10 @@ export default function MainPage() {
     nickName,
     isLoading: isMeetingLoading,
   } = useMeetingContext();
-  const { data: resultData, isLoading: isResultLoading } = useRecommendResult();
+  const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
 
-  const isLoading = isMeetingLoading || isResultLoading;
+  const isLoading = isMeetingLoading;
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -113,6 +113,8 @@ export default function MainPage() {
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
             isLoading={isLoading}
+            isPlaceCalculating={false}
+            isTimeCalculating={false}
           />
         </div>
 

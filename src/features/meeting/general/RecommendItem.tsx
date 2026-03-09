@@ -1,4 +1,5 @@
 import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -7,9 +8,10 @@ interface RecommendItemProps {
   label: string;
   value?: string;
   placeholder?: string;
-  onClick?: () => void;
+  onClick: () => void;
   className?: string;
   isLoading?: boolean;
+  isCalculating?: boolean;
 }
 
 export function RecommendItem({
@@ -19,13 +21,14 @@ export function RecommendItem({
   onClick,
   className,
   isLoading = false,
+  isCalculating = false,
 }: RecommendItemProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => !isCalculating && onClick()}
       className={cn(
-        'flex items-center justify-between gap-4 rounded-xl p-3 transition-all duration-200',
-        onClick && 'cursor-pointer hover:bg-gray-100 active:scale-[0.98]',
+        'flex items-center justify-between gap-4 rounded-3xl p-2 transition-all duration-200',
+        'cursor-pointer hover:bg-gray-100',
         className,
       )}
     >
@@ -62,11 +65,12 @@ export function RecommendItem({
             : value}
         </span>
       </div>
-      {!isLoading && (
+      {!isLoading && !isCalculating && (
         <div className="rounded-2x transition-color flex h-11 shrink-0 items-center justify-center text-gray-500">
           <ChevronRight strokeWidth={3} className="h-6 w-6" />
         </div>
       )}
+      {isCalculating && <Loader2 className="h-8 w-11 animate-spin text-gray-500" />}
     </button>
   );
 }
