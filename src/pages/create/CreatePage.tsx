@@ -140,7 +140,7 @@ export default function CreatePage() {
         {meetingNameInputFinished && (
           <div className="flex flex-col gap-2">
             {/** 추천 기능 선택 */}
-            <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold">
+            <Label htmlFor="meeting-setting" className="text-base font-semibold">
               모임 설정
             </Label>
             <RecommendCheckBox

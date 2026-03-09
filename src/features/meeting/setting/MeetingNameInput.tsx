@@ -29,7 +29,7 @@ export function MeetingNameInput({
   };
   return (
     <div ref={containerRef} className={cn('mb-2 grid w-full items-center gap-2', className)}>
-      <Label htmlFor="meeting-name" className="ml-1 text-base font-semibold">
+      <Label htmlFor="meeting-name" className="text-base font-semibold">
         모임 이름
       </Label>
 
