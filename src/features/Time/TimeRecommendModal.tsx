@@ -65,6 +65,8 @@ export default function TimeRecommendModal({
   const [safeAreaBottom, setSafeAreaBottom] = useState(() => getSafeAreaBottom());
   const y = useMotionValue(0);
 
+  const [selectedCardKey, setSelectedCardKey] = useState<string | null>(null);
+
   useEffect(() => {
     const handleResize = () => {
       setViewportHeight(getViewportHeight());
@@ -139,6 +141,8 @@ export default function TimeRecommendModal({
 
   const handleCardClick = useCallback(
     (candidate: Candidate) => {
+      setSelectedCardKey(`${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`);
+
       if (dateType !== 'WEEKLY' && candidate.date) {
         setSelectedDate(new Date(candidate.date));
       }
@@ -194,18 +198,21 @@ export default function TimeRecommendModal({
           style={{ paddingBottom: `calc(5rem + ${safeAreaBottom}px)` }}
           onPointerDownCapture={(e) => e.stopPropagation()}
         >
-          {candidateList.map((candidate, index) => (
-            <TimeRecommendCard
-              key={`${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`}
-              candidate={candidate}
-              participantsNum={participantsNum}
-              isTopRank={candidate.rank === 1 || index === 0}
-              onClick={() => handleCardClick(candidate)}
-              commonTimeList={commonTimeList}
-              dateType={dateType}
-              timeRange={timeRange}
-            />
-          ))}
+          {candidateList.map((candidate) => {
+            const cardKey = `${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`;
+            return (
+              <TimeRecommendCard
+                key={cardKey}
+                candidate={candidate}
+                participantsNum={participantsNum}
+                isTopRank={selectedCardKey === cardKey}
+                onClick={() => handleCardClick(candidate)}
+                commonTimeList={commonTimeList}
+                dateType={dateType}
+                timeRange={timeRange}
+              />
+            );
+          })}
         </div>
       </motion.div>
     </div>
