@@ -9,29 +9,15 @@ import { LatLngMap } from './LatLngMap';
 import { RecommendItem } from './RecommendItem';
 
 import { CenterPin } from '@/features/place/confirm/CenterPin';
+import type { GetRecommendResultResponse } from '@/types/apiTypes';
 
-interface BestTime {
-  availableCount: number;
-  date: string;
-  dayOfWeek: number;
-  endTime: string;
-  rank: number;
-  startTime: string;
-}
-
-interface BestPlace {
-  address: string;
-  avgTravelTime: number;
-  latitude: number;
-  longitude: number;
-  maxTravelTime: number;
-  name: string;
-  rank: number;
-}
+type BestTime = GetRecommendResultResponse['result']['timeCandidate'];
+type BestPlace = GetRecommendResultResponse['result']['placeCandidate'];
 
 //추천 스크립트 제작 함수
 const makeTimeDescription = (bestTime: BestTime | undefined): string => {
-  if (!bestTime) return '시간 정보가 없습니다';
+  if (!bestTime?.startTime || !bestTime?.endTime || bestTime.dayOfWeek === undefined)
+    return '시간 정보가 없습니다';
 
   const { date, dayOfWeek, startTime, endTime } = bestTime;
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -58,10 +44,10 @@ const makeTimeDescription = (bestTime: BestTime | undefined): string => {
   return `${datePart} ${startFormatted}\u00A0~\u00A0${endFormatted}`;
 };
 const makePlaceDescription = (bestPlace: BestPlace | undefined): string => {
-  if (!bestPlace) return '장소 정보가 없습니다';
+  if (!bestPlace?.name) return '장소 정보가 없습니다';
 
   const name = bestPlace.name.replaceAll(' ', '\u00A0');
-  const address = bestPlace.address.replaceAll(' ', '\u00A0');
+  const address = bestPlace.address?.replaceAll(' ', '\u00A0');
 
   return `${name} (${address})`;
 };

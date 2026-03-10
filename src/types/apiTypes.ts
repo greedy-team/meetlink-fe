@@ -228,22 +228,22 @@ export interface GetRecommendResultResponse {
   result: {
     timeCandidate: {
       calculationStatus: string;
-      date: string;
-      dayOfWeek: number;
-      startTime: string;
-      endTime: string;
-      availableCount: number;
-      rank: number;
+      date?: string;
+      dayOfWeek?: number;
+      startTime?: string;
+      endTime?: string;
+      availableCount?: number;
+      rank?: number;
     };
     placeCandidate: {
       calculationStatus: string;
-      name: string;
-      address: string;
-      avgTravelTime: number;
-      latitude: number;
-      longitude: number;
-      maxTravelTime: number;
-      rank: number;
+      name?: string;
+      address?: string;
+      avgTravelTime?: number;
+      latitude?: number;
+      longitude?: number;
+      maxTravelTime?: number;
+      rank?: number;
     };
   };
   code?: string;
