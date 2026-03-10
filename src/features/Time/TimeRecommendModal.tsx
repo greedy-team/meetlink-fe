@@ -28,6 +28,7 @@ export interface Candidate {
 interface TimeRecommendModalProps {
   candidateList: Candidate[] | undefined;
   participantsNum: number;
+  maxAvailableNum: number;
   setSelectedDate: (date: Date) => void;
   timeRange: [number, number];
   commonTimeList: SelectedTime[];
@@ -54,6 +55,7 @@ function getViewportHeight(): number {
 export default function TimeRecommendModal({
   candidateList,
   participantsNum,
+  maxAvailableNum,
   setSelectedDate,
   timeRange,
   commonTimeList,
@@ -205,6 +207,7 @@ export default function TimeRecommendModal({
                 key={cardKey}
                 candidate={candidate}
                 participantsNum={participantsNum}
+                maxAvailableNum={maxAvailableNum}
                 isTopRank={selectedCardKey === cardKey}
                 onClick={() => handleCardClick(candidate)}
                 commonTimeList={commonTimeList}

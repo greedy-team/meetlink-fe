@@ -25,6 +25,16 @@ export default function TimeRecommendPage() {
 
   const candidateList = timeRecommendData?.result;
 
+  const maxAvailableNum = useMemo(() => {
+    if (!commonTimeList || commonTimeList.length === 0) return 0;
+
+    return Math.max(
+      ...commonTimeList.flatMap((selectedTime) =>
+        selectedTime.startTimeList.map((timeInfo) => timeInfo.availableNumber),
+      ),
+    );
+  }, [commonTimeList]);
+
   return (
     <AppLayout
       header={
@@ -35,7 +45,7 @@ export default function TimeRecommendPage() {
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             selectedTimeList={commonTimeList}
-            participantsNum={participantsNum}
+            participantsNum={maxAvailableNum}
             timeRange={timeRange}
           />
         </>
@@ -46,6 +56,7 @@ export default function TimeRecommendPage() {
           <TimeRecommendModal
             candidateList={candidateList}
             participantsNum={participantsNum}
+            maxAvailableNum={maxAvailableNum}
             setSelectedDate={setSelectedDate}
             commonTimeList={commonTimeList}
             dateType={dateType}
@@ -60,6 +71,7 @@ export default function TimeRecommendPage() {
         <TimeHeatMap
           mode="OUTPUT"
           participantsNum={participantsNum}
+          maxAvailableNum={maxAvailableNum}
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}

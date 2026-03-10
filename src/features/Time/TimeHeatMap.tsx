@@ -17,6 +17,7 @@ const HOUR_HEIGHT = SLOT_HEIGHT * 2;
 interface TimeHeatMapProps {
   mode: 'INPUT' | 'OUTPUT';
   participantsNum?: number;
+  maxAvailableNum?: number;
   timeRange: [number, number];
   dateType: string;
   selectedDate: Date;
@@ -35,6 +36,7 @@ interface DragState {
 export default function TimeHeatMap({
   mode,
   participantsNum = 1,
+  maxAvailableNum = 1,
   timeRange,
   dateType,
   selectedDate,
@@ -304,7 +306,7 @@ export default function TimeHeatMap({
                 ? isSameDay(parseISO(item.date), date)
                 : false,
           );
-          const maxAvailableNum = getMaxAvailableNum(matched, timeRange);
+          const dateMaxAvailableNum = getMaxAvailableNum(matched, timeRange);
           const todayStart = startOfDay(new Date());
           const currentDayStart = startOfDay(date);
           const isPastDate = dateType !== 'WEEKLY' && isBefore(currentDayStart, todayStart);
@@ -334,7 +336,7 @@ export default function TimeHeatMap({
                   : timeDataMap[mapKey]?.[startTime]?.availableNumber || 0;
 
                 const isMaxAvailableSlot =
-                  mode === 'OUTPUT' && availableNum > 0 && availableNum === maxAvailableNum;
+                  mode === 'OUTPUT' && availableNum > 0 && availableNum === dateMaxAvailableNum;
 
                 const isStart = (() => {
                   if (!isSelectedDate || !isMaxAvailableSlot) return false;
@@ -357,7 +359,7 @@ export default function TimeHeatMap({
                 const isLastSlot = slotIdx === timeSlots.length - 1;
 
                 // INPUT 모드면 무조건 100% OUTPUT 모드면 비율 계산
-                const opacityValue = mode === 'INPUT' ? 1 : availableNum / participantsNum;
+                const opacityValue = mode === 'INPUT' ? 1 : availableNum / maxAvailableNum;
 
                 return (
                   <AvailableParticipantCard
