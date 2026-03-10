@@ -70,7 +70,7 @@ export function RecommendItem({
           <ChevronRight strokeWidth={3} className="h-6 w-6" />
         </div>
       )}
-      {isCalculating && <Loader2 className="h-6 w-11 animate-spin text-gray-500" />}
+      {!isLoading && isCalculating && <Loader2 className="h-6 w-11 animate-spin text-gray-500" />}
     </button>
   );
 }
