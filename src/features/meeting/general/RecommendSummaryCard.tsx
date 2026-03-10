@@ -97,13 +97,13 @@ export function RecommendSummaryCard({
         className,
       )}
     >
-      {isPlaceRecommendEnabled && (
+      {isPlaceRecommendEnabled && (isLoading || (!isPlaceCalculating && bestPlace?.latitude)) && (
         <div className="p-2 pb-1">
-          {!isLoading && !isPlaceCalculating ? (
+          {!isLoading && bestPlace?.latitude ? (
             <div className="relative h-40 w-full overflow-hidden rounded-2xl lg:h-50">
               <LatLngMap
-                lat={bestPlace?.latitude ?? 37.54972}
-                lng={bestPlace?.longitude ?? 127.075475}
+                lat={bestPlace!.latitude!}
+                lng={bestPlace!.longitude!}
                 level={4}
                 className="h-full w-full"
                 isInteractive={false}
