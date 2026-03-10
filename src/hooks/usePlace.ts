@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { participantKeys, placeKeys, recommendKeys } from './queryKeys';
 
 import { getMyStartPlace, updateMyStartPlace } from '@/features/api/placeApi';
-import { type UpdateMyStartPlaceRequest } from '@/types/apiTypes';
+import { type GetRecommendResultResponse, type UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 
 //출발지 조회
 export const useGetMyStartPlace = () => {
@@ -38,6 +38,23 @@ export const useUpdateMyStartPlace = () => {
   return useMutation({
     mutationFn: (body: UpdateMyStartPlaceRequest) => updateMyStartPlace(code!, body),
     onSuccess: () => {
+      // 낙천적 업데이트
+      queryClient.setQueryData<GetRecommendResultResponse>(
+        recommendKeys.result(code!, token),
+        (oldData) => {
+          if (!oldData) return undefined;
+          return {
+            ...oldData,
+            result: {
+              ...oldData.result,
+              placeCandidate: {
+                ...oldData.result.placeCandidate,
+                calculationStatus: 'CALCULATING',
+              },
+            },
+          };
+        },
+      );
       //내 출발지 리패치
       queryClient.invalidateQueries({
         queryKey: placeKeys.all,
@@ -46,11 +63,6 @@ export const useUpdateMyStartPlace = () => {
       //참여자 현황 리패치
       queryClient.invalidateQueries({
         queryKey: participantKeys.list(code!, token),
-      });
-
-      //추천 결과 래패치
-      queryClient.invalidateQueries({
-        queryKey: recommendKeys.all,
       });
     },
     onError: () => {

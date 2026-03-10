@@ -28,6 +28,7 @@ export default function MainPage() {
   const { code } = useParams<{ code: string }>();
 
   const isLoading = isMeetingLoading;
+  console.log(resultData);
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -36,6 +37,9 @@ export default function MainPage() {
 
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
+
+  const isTimeCalculating = bestRecommendedTime?.calculationStatus === 'CALCULATING';
+  const isPlaceCalculating = bestRecommendedPlace?.calculationStatus === 'CALCULATING';
 
   const safeParticipantList =
     participantStatusList && participantStatusList.length > 0
@@ -113,8 +117,8 @@ export default function MainPage() {
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
             isLoading={isLoading}
-            isPlaceCalculating={true}
-            isTimeCalculating={false}
+            isPlaceCalculating={isPlaceCalculating}
+            isTimeCalculating={isTimeCalculating}
           />
         </div>
 
