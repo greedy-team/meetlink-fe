@@ -410,9 +410,13 @@ export default function TimeHeatMap({
                           : '',
                         isMaxAvailableSlot &&
                           isSelectedDate &&
-                          'border-r-2 border-l-2 border-solid border-r-black border-l-black',
-                        isMaxAvailableSlot && isStart && 'border-t-2 border-solid border-t-black',
-                        isMaxAvailableSlot && isEnd && 'border-b-2 border-solid border-b-black',
+                          'border-l-greedy-strong border-r-greedy-strong border-r-2 border-l-2 border-solid',
+                        isMaxAvailableSlot &&
+                          isStart &&
+                          'border-t-greedy-strong border-t-2 border-solid',
+                        isMaxAvailableSlot &&
+                          isEnd &&
+                          'border-b-greedy-strong border-b-2 border-solid',
                       )}
                     >
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
