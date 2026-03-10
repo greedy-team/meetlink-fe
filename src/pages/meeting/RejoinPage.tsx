@@ -13,7 +13,7 @@ import { ParticipantSelectedList } from '@/features/meeting/join/ParticipantSele
 import { buildParticipantSummary } from '@/features/meeting/join/participantSummary';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
-export default function ReconnectPage() {
+export default function RejoinPage() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
 

@@ -13,7 +13,7 @@ import MainPage from './pages/meeting/MainPage';
 import MeetingLayout from './pages/meeting/MeetingLayout';
 import PlaceRecommendPage from './pages/meeting/recommend/PlaceRecommendPage';
 import TimeRecommendPage from './pages/meeting/recommend/TimeRecommendPage';
-import ReconnectPage from './pages/meeting/ReconnectPage';
+import RejoinPage from './pages/meeting/RejoinPage';
 import SettingPage from './pages/meeting/SettingPage';
 
 import './App.css';
@@ -29,7 +29,7 @@ function App() {
       <Route path="/meeting/:code" element={<MeetingLayout />}>
         <Route index element={<MainPage />} />
         <Route path="join" element={<JoinPage />} />
-        <Route path="reconnect" element={<ReconnectPage />} />
+        <Route path="rejoin" element={<RejoinPage />} />
         <Route path="settings" element={<SettingPage />} />
 
         <Route path="input/time" element={<TimeInputPage />} />
@@ -37,8 +37,8 @@ function App() {
         <Route path="input/place/search" element={<AddressSearchPage />} />
         <Route path="input/place/confirm" element={<ConfirmOnMapPage />} />
 
-        <Route path="recommend/time" element={<TimeRecommendPage />} />
-        <Route path="recommend/place" element={<PlaceRecommendPage />} />
+        <Route path="recommendations/time" element={<TimeRecommendPage />} />
+        <Route path="recommendations/place" element={<PlaceRecommendPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

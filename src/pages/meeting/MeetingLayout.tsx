@@ -84,7 +84,7 @@ export default function MeetingLayout() {
 
   const token = localStorage.getItem('meeting_token');
 
-  const isJoinPage = pathname.endsWith('/join') || pathname.endsWith('/reconnect');
+  const isJoinPage = pathname.endsWith('/join') || pathname.endsWith('/rejoin');
   const isInputPage = pathname.includes('/input');
 
   useEffect(() => {

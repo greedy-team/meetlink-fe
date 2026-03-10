@@ -49,9 +49,9 @@ export default function JoinPage() {
   const { mutateAsync: saveTimeAsync, isPending: timePending } = useUpdateMyAvailableTime();
   const { mutateAsync: savePlaceAsync, isPending: placePending } = useUpdateMyStartPlace();
 
-  const goReconnect = () => {
+  const goRejoin = () => {
     if (!code) return;
-    navigate(`/meeting/${code}/reconnect`);
+    navigate(`/meeting/${code}/rejoin`);
   };
 
   const goTimeInput = () => {
@@ -175,7 +175,7 @@ export default function JoinPage() {
         <div className="space-y-3">
           <button
             type="button"
-            onClick={goReconnect}
+            onClick={goRejoin}
             className="text-greedy-strong w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
           >
             이미 참여하셨나요?
