@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { addDays, format, startOfWeek } from 'date-fns';
+import { addDays, format, isBefore, isSameDay, parseISO, startOfDay, startOfWeek } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { AvailableParticipantCard } from './AvailableParticipantCard';
+import { getMaxAvailableNum } from './timeFunctions';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
@@ -16,11 +17,13 @@ const HOUR_HEIGHT = SLOT_HEIGHT * 2;
 interface TimeHeatMapProps {
   mode: 'INPUT' | 'OUTPUT';
   participantsNum?: number;
+  maxAvailableNum?: number;
   timeRange: [number, number];
   dateType: string;
   selectedDate: Date;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
+  selectedRecommendDate?: string | number | undefined;
 }
 
 interface DragState {
@@ -33,11 +36,13 @@ interface DragState {
 export default function TimeHeatMap({
   mode,
   participantsNum = 1,
+  maxAvailableNum = 1,
   timeRange,
   dateType,
   selectedDate,
   selectedTimeList,
   setSelectedTimeList,
+  selectedRecommendDate = undefined,
 }: TimeHeatMapProps) {
   const [startHour, endHour] = timeRange;
 
@@ -88,23 +93,24 @@ export default function TimeHeatMap({
     dataRefs.current = { weekdays, timeSlots, dateType };
   }, [weekdays, timeSlots, dateType]);
 
-  //해당 날짜의 시간의 가능 인원 수
-  const getAvailableNumber = (dayOfWeek: number, date: string, startTime: string) => {
-    const targetDay = selectedTimeList.find((item) =>
-      dateType === 'WEEKLY' ? item.dayOfWeek === dayOfWeek : item.date === date,
-    );
-    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
-    return timeInfo ? timeInfo.availableNumber : 0;
-  };
+  const timeDataMap = useMemo(() => {
+    const map: Record<
+      string | number,
+      Record<string, { availableNumber: number; participants: string[] }>
+    > = {};
 
-  //해당 날짜의 시간의 가능 참여자 리스트
-  const getParticipantList = (dayOfWeek: number, date: string, startTime: string) => {
-    const targetDay = selectedTimeList.find((item) =>
-      dateType === 'WEEKLY' ? item.dayOfWeek === dayOfWeek : item.date === date,
-    );
-    const timeInfo = targetDay?.startTimeList.find((t) => t.startTime === startTime);
-    return timeInfo ? timeInfo.participants : [];
-  };
+    selectedTimeList.forEach((day) => {
+      const key = dateType === 'WEEKLY' ? day.dayOfWeek : day.date;
+      map[key] = {};
+      day.startTimeList.forEach((time) => {
+        map[key][time.startTime] = {
+          availableNumber: time.availableNumber,
+          participants: time.participants || [],
+        };
+      });
+    });
+    return map;
+  }, [selectedTimeList, dateType]);
 
   // 마우스 누를 때 드래그 시작 - 최소 위치 저장
   const handleMouseDown = (dayIndex: number, slotIdx: number, availableNum: number) => {
@@ -249,6 +255,17 @@ export default function TimeHeatMap({
     };
   }, [setSelectedTimeList]);
 
+  const dragBounds = useMemo(() => {
+    if (mode !== 'INPUT' || !dragState.isDragging || !dragState.start || !dragState.current)
+      return null;
+    return {
+      minX: Math.min(dragState.start.x, dragState.current.x),
+      maxX: Math.max(dragState.start.x, dragState.current.x),
+      minY: Math.min(dragState.start.y, dragState.current.y),
+      maxY: Math.max(dragState.start.y, dragState.current.y),
+    };
+  }, [mode, dragState]);
+
   return (
     <div className="flex w-full justify-between font-sans select-none">
       {/* 좌측 시간 */}
@@ -273,6 +290,26 @@ export default function TimeHeatMap({
       >
         {weekdays.map((date, dayIndex) => {
           const dateStr = format(date, 'yyyy-MM-dd');
+          const isSelectedDate = (() => {
+            if (selectedRecommendDate === undefined || selectedRecommendDate === null) return false;
+
+            if (dateType === 'WEEKLY') {
+              return dayIndex === selectedRecommendDate;
+            } else {
+              return isSameDay(date, parseISO(String(selectedRecommendDate)));
+            }
+          })();
+          const matched = selectedTimeList.find((item) =>
+            dateType === 'WEEKLY'
+              ? item.dayOfWeek === dayIndex
+              : item.date
+                ? isSameDay(parseISO(item.date), date)
+                : false,
+          );
+          const dateMaxAvailableNum = getMaxAvailableNum(matched, timeRange);
+          const todayStart = startOfDay(new Date());
+          const currentDayStart = startOfDay(date);
+          const isPastDate = dateType !== 'WEEKLY' && isBefore(currentDayStart, todayStart);
 
           return (
             <div
@@ -280,38 +317,49 @@ export default function TimeHeatMap({
               className="flex w-full flex-col border-r border-gray-200 last:border-r-0"
             >
               {timeSlots.map((startTime, slotIdx) => {
-                const selectedDate = date;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                selectedDate.setHours(0, 0, 0, 0);
+                const mapKey = dateType === 'WEEKLY' ? dayIndex : dateStr;
 
-                const isPastDate = today > selectedDate && dateType !== 'WEEKLY';
-
-                const isInDragBounds = // 좌표가 드래그 범위 안에 있는가?
-                  mode === 'INPUT' && dragState.isDragging && dragState.start && dragState.current
-                    ? dayIndex >= Math.min(dragState.start.x, dragState.current.x) &&
-                      dayIndex <= Math.max(dragState.start.x, dragState.current.x) &&
-                      slotIdx >= Math.min(dragState.start.y, dragState.current.y) &&
-                      slotIdx <= Math.max(dragState.start.y, dragState.current.y)
-                    : false;
+                const isInDragBounds = dragBounds // 좌표가 드래그 범위 안에 있는가?
+                  ? dayIndex >= dragBounds.minX &&
+                    dayIndex <= dragBounds.maxX &&
+                    slotIdx >= dragBounds.minY &&
+                    slotIdx <= dragBounds.maxY
+                  : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
-                const availableNum = getAvailableNumber(date.getDay(), dateStr, startTime);
-                const participantList = getParticipantList(date.getDay(), dateStr, startTime);
-                const newAvailableNum = isInDragBounds
+                const participantList = timeDataMap[mapKey]?.[startTime]?.participants || [];
+
+                const availableNum = isInDragBounds
                   ? dragState.action === 'ADD'
                     ? 1
                     : 0
-                  : availableNum;
+                  : timeDataMap[mapKey]?.[startTime]?.availableNumber || 0;
+
+                const isMaxAvailableSlot =
+                  mode === 'OUTPUT' && availableNum > 0 && availableNum === dateMaxAvailableNum;
+
+                const isStart = (() => {
+                  if (!isSelectedDate || !isMaxAvailableSlot) return false;
+                  const prevStartTime = timeSlots[slotIdx - 1];
+                  if (!prevStartTime) return true;
+                  const prevAvailableNum =
+                    timeDataMap[mapKey]?.[prevStartTime]?.availableNumber || 0;
+                  return prevAvailableNum !== availableNum;
+                })();
+                const isEnd = (() => {
+                  if (!isSelectedDate || !isMaxAvailableSlot) return false;
+                  const nextStartTime = timeSlots[slotIdx + 1];
+                  if (!nextStartTime) return true;
+                  const nextAvailableNum =
+                    timeDataMap[mapKey]?.[nextStartTime]?.availableNumber || 0;
+                  return nextAvailableNum !== availableNum;
+                })();
 
                 const isTopHour = startTime.endsWith(':00:00');
                 const isLastSlot = slotIdx === timeSlots.length - 1;
 
-                //가능 인원이 1 이상이면 선택된 것
-                const isSelected = newAvailableNum > 0;
-
                 // INPUT 모드면 무조건 100% OUTPUT 모드면 비율 계산
-                const opacityValue = mode === 'INPUT' ? 1 : newAvailableNum / participantsNum;
+                const opacityValue = mode === 'INPUT' ? 1 : availableNum / maxAvailableNum;
 
                 return (
                   <AvailableParticipantCard
@@ -359,11 +407,22 @@ export default function TimeHeatMap({
                           : 'border-t border-dashed border-gray-100',
                         isLastSlot ? 'border-b border-gray-200' : '',
                         isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
-                        mode === 'INPUT' && !isSelected && !isPastDate ? 'hover:bg-gray-50' : '',
+                        mode === 'INPUT' && availableNum === 0 && !isPastDate
+                          ? 'hover:bg-gray-50'
+                          : '',
+                        isMaxAvailableSlot &&
+                          isSelectedDate &&
+                          'border-l-greedy-strong border-r-greedy-strong border-r-2 border-l-2 border-solid',
+                        isMaxAvailableSlot &&
+                          isStart &&
+                          'border-t-greedy-strong border-t-2 border-solid',
+                        isMaxAvailableSlot &&
+                          isEnd &&
+                          'border-b-greedy-strong border-b-2 border-solid',
                       )}
                     >
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
-                      {isSelected && (
+                      {availableNum > 0 && (
                         <div
                           className="bg-greedy pointer-events-none absolute inset-0"
                           style={{

@@ -18,7 +18,6 @@ export const useRecommendTime = () => {
     queryKey: recommendKeys.time(code!, token),
     queryFn: () => getRecommendTime(code!),
     enabled: !!code,
-    staleTime: 1000 * 60 * 5,
     refetchInterval: 10000,
   });
 };
@@ -32,7 +31,6 @@ export const useRecommendPlace = () => {
     queryKey: recommendKeys.place(code!, token),
     queryFn: () => getRecommendPlace(code!),
     enabled: !!code,
-    staleTime: 1000 * 60 * 5,
     refetchInterval: 10000,
   });
 };
@@ -45,7 +43,7 @@ export const useRecommendResult = () => {
     queryKey: recommendKeys.result(code!, token),
     queryFn: () => getRecommendResult(code!),
     enabled: !!code,
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: 5000,
+    staleTime: 1000 * 60 * 1,
+    refetchInterval: 4000,
   });
 };

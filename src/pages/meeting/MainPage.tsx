@@ -24,10 +24,11 @@ export default function MainPage() {
     nickName,
     isLoading: isMeetingLoading,
   } = useMeetingContext();
-  const { data: resultData, isLoading: isResultLoading } = useRecommendResult();
+  const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
 
-  const isLoading = isMeetingLoading || isResultLoading;
+  const isLoading = isMeetingLoading;
+  console.log(resultData);
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -36,6 +37,9 @@ export default function MainPage() {
 
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
+
+  const isTimeCalculating = bestRecommendedTime?.calculationStatus === 'CALCULATING';
+  const isPlaceCalculating = bestRecommendedPlace?.calculationStatus === 'CALCULATING';
 
   const safeParticipantList =
     participantStatusList && participantStatusList.length > 0
@@ -88,7 +92,7 @@ export default function MainPage() {
     <AppLayout
       header={
         <Header
-          title={meetingName}
+          title={meetingName || '임시'}
           showBackButton={false}
           showSettingButton={true}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
@@ -113,11 +117,13 @@ export default function MainPage() {
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
             isLoading={isLoading}
+            isPlaceCalculating={isPlaceCalculating}
+            isTimeCalculating={isTimeCalculating}
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="meeting-todo" className="ml-1 text-base font-semibold text-gray-700">
+          <Label htmlFor="meeting-todo" className="text-base font-semibold">
             내가 할 일
           </Label>
 
@@ -145,10 +151,7 @@ export default function MainPage() {
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between px-1">
-            <Label
-              htmlFor="meeting-participant"
-              className="ml-1 text-base font-semibold text-gray-700"
-            >
+            <Label htmlFor="meeting-participant" className="text-base font-semibold">
               참여자 현황
             </Label>
             {!isLoading && (

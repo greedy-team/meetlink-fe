@@ -28,10 +28,12 @@ export interface Candidate {
 interface TimeRecommendModalProps {
   candidateList: Candidate[] | undefined;
   participantsNum: number;
+  maxAvailableNum: number;
   setSelectedDate: (date: Date) => void;
   timeRange: [number, number];
   commonTimeList: SelectedTime[];
   dateType: string;
+  setSelectedRecommendDate: (date: string | number) => void;
 }
 
 function getSafeAreaBottom(): number {
@@ -53,15 +55,19 @@ function getViewportHeight(): number {
 export default function TimeRecommendModal({
   candidateList,
   participantsNum,
+  maxAvailableNum,
   setSelectedDate,
   timeRange,
   commonTimeList,
   dateType,
+  setSelectedRecommendDate,
 }: TimeRecommendModalProps) {
   const [sheetState, setSheetState] = useState<SheetState>('peek');
   const [viewportHeight, setViewportHeight] = useState(getViewportHeight);
   const [safeAreaBottom, setSafeAreaBottom] = useState(() => getSafeAreaBottom());
   const y = useMotionValue(0);
+
+  const [selectedCardKey, setSelectedCardKey] = useState<string | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -137,12 +143,19 @@ export default function TimeRecommendModal({
 
   const handleCardClick = useCallback(
     (candidate: Candidate) => {
+      setSelectedCardKey(`${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`);
+
       if (dateType !== 'WEEKLY' && candidate.date) {
         setSelectedDate(new Date(candidate.date));
       }
+      if (dateType === 'WEEKLY') {
+        setSelectedRecommendDate(candidate.dayOfWeek);
+      } else {
+        setSelectedRecommendDate(candidate.date);
+      }
       snapTo('peek');
     },
-    [dateType, setSelectedDate, snapTo],
+    [dateType, setSelectedDate, snapTo, setSelectedRecommendDate],
   );
 
   if (!candidateList || candidateList.length === 0) return null;
@@ -187,18 +200,22 @@ export default function TimeRecommendModal({
           style={{ paddingBottom: `calc(5rem + ${safeAreaBottom}px)` }}
           onPointerDownCapture={(e) => e.stopPropagation()}
         >
-          {candidateList.map((candidate, index) => (
-            <TimeRecommendCard
-              key={`${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`}
-              candidate={candidate}
-              participantsNum={participantsNum}
-              isTopRank={candidate.rank === 1 || index === 0}
-              onClick={() => handleCardClick(candidate)}
-              commonTimeList={commonTimeList}
-              dateType={dateType}
-              timeRange={timeRange}
-            />
-          ))}
+          {candidateList.map((candidate) => {
+            const cardKey = `${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`;
+            return (
+              <TimeRecommendCard
+                key={cardKey}
+                candidate={candidate}
+                participantsNum={participantsNum}
+                maxAvailableNum={maxAvailableNum}
+                isTopRank={selectedCardKey === cardKey}
+                onClick={() => handleCardClick(candidate)}
+                commonTimeList={commonTimeList}
+                dateType={dateType}
+                timeRange={timeRange}
+              />
+            );
+          })}
         </div>
       </motion.div>
     </div>

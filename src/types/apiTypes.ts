@@ -227,6 +227,7 @@ export interface GetRecommendResultResponse {
   status: boolean;
   result: {
     timeCandidate: {
+      calculationStatus: string;
       date: string;
       dayOfWeek: number;
       startTime: string;
@@ -235,6 +236,7 @@ export interface GetRecommendResultResponse {
       rank: number;
     };
     placeCandidate: {
+      calculationStatus: string;
       name: string;
       address: string;
       avgTravelTime: number;

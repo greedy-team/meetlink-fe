@@ -102,7 +102,7 @@ export default function CreatePage() {
   return (
     <AppLayout
       header={
-        <div className="mx-8 mt-8 mb-5 flex flex-col gap-2 text-left">
+        <div className="mx-5 mt-8 mb-5 flex flex-col gap-2 text-left">
           <div className="text-3xl font-bold">모임 만들기</div>
           <div className="text-gray-500">모임을 만드는데 필요한 기본 정보를 설정해요</div>
         </div>
@@ -123,7 +123,7 @@ export default function CreatePage() {
         ) : null
       }
     >
-      <div className="mx-3 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <div>
           {/** 미팅 이름 입력 */}
           <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
@@ -140,7 +140,7 @@ export default function CreatePage() {
         {meetingNameInputFinished && (
           <div className="flex flex-col gap-2">
             {/** 추천 기능 선택 */}
-            <Label htmlFor="meeting-setting" className="ml-1 text-base font-semibold text-gray-700">
+            <Label htmlFor="meeting-setting" className="text-base font-semibold">
               모임 설정
             </Label>
             <RecommendCheckBox
