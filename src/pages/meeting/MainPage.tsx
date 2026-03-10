@@ -113,7 +113,7 @@ export default function MainPage() {
             bestTime={bestRecommendedTime}
             bestPlace={bestRecommendedPlace}
             isLoading={isLoading}
-            isPlaceCalculating={false}
+            isPlaceCalculating={true}
             isTimeCalculating={false}
           />
         </div>
