@@ -103,13 +103,13 @@ export function RecommendSummaryCard({
       )}
     >
       <div className="flex flex-col">
-        {isPlaceRecommendEnabled && (
+        {isPlaceRecommendEnabled && (isLoading || bestPlace) && (
           <div className="px-3 pt-3">
             {!isLoading ? (
               <div className="relative h-40 w-full overflow-hidden rounded-2xl lg:h-50">
                 <LatLngMap
-                  lat={bestPlace?.latitude ?? 37.54972}
-                  lng={bestPlace?.longitude ?? 127.075475}
+                  lat={bestPlace!.latitude}
+                  lng={bestPlace!.longitude}
                   level={4}
                   className="h-full w-full"
                   isInteractive={false}
