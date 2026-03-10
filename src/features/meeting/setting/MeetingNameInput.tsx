@@ -27,6 +27,9 @@ export function MeetingNameInput({
       block: 'center',
     });
   };
+
+  const isOverLength = value.length > 15;
+
   return (
     <div ref={containerRef} className={cn('mb-2 grid w-full items-center gap-2', className)}>
       <Label htmlFor="meeting-name" className="text-base font-semibold">
@@ -36,21 +39,22 @@ export function MeetingNameInput({
       <Input
         type="text"
         id="meeting-name"
-        maxLength={15}
         value={value}
         onChange={onChange}
         onFocus={handleFocus}
         placeholder={placeholder}
         disabled={isLoading}
         className={cn(
-          'bg-background h-12 w-full rounded-xl border border-gray-200 px-4 text-base! shadow-none outline-none',
+          'bg-background h-12 w-full rounded-xl border px-4 text-base! shadow-none outline-none',
           'placeholder:text-muted-foreground',
-          'focus-visible:ring-greedy/20 focus-visible:border-greedy focus-visible:ring-2 focus-visible:ring-offset-0',
+          isOverLength
+            ? 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20 focus-visible:ring-2 focus-visible:ring-offset-0'
+            : 'focus-visible:border-greedy focus-visible:ring-greedy/20 border-gray-200 focus-visible:ring-2 focus-visible:ring-offset-0',
           isLoading && 'bg-gray-100 text-gray-100',
         )}
       />
       {/* 글자수 초과했을 경우 에러 스타일 문구 */}
-      {value.length > 15 && (
+      {isOverLength && (
         <p className="text-destructive ml-1 text-xs">최대 15자까지 입력할 수 있어요.</p>
       )}
     </div>

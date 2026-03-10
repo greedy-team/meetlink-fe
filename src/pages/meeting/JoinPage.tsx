@@ -42,7 +42,7 @@ export default function JoinPage() {
     [participantStatusList],
   );
 
-  const canSubmit = tempNickName.trim().length > 0;
+  const canSubmit = tempNickName.trim().length > 0 && tempNickName.length <= 10;
 
   const { mutateAsync: joinAsync, isPending: joinPending } = useJoinMeeting();
   const { mutateAsync: saveTimeAsync, isPending: timePending } = useUpdateMyAvailableTime();
