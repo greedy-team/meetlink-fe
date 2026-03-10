@@ -37,6 +37,7 @@ const findAvailableNum = (startTime: string, timeData: SelectedTime | undefined)
 interface TimeRecommendCardProps {
   candidate: Candidate;
   participantsNum: number;
+  maxAvailableNum: number;
   isTopRank: boolean;
   onClick: (dateString: string) => void;
   timeRange: [number, number];
@@ -47,6 +48,7 @@ interface TimeRecommendCardProps {
 export function TimeRecommendCard({
   candidate,
   participantsNum,
+  maxAvailableNum,
   isTopRank,
   onClick,
   timeRange,
@@ -105,7 +107,7 @@ export function TimeRecommendCard({
         <div className="flex w-full items-center gap-px px-2">
           {timeSlots.map((slot) => {
             const count = findAvailableNum(slot, matchedTimeData) || 0;
-            const ratio = participantsNum > 0 ? count / participantsNum : 0;
+            const ratio = maxAvailableNum > 0 ? count / maxAvailableNum : 0;
 
             return (
               <div

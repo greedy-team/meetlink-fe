@@ -73,6 +73,8 @@ interface RecommendSummaryCardProps {
   bestPlace: BestPlace | undefined;
   className?: string;
   isLoading: boolean;
+  isTimeCalculating?: boolean;
+  isPlaceCalculating?: boolean;
 }
 
 export function RecommendSummaryCard({
@@ -82,14 +84,20 @@ export function RecommendSummaryCard({
   bestPlace,
   className,
   isLoading,
+  isTimeCalculating = false,
+  isPlaceCalculating = false,
 }: RecommendSummaryCardProps) {
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
 
-  const timeValue = makeTimeDescription(bestTime);
-  const placeValue = makePlaceDescription(bestPlace);
+  const timeValue = !isTimeCalculating
+    ? makeTimeDescription(bestTime)
+    : '추천 시간을 계산 중입니다!';
+  const placeValue = !isPlaceCalculating
+    ? makePlaceDescription(bestPlace)
+    : '추천 장소를 계산 중입니다!';
 
   if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
     return null; // 혹시나 방지
@@ -99,57 +107,58 @@ export function RecommendSummaryCard({
     <div
       className={cn(
         'w-full overflow-hidden rounded-[32px] border-2 border-gray-200 bg-gray-50',
+        'flex flex-col p-1',
         className,
       )}
     >
-      <div className="flex flex-col">
-        {isPlaceRecommendEnabled && (isLoading || bestPlace) && (
-          <div className="px-3 pt-3">
-            {!isLoading ? (
-              <div className="relative h-40 w-full overflow-hidden rounded-2xl lg:h-50">
-                <LatLngMap
-                  lat={bestPlace!.latitude}
-                  lng={bestPlace!.longitude}
-                  level={4}
-                  className="h-full w-full"
-                  isInteractive={false}
-                />
-                <div className="pointer-events-none absolute inset-0 z-10">
-                  <CenterPin />
-                </div>
+      {isPlaceRecommendEnabled && (
+        <div className="p-2 pb-1">
+          {!isLoading && !isPlaceCalculating ? (
+            <div className="relative h-40 w-full overflow-hidden rounded-2xl lg:h-50">
+              <LatLngMap
+                lat={bestPlace?.latitude ?? 37.54972}
+                lng={bestPlace?.longitude ?? 127.075475}
+                level={4}
+                className="h-full w-full"
+                isInteractive={false}
+              />
+              <div className="pointer-events-none absolute inset-0 z-10">
+                <CenterPin />
               </div>
-            ) : (
-              <div className="h-40 rounded-2xl bg-gray-100 lg:h-50" />
-            )}
-          </div>
-        )}
+            </div>
+          ) : (
+            <div className="h-40 rounded-2xl bg-gray-100 lg:h-50" />
+          )}
+        </div>
+      )}
 
-        {isTimeRecommendEnabled && (
-          <RecommendItem
-            icon={Clock}
-            label="추천 시간"
-            value={timeValue}
-            onClick={() => handleGoToButton('recommend/time')}
-            isLoading={isLoading}
-          />
-        )}
+      {isTimeRecommendEnabled && (
+        <RecommendItem
+          icon={Clock}
+          label="추천 시간"
+          value={timeValue}
+          onClick={() => handleGoToButton('recommend/time')}
+          isLoading={isLoading}
+          isCalculating={isTimeCalculating}
+        />
+      )}
 
-        {isTimeRecommendEnabled && isPlaceRecommendEnabled && (
-          <div className="px-3">
-            <div className="h-px w-full bg-gray-200" />
-          </div>
-        )}
+      {isTimeRecommendEnabled && isPlaceRecommendEnabled && (
+        <div className="py-1">
+          <div className="h-px w-full bg-gray-200" />
+        </div>
+      )}
 
-        {isPlaceRecommendEnabled && (
-          <RecommendItem
-            icon={MapPin}
-            label="추천 장소"
-            value={placeValue}
-            onClick={() => handleGoToButton('recommend/place')}
-            isLoading={isLoading}
-          />
-        )}
-      </div>
+      {isPlaceRecommendEnabled && (
+        <RecommendItem
+          icon={MapPin}
+          label="추천 장소"
+          value={placeValue}
+          onClick={() => handleGoToButton('recommend/place')}
+          isLoading={isLoading}
+          isCalculating={isPlaceCalculating}
+        />
+      )}
     </div>
   );
 }

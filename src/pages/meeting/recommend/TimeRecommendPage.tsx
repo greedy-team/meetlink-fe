@@ -16,6 +16,7 @@ export default function TimeRecommendPage() {
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedRecommendDate, setSelectedRecommendDate] = useState<string | number>();
 
   const participantsNum = participantStatusList.length;
   const commonTimeList = useMemo(() => {
@@ -23,6 +24,16 @@ export default function TimeRecommendPage() {
   }, [wholeTimeData]);
 
   const candidateList = timeRecommendData?.result;
+
+  const maxAvailableNum = useMemo(() => {
+    if (!commonTimeList || commonTimeList.length === 0) return 0;
+
+    return Math.max(
+      ...commonTimeList.flatMap((selectedTime) =>
+        selectedTime.startTimeList.map((timeInfo) => timeInfo.availableNumber),
+      ),
+    );
+  }, [commonTimeList]);
 
   return (
     <AppLayout
@@ -34,7 +45,7 @@ export default function TimeRecommendPage() {
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             selectedTimeList={commonTimeList}
-            participantsNum={participantsNum}
+            participantsNum={maxAvailableNum}
             timeRange={timeRange}
           />
         </>
@@ -45,10 +56,12 @@ export default function TimeRecommendPage() {
           <TimeRecommendModal
             candidateList={candidateList}
             participantsNum={participantsNum}
+            maxAvailableNum={maxAvailableNum}
             setSelectedDate={setSelectedDate}
             commonTimeList={commonTimeList}
             dateType={dateType}
             timeRange={timeRange}
+            setSelectedRecommendDate={setSelectedRecommendDate}
           />
         </div>
       }
@@ -58,11 +71,13 @@ export default function TimeRecommendPage() {
         <TimeHeatMap
           mode="OUTPUT"
           participantsNum={participantsNum}
+          maxAvailableNum={maxAvailableNum}
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}
           selectedTimeList={commonTimeList}
           setSelectedTimeList={setSelectedTimeList}
+          selectedRecommendDate={selectedRecommendDate}
         />
       </div>
     </AppLayout>

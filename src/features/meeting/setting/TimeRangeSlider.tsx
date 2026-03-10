@@ -38,7 +38,7 @@ interface TimeRangeSliderProps {
 export function TimeRangeSlider({ value, onValueChange, className }: TimeRangeSliderProps) {
   return (
     <div className={cn('flex w-full flex-col gap-3', className)}>
-      <Label className="ml-1 text-base font-semibold text-gray-700">시간 범위 선택</Label>
+      <Label className="text-greedy text-base font-semibold">시간 범위 선택</Label>
 
       <div className="space-y-2">
         <div className="p-1">
