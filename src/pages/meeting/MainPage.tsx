@@ -88,7 +88,7 @@ export default function MainPage() {
     <AppLayout
       header={
         <Header
-          title={meetingName}
+          title={meetingName || '임시'}
           showBackButton={false}
           showSettingButton={true}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
