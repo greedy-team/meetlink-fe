@@ -16,6 +16,8 @@ declare global {
     setLevel(level: number): void;
     setBounds(bounds: KakaoLatLngBounds): void;
     relayout?(): void;
+    setDraggable(draggable: boolean): void;
+    setZoomable(zoomable: boolean): void;
   };
 
   type KakaoSize = {

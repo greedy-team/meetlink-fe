@@ -5,6 +5,7 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
+import { cn } from '@/lib/utils';
 import { useParticipantList } from '@/hooks/useParticipant';
 
 import { MeetingInfoCard } from '@/features/meeting/join/MeetingInfoCard';
@@ -17,10 +18,12 @@ export default function ReconnectPage() {
   const { code } = useParams<{ code: string }>();
 
   // Context에서 모임명 가져오기
-  const { meetingName } = useMeetingContext();
+  const { meetingName, isLoading: isMeetingLoading } = useMeetingContext();
 
   // 참여자 목록 조회
-  const { data: participantData, isLoading } = useParticipantList();
+  const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
+
+  const isPageLoading = isMeetingLoading || isParticipantLoading;
 
   const [selectedInfo, setSelectedInfo] = useState<{ nickname: string; token: string } | null>(
     null,
@@ -51,7 +54,7 @@ export default function ReconnectPage() {
 
   return (
     <AppLayout
-      header={<Header title="" showBackButton />}
+      header={<Header title="모임 재참여" showBackButton={false} />}
       bottom={
         <div className="space-y-3">
           <NotifyBox variant="emphasis">
@@ -60,7 +63,7 @@ export default function ReconnectPage() {
               <button
                 type="button"
                 onClick={onGoJoin}
-                className="text-greedy-strong font-semibold underline underline-offset-4"
+                className="text-greedy-strong cursor-pointer font-semibold underline underline-offset-4"
               >
                 새로 참여하기
               </button>
@@ -69,22 +72,39 @@ export default function ReconnectPage() {
           </NotifyBox>
 
           <FixedBottomButton
-            disabled={!selectedInfo || isLoading}
-            loading={isLoading}
+            disabled={!selectedInfo || isPageLoading}
             onClick={onLogin}
             className="bg-greedy hover:bg-greedy/50 text-white"
           >
-            선택한 닉네임으로 로그인
+            선택한 닉네임으로 참여하기
           </FixedBottomButton>
         </div>
       }
     >
       <div className="space-y-6">
-        <MeetingInfoCard title={meetingName || '모임'} participantSummary={participantSummary} />
+        <MeetingInfoCard
+          title={meetingName || '모임'}
+          participantSummary={participantSummary}
+          isLoading={isPageLoading}
+        />
 
         <div className="space-y-2">
-          <div className="text-xl font-extrabold">다시 오셨군요!</div>
-          <div className="text-muted-foreground text-sm">참여 중인 닉네임을 선택해주세요</div>
+          <div
+            className={cn(
+              'text-xl font-extrabold',
+              isPageLoading ? 'w-32 rounded-lg bg-gray-100 text-gray-100' : '',
+            )}
+          >
+            다시 오셨군요!
+          </div>
+          <div
+            className={cn(
+              'text-sm',
+              isPageLoading ? 'w-48 rounded-lg bg-gray-100 text-gray-100' : 'text-muted-foreground',
+            )}
+          >
+            참여 중인 닉네임을 선택해주세요
+          </div>
         </div>
 
         {/* 참여자 목록 렌더링 (서버에서 받아온 nickname과 token 사용) */}
@@ -99,6 +119,7 @@ export default function ReconnectPage() {
               setSelectedInfo({ nickname: found.nickname, token: found.token });
             }
           }}
+          isLoading={isPageLoading}
         />
       </div>
     </AppLayout>

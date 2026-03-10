@@ -6,6 +6,7 @@ type NickNameInputProps = {
   required?: boolean;
   disabled?: boolean;
   error?: string;
+  isLoading?: boolean;
 };
 
 export function NickNameInput({
@@ -14,10 +15,14 @@ export function NickNameInput({
   required = true,
   disabled,
   error,
+  isLoading = false,
 }: NickNameInputProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
+
+  const isOverLength = value.length > 10;
+  const hasError = Boolean(error) || isOverLength;
 
   return (
     <div className="mt-6">
@@ -28,24 +33,28 @@ export function NickNameInput({
       <div className="mt-2">
         <input
           value={value}
-          maxLength={10}
           onChange={handleChange}
-          disabled={disabled}
+          disabled={disabled || isLoading}
           placeholder="모임에서 사용할 닉네임을 입력해주세요"
           className={[
-            'bg-background h-12 w-full rounded-xl border px-4 text-base outline-none',
-            'placeholder:text-muted-foreground',
-            'focus:border-greedy focus:ring-greedy/20 focus:ring-2',
-            disabled ? 'opacity-60' : '',
-            error ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : '',
+            'h-12 w-full rounded-xl border px-4 text-base outline-none',
+            !isLoading ? 'bg-background placeholder:text-muted-foreground' : '',
+            hasError && !isLoading
+              ? 'border-destructive focus:border-destructive focus:ring-destructive/20 focus:ring-2'
+              : !isLoading
+                ? 'focus:border-greedy focus:ring-greedy/20 focus:ring-2'
+                : '',
+            disabled && !isLoading ? 'opacity-60' : '',
+            isLoading
+              ? 'pointer-events-none border-transparent bg-gray-100 text-transparent placeholder:text-transparent'
+              : '',
           ].join(' ')}
         />
       </div>
 
-      {/* 에러가 있거나 글자 수가 초과된 경우 */}
-      {error || value.length > 10 ? (
+      {hasError && !isLoading ? (
         <p className="text-destructive mt-2 ml-1 text-xs">
-          {value.length > 10 ? '최대 10자까지 입력할 수 있어요.' : error}
+          {isOverLength ? '최대 10자까지 입력할 수 있어요.' : error}
         </p>
       ) : null}
     </div>

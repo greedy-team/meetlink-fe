@@ -6,9 +6,17 @@ type LatLngMapProps = {
   level?: number;
   className?: string;
   onCenterChange?: (nextLat: number, nextLng: number) => void;
+  isInteractive?: boolean;
 };
 
-export function LatLngMap({ lat, lng, level = 4, className, onCenterChange }: LatLngMapProps) {
+export function LatLngMap({
+  lat,
+  lng,
+  level = 4,
+  className,
+  onCenterChange,
+  isInteractive = true,
+}: LatLngMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const mapRef = useRef<KakaoMap | null>(null);
@@ -30,6 +38,11 @@ export function LatLngMap({ lat, lng, level = 4, className, onCenterChange }: La
 
       const center = new kakao.maps.LatLng(lat, lng);
       const map = new kakao.maps.Map(containerRef.current, { center, level });
+
+      if (!isInteractive) {
+        map.setDraggable(false); // 드래그 이동 금지
+        map.setZoomable(false); // 마우스 휠/터치 확대축소 금지
+      }
 
       mapRef.current = map;
 

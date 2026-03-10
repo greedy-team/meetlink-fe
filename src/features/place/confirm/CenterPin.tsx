@@ -1,13 +1,35 @@
 import { MapPin } from 'lucide-react';
 
-export function CenterPin() {
+import { cn } from '@/lib/utils';
+
+interface CenterPinProps {
+  type?: 'start' | 'end'; // 핀 종류 (기본값: 도착지)
+  isFixed?: boolean; // 화면 정중앙 고정 여부 (기본값: true)
+}
+
+export function CenterPin({ type = 'start', isFixed = true }: CenterPinProps) {
+  const isStart = type === 'end';
+
   return (
-    <div className="pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-      <div className="bg-greedy grid h-10 w-10 place-items-center rounded-full shadow-lg">
-        <MapPin className="h-5 w-5 text-white" />
+    <div
+      className={cn(
+        'flex flex-col items-center',
+        isFixed
+          ? 'pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full'
+          : 'relative z-10 cursor-pointer',
+      )}
+    >
+      <div className="relative flex items-center justify-center">
+        <MapPin
+          className={cn(
+            'h-10 w-10 drop-shadow-md',
+            isStart ? 'fill-red-500 text-red-500' : 'fill-greedy text-greedy',
+          )}
+          strokeWidth={1} // 외곽선을 얇게 줘서 플랫한 느낌 추가
+        />
+        {/* 핀 안쪽 구멍 */}
+        <div className="absolute top-2.5 h-3 w-3 rounded-full bg-white shadow-sm" />
       </div>
-      {/* 핀이 꽂히는 바닥 점 */}
-      <div className="bg-greedy mt-1 h-2 w-2 rounded-full shadow-sm" />
     </div>
   );
 }

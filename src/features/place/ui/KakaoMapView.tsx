@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 
+import { CenterPin } from '@/features/place/confirm/CenterPin';
 import { type PathSegment } from '@/types/meetingTypes';
 
 type LatLng = { lat: number; lng: number };
@@ -65,52 +67,12 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
 
     const endPos = new kakao.maps.LatLng(center.lat, center.lng);
 
-    const createPinHtml = (type: 'start' | 'end') => {
-      const isStart = type === 'start';
-      const greedyColor = '#008e4c';
-
-      // 출발핀/도착핀 색상 반전
-      const circleBg = isStart ? 'white' : greedyColor;
-      const borderStyle = isStart ? `2px solid ${greedyColor}` : '2px solid transparent';
-      const iconColor = isStart ? greedyColor : 'white';
-
-      const zIndex = isStart ? 1 : 2; // 겹칠 경우 도착핀이 출발핀보다 위에 보이도록 z-index 조정
-
-      // Lucide React의 <MapPin /> 아이콘을 SVG로 변환한 문자열
-      const mapPinSvg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-          <circle cx="12" cy="10" r="3"></circle>
-        </svg>
-      `;
-
-      // CenterPin 스타일 적용한 HTML 반환
-      return `
-        <div style="z-index: ${zIndex}; position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
-          <div style="
-            box-sizing: border-box;
-            width: 40px; 
-            height: 40px; 
-            border-radius: 50%; 
-            background-color: ${circleBg}; 
-            border: ${borderStyle};
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-          ">
-            ${mapPinSvg}
-          </div>
-          <div style="
-            width: 8px; 
-            height: 8px; 
-            border-radius: 50%; 
-            background-color: ${greedyColor}; 
-            margin-top: 4px; 
-            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
-          "></div>
-        </div>
-      `;
+    const createPinElement = (type: 'start' | 'end') => {
+      const wrapper = document.createElement('div');
+      const root = createRoot(wrapper);
+      // isFixed=false로 넘겨주어 화면 고정이 아닌 마커용으로 사용
+      root.render(<CenterPin type={type} isFixed={false} />);
+      return wrapper;
     };
 
     // 기존 선 지우기
@@ -124,12 +86,12 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
       if (!endOverlayRef.current) {
         endOverlayRef.current = new kakao.maps.CustomOverlay({
           position: endPos,
-          content: createPinHtml('end'), // 진한 색(end) 적용
+          content: createPinElement('end'), // 진한 색(end) 적용
           yAnchor: 1, // 핀의 뾰족한 맨 아래를 좌표에 맞춤
         });
         endOverlayRef.current.setMap(map);
       } else {
-        endOverlayRef.current.setContent(createPinHtml('end'));
+        endOverlayRef.current.setContent(createPinElement('end'));
         endOverlayRef.current.setPosition(endPos);
       }
       map.setCenter(endPos);
@@ -150,20 +112,18 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
         return pos;
       });
 
-      // 모드별 색상 결정
       const greedyColor = '#008e4c';
       const isWalk = seg.mode === 'WALK';
 
-      // 선(Polyline)을 생성해서 배열에 저장
       const polyline = new kakao.maps.Polyline({
         path: pathLatLng,
         strokeWeight: isWalk ? 8 : 6,
         strokeColor: greedyColor,
         strokeOpacity: 0.9,
-        strokeStyle: isWalk ? 'shortdot' : 'solid', // 도보는 점선, 나머지는 실선
+        strokeStyle: isWalk ? 'shortdot' : 'solid',
       });
       polyline.setMap(map);
-      polylinesRef.current.push(polyline); // 나중에 지우기 위해 참조 저장
+      polylinesRef.current.push(polyline);
     });
 
     bounds.extend(endPos);
@@ -173,12 +133,12 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
       if (!startOverlayRef.current) {
         startOverlayRef.current = new kakao.maps.CustomOverlay({
           position: firstPos,
-          content: createPinHtml('start'), // 연한 색(start) 적용
+          content: createPinElement('start'),
           yAnchor: 1,
         });
         startOverlayRef.current.setMap(map);
       } else {
-        startOverlayRef.current.setContent(createPinHtml('start'));
+        startOverlayRef.current.setContent(createPinElement('start'));
         startOverlayRef.current.setPosition(firstPos);
       }
       startOverlayRef.current.setMap(map);
@@ -188,11 +148,11 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
     if (!endOverlayRef.current) {
       endOverlayRef.current = new kakao.maps.CustomOverlay({
         position: endPos,
-        content: createPinHtml('end'), // 진한 색(end) 적용
+        content: createPinElement('end'),
         yAnchor: 1,
       });
     } else {
-      endOverlayRef.current.setContent(createPinHtml('end'));
+      endOverlayRef.current.setContent(createPinElement('end'));
       endOverlayRef.current.setPosition(endPos);
     }
     endOverlayRef.current.setMap(map);
