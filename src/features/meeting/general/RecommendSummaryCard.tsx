@@ -31,7 +31,7 @@ interface BestPlace {
 
 //추천 스크립트 제작 함수
 const makeTimeDescription = (bestTime: BestTime | undefined): string => {
-  if (!bestTime) return '시간 정보가 없습니다';
+  if (!bestTime?.startTime) return '시간 정보가 없습니다';
 
   const { date, dayOfWeek, startTime, endTime } = bestTime;
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -58,7 +58,7 @@ const makeTimeDescription = (bestTime: BestTime | undefined): string => {
   return `${datePart} ${startFormatted}\u00A0~\u00A0${endFormatted}`;
 };
 const makePlaceDescription = (bestPlace: BestPlace | undefined): string => {
-  if (!bestPlace) return '장소 정보가 없습니다';
+  if (!bestPlace?.name) return '장소 정보가 없습니다';
 
   const name = bestPlace.name.replaceAll(' ', '\u00A0');
   const address = bestPlace.address.replaceAll(' ', '\u00A0');
