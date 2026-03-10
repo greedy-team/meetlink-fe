@@ -27,6 +27,7 @@ export default function JoinPage() {
 
   const {
     meetingName,
+    isLoading: isMeetingLoading,
     participantStatusList,
     tempNickName,
     setTempNickName,
@@ -165,15 +166,17 @@ export default function JoinPage() {
 
   const isPending = joinPending || timePending || placePending;
 
+  const isPageLoading = isMeetingLoading;
+
   return (
     <AppLayout
-      header={<Header title="모임 참여 페이지" showBackButton={false} />}
+      header={<Header title="모임 참여" showBackButton={false} />}
       bottom={
         <div className="space-y-3">
           <button
             type="button"
             onClick={goReconnect}
-            className="text-greedy-strong w-full text-center text-sm font-semibold underline underline-offset-4"
+            className="text-greedy-strong w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
           >
             이미 참여하셨나요?
           </button>
@@ -190,16 +193,28 @@ export default function JoinPage() {
       }
     >
       <div className="space-y-3">
-        <MeetingInfoCard title={meetingName || '모임'} participantSummary={participantSummary} />
+        <MeetingInfoCard
+          title={meetingName || '모임'}
+          participantSummary={participantSummary}
+          isLoading={isPageLoading}
+        />
 
-        <NickNameInput value={tempNickName} onChange={handleNicknameChange} error={nicknameError} />
+        <NickNameInput
+          value={tempNickName}
+          onChange={handleNicknameChange}
+          error={nicknameError}
+          isLoading={isPageLoading}
+        />
 
-        <div className="space-y-3">
-          <NotifyBox variant="emphasis">모임 참여 이후 닉네임은 변경할 수 없어요</NotifyBox>
-          <p className="text-muted-foreground text-sm">
-            지금 바로 입력하거나, 참여 후 나중에 입력해도 돼요
-          </p>
-        </div>
+        {!isPageLoading && (
+          <div className="space-y-3">
+            <NotifyBox variant="emphasis">모임 참여 이후 닉네임은 변경할 수 없어요</NotifyBox>
+            <p className="text-muted-foreground text-sm">
+              지금 바로 입력하거나, 참여 후 나중에 입력해도 돼요
+            </p>
+          </div>
+        )}
+
         <div className="space-y-3">
           {isTimeRecommendEnabled && (
             <GoToButton
@@ -208,6 +223,7 @@ export default function JoinPage() {
               description="모임 만남 시간을 추천하는데 활용돼요"
               onClick={goTimeInput}
               isDone={Boolean(selectedTimeList && selectedTimeList.length > 0)}
+              isLoading={isPageLoading}
             />
           )}
 
@@ -218,6 +234,7 @@ export default function JoinPage() {
               description="모임 만남 장소를 추천하는데 활용돼요"
               onClick={goPlaceInput}
               isDone={Boolean(selectedPlace && selectedPlace.address)}
+              isLoading={isPageLoading}
             />
           )}
         </div>
