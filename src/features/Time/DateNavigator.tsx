@@ -28,6 +28,7 @@ export default function DateNavigator({
             ? 'pointer-events-none text-gray-300'
             : 'cursor-pointer text-gray-600 hover:text-gray-900',
         )}
+        aria-label="이전 주/달으로"
       >
         <ChevronLeft size={24} />
       </button>
@@ -40,6 +41,7 @@ export default function DateNavigator({
       <button // 다음 주/달 버튼
         onClick={handleNextClick}
         className="cursor-pointer p-1 text-gray-600 transition-colors hover:text-gray-900"
+        aria-label="다음 주/달으로"
       >
         <ChevronRight size={24} />
       </button>

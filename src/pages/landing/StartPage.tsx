@@ -110,14 +110,12 @@ export default function StartPage() {
         {/* 하단 인디게이터 */}
         <div className="flex justify-center gap-2">
           {INFO_LIST.map((_, index) => (
-            <button
+            <div
               key={index}
-              onClick={() => api?.scrollTo(index)}
               className={cn(
                 'rounded-full transition-all duration-500',
                 current === index ? 'bg-greedy h-2.5 w-8' : 'h-2.5 w-2.5 bg-gray-200',
               )}
-              aria-label={`${index + 1}번 슬라이드로 이동`}
             />
           ))}
         </div>

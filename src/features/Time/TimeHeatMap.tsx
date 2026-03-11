@@ -10,6 +10,8 @@ import { getMaxAvailableNum } from './timeFunctions';
 
 import { type SelectedTime } from '@/types/meetingTypes';
 
+const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
 // 히트맵 간격을 결정하는 스태틱 변수
 const SLOT_HEIGHT = 24;
 const HOUR_HEIGHT = SLOT_HEIGHT * 2;
@@ -361,6 +363,23 @@ export default function TimeHeatMap({
                 // INPUT 모드면 무조건 100% OUTPUT 모드면 비율 계산
                 const opacityValue = mode === 'INPUT' ? 1 : availableNum / maxAvailableNum;
 
+                const dateLabel =
+                  dateType === 'WEEKLY'
+                    ? `${dayNames[date.getDay()]}요일`
+                    : format(date, 'M월 d일');
+
+                const [h, m] = startTime.split(':');
+                const timeLabel = `${h}시${m === '30' ? ' 30분' : ''}`;
+
+                const statusLabel =
+                  mode === 'INPUT'
+                    ? availableNum > 0
+                      ? '선택됨'
+                      : '선택 안 됨'
+                    : `가능 인원 ${availableNum}명`;
+
+                // 최종 라벨 결합
+                const ariaLabel = `${dateLabel} ${timeLabel}, ${statusLabel}`;
                 return (
                   <AvailableParticipantCard
                     key={startTime}
@@ -420,6 +439,8 @@ export default function TimeHeatMap({
                           isEnd &&
                           'border-b-greedy-strong border-b-2 border-solid',
                       )}
+                      aria-label={ariaLabel}
+                      aria-pressed={mode === 'INPUT' ? availableNum > 0 : undefined}
                     >
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
                       {availableNum > 0 && (
