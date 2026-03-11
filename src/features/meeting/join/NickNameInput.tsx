@@ -36,6 +36,7 @@ export function NickNameInput({
           onChange={handleChange}
           disabled={disabled || isLoading}
           placeholder="모임에서 사용할 닉네임을 입력해주세요"
+          maxLength={10}
           className={[
             'h-12 w-full rounded-xl border px-4 text-base outline-none',
             !isLoading ? 'bg-background placeholder:text-muted-foreground' : '',

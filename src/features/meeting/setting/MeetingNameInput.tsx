@@ -44,6 +44,7 @@ export function MeetingNameInput({
         onFocus={handleFocus}
         placeholder={placeholder}
         disabled={isLoading}
+        maxLength={15}
         className={cn(
           'bg-background h-12 w-full rounded-xl border px-4 text-base! shadow-none outline-none',
           'placeholder:text-muted-foreground',
