@@ -103,6 +103,7 @@ export default function Calendar({
                           (!isSameMonth(date, selectedDate) || isDisabled) && 'opacity-10',
                           isDisabled ? 'pointer-events-none' : 'cursor-pointer',
                         )}
+                        aria-label={`${date}`}
                       >
                         <span
                           className={cn(
@@ -130,6 +131,7 @@ export default function Calendar({
             '-mt-px h-6 w-full rounded-b-xl bg-white text-gray-400 transition-colors hover:bg-gray-50',
             'flex cursor-pointer items-center justify-center',
           )}
+          aria-label={isOpen ? '달력 닫기' : '달력 펼치기'}
         >
           <ChevronDown
             size={24}
