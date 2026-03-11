@@ -82,6 +82,7 @@ export function TimeRecommendCard({
       className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border-2 p-5 transition-colors ${
         isTopRank ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-white hover:bg-gray-50'
       }`}
+      aria-label={`${candidate.rank} 순위 추천 카드 - ${dateType === 'WEEKLY' ? getDayText(candidate.dayOfWeek) : candidate.date} - ${candidate.availableCount}명 가능`}
     >
       <div className="flex items-start justify-between">
         <div>

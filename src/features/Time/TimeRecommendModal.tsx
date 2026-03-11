@@ -184,7 +184,7 @@ export default function TimeRecommendModal({
         <button
           onClick={() => sheetState === 'peek' && snapTo('half')}
           className="flex cursor-grab flex-col items-center pt-3 pb-4 active:cursor-grabbing"
-          aria-label="Expand recommendation sheet"
+          aria-label="시간 추천 시트 열기"
         >
           <div className="mb-3 h-2 w-30 rounded-full bg-gray-200" />
           <div className="flex w-full items-center justify-between px-6">
