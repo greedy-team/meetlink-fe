@@ -1,47 +1,53 @@
+import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import CreatePage from './pages/create/CreatePage';
-import SharePage from './pages/create/SharePage';
-import LayoutPreviewPage from './pages/dev/LayoutPreviewPage';
-import StartPage from './pages/landing/StartPage';
-import AddressSearchPage from './pages/meeting/input/AddressSearchPage';
-import ConfirmOnMapPage from './pages/meeting/input/ConfirmOnMapPage';
-import PlaceInputPage from './pages/meeting/input/PlaceInputPage';
-import TimeInputPage from './pages/meeting/input/TimeInputPage';
-import JoinPage from './pages/meeting/JoinPage';
-import MainPage from './pages/meeting/MainPage';
-import MeetingLayout from './pages/meeting/MeetingLayout';
-import PlaceRecommendPage from './pages/meeting/recommend/PlaceRecommendPage';
-import TimeRecommendPage from './pages/meeting/recommend/TimeRecommendPage';
-import RejoinPage from './pages/meeting/RejoinPage';
-import SettingPage from './pages/meeting/SettingPage';
+import FallBackPage from './pages/FallBackPage';
+
+const CreatePage = lazy(() => import('./pages/create/CreatePage'));
+const SharePage = lazy(() => import('./pages/create/SharePage'));
+const LayoutPreviewPage = lazy(() => import('./pages/dev/LayoutPreviewPage'));
+const StartPage = lazy(() => import('./pages/landing/StartPage'));
+const AddressSearchPage = lazy(() => import('./pages/meeting/input/AddressSearchPage'));
+const ConfirmOnMapPage = lazy(() => import('./pages/meeting/input/ConfirmOnMapPage'));
+const PlaceInputPage = lazy(() => import('./pages/meeting/input/PlaceInputPage'));
+const TimeInputPage = lazy(() => import('./pages/meeting/input/TimeInputPage'));
+const JoinPage = lazy(() => import('./pages/meeting/JoinPage'));
+const MainPage = lazy(() => import('./pages/meeting/MainPage'));
+const MeetingLayout = lazy(() => import('./pages/meeting/MeetingLayout'));
+const PlaceRecommendPage = lazy(() => import('./pages/meeting/recommend/PlaceRecommendPage'));
+const TimeRecommendPage = lazy(() => import('./pages/meeting/recommend/TimeRecommendPage'));
+const RejoinPage = lazy(() => import('./pages/meeting/RejoinPage'));
+const SettingPage = lazy(() => import('./pages/meeting/SettingPage'));
 
 import './App.css';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/preview/layout" element={<LayoutPreviewPage />} />
-      <Route path="/" element={<StartPage />} />
-      <Route path="/create" element={<CreatePage />} />
-      <Route path="/share/:code" element={<SharePage />} />
+    <Suspense fallback={<FallBackPage />}>
+      <Routes>
+        <Route path="/preview/layout" element={<LayoutPreviewPage />} />
+        <Route path="/" element={<StartPage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/share/:code" element={<SharePage />} />
 
-      <Route path="/meeting/:code" element={<MeetingLayout />}>
-        <Route index element={<MainPage />} />
-        <Route path="join" element={<JoinPage />} />
-        <Route path="rejoin" element={<RejoinPage />} />
-        <Route path="settings" element={<SettingPage />} />
+        <Route path="/meeting/:code" element={<MeetingLayout />}>
+          <Route index element={<MainPage />} />
+          <Route path="join" element={<JoinPage />} />
+          <Route path="rejoin" element={<RejoinPage />} />
+          <Route path="settings" element={<SettingPage />} />
 
-        <Route path="input/time" element={<TimeInputPage />} />
-        <Route path="input/place" element={<PlaceInputPage />} />
-        <Route path="input/place/search" element={<AddressSearchPage />} />
-        <Route path="input/place/confirm" element={<ConfirmOnMapPage />} />
+          <Route path="input/time" element={<TimeInputPage />} />
+          <Route path="input/place" element={<PlaceInputPage />} />
+          <Route path="input/place/search" element={<AddressSearchPage />} />
+          <Route path="input/place/confirm" element={<ConfirmOnMapPage />} />
 
-        <Route path="recommendations/time" element={<TimeRecommendPage />} />
-        <Route path="recommendations/place" element={<PlaceRecommendPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+          <Route path="recommendations/time" element={<TimeRecommendPage />} />
+          <Route path="recommendations/place" element={<PlaceRecommendPage />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 
