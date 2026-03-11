@@ -116,7 +116,6 @@ export default function StartPage() {
                 'rounded-full transition-all duration-500',
                 current === index ? 'bg-greedy h-2.5 w-8' : 'h-2.5 w-2.5 bg-gray-200',
               )}
-              aria-label={`${index + 1}번 슬라이드로 이동`}
             />
           ))}
         </div>
