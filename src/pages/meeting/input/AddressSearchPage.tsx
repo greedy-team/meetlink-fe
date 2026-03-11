@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
 import { type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
+import { useKakaoLoader } from '@/hooks/useKakaoLoader';
 
 import { AddressSearchInput } from '@/features/place/search/AddressSearchInput';
 import { SearchEmptyState } from '@/features/place/search/SearchEmptyState';
@@ -53,6 +54,7 @@ const getKakao = () => {
 };
 
 export default function AddressSearchPage() {
+  const isKakaoLoaded = useKakaoLoader();
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
   const location = useLocation();
@@ -73,6 +75,7 @@ export default function AddressSearchPage() {
 
   // 키워드, 주소 검색 동시 실행
   const runSearch = async (keyword: string) => {
+    if (!isKakaoLoaded) return;
     const kakao = getKakao();
     if (!kakao || !kakao.maps.services) {
       setResults([]);
