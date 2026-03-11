@@ -176,7 +176,7 @@ export default function JoinPage() {
           <button
             type="button"
             onClick={goRejoin}
-            className="text-greedy-strong w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
+            className="text-greedy-strong hover:text-greedy w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
           >
             이미 참여하셨나요?
           </button>

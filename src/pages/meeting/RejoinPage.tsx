@@ -63,7 +63,7 @@ export default function RejoinPage() {
               <button
                 type="button"
                 onClick={onGoJoin}
-                className="text-greedy-strong cursor-pointer font-semibold underline underline-offset-4"
+                className="text-greedy-strong hover:text-greedy cursor-pointer font-semibold underline underline-offset-4"
               >
                 새로 참여하기
               </button>
@@ -74,7 +74,7 @@ export default function RejoinPage() {
           <FixedBottomButton
             disabled={!selectedInfo || isPageLoading}
             onClick={onLogin}
-            className="bg-greedy hover:bg-greedy/50 text-white"
+            className="bg-greedy hover:bg-greedy/50 cursor-pointer text-white"
           >
             선택한 닉네임으로 참여하기
           </FixedBottomButton>
