@@ -12,6 +12,7 @@ interface RecommendItemProps {
   className?: string;
   isLoading?: boolean;
   isCalculating?: boolean;
+  haveData?: boolean;
 }
 
 export function RecommendItem({
@@ -22,10 +23,11 @@ export function RecommendItem({
   className,
   isLoading = false,
   isCalculating = false,
+  haveData = true,
 }: RecommendItemProps) {
   return (
     <button
-      onClick={() => !isCalculating && onClick()}
+      onClick={() => !isCalculating && !isLoading && haveData && onClick()}
       className={cn(
         'flex items-center justify-between gap-4 rounded-3xl p-2 transition-all duration-200',
         'cursor-pointer hover:bg-gray-100',
@@ -65,7 +67,7 @@ export function RecommendItem({
             : value}
         </span>
       </div>
-      {!isLoading && !isCalculating && (
+      {!isLoading && !isCalculating && haveData && (
         <div className="rounded-2x transition-color flex h-11 shrink-0 items-center justify-center text-gray-500">
           <ChevronRight strokeWidth={3} className="h-6 w-6" />
         </div>

@@ -123,9 +123,10 @@ export function RecommendSummaryCard({
           icon={Clock}
           label="추천 시간"
           value={timeValue}
-          onClick={() => handleGoToButton('recommend/time')}
+          onClick={() => handleGoToButton('recommendations/time')}
           isLoading={isLoading}
           isCalculating={isTimeCalculating}
+          haveData={bestTime?.rank ? true : false}
         />
       )}
 
@@ -140,9 +141,10 @@ export function RecommendSummaryCard({
           icon={MapPin}
           label="추천 장소"
           value={placeValue}
-          onClick={() => handleGoToButton('recommend/place')}
+          onClick={() => handleGoToButton('recommendations/place')}
           isLoading={isLoading}
           isCalculating={isPlaceCalculating}
+          haveData={bestPlace?.rank ? true : false}
         />
       )}
     </div>
