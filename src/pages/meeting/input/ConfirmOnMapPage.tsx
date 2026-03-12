@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { Header } from '@/components/common/layout/Header';
 import { type RecentPlaceItem, upsertRecentPlace } from '@/lib/recentPlaces';
+import { useKakaoLoader } from '@/hooks/useKakaoLoader';
 
 import { LatLngMap } from '@/features/meeting/general/LatLngMap';
 import { CenterPin } from '@/features/place/confirm/CenterPin';
@@ -47,6 +48,8 @@ export default function ConfirmOnMapPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { code } = useParams<{ code: string }>();
+
+  const isKakaoLoaded = useKakaoLoader();
 
   // 현재 위치 받기 전엔 null
   const [lat, setLat] = useState<number | null>(null);
@@ -121,6 +124,13 @@ export default function ConfirmOnMapPage() {
     fetchCurrentLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // 카카오 SDK가 완전히 로드되었고, 좌표는 찾았는데 아직 주소 변환이 안 된 상태라면 재시도
+    if (isKakaoLoaded && lat !== null && lng !== null && !roadAddress && !jibunAddress) {
+      reverseGeocode(lat, lng);
+    }
+  }, [isKakaoLoaded, lat, lng, roadAddress, jibunAddress]);
 
   // 검증(주소가 있나, 위도/경도는 유효한가, 현재 위치 불러오는 중이 아닌가)
   const canConfirm = useMemo(() => {
