@@ -8,8 +8,7 @@ import { toast } from 'sonner';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
-import { useUpdateMyAvailableTime } from '@/hooks/useTime';
-import { useGetMyAvailableTime } from '@/hooks/useTime';
+import { useGetMyAvailableTime, useUpdateMyAvailableTime } from '@/hooks/useTime';
 
 import { convertToAvailabilities, convertToSelectedTimeList } from '@/features/Time/timeFunctions';
 import TimeHeader from '@/features/Time/TimeHeader';
@@ -20,44 +19,52 @@ export default function TimeInputPage() {
   const { dateType, timeRange, selectedTimeList, setSelectedTimeList, isLoading } =
     useMeetingContext();
   const { code } = useParams<{ code: string }>();
+  const navigate = useNavigate();
 
   const { data: myTimeList, isSuccess } = useGetMyAvailableTime();
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
   const { mutate: saveTime, isPending } = useUpdateMyAvailableTime();
-  const navigate = useNavigate();
+
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [draftSelectedTimeList, setDraftSelectedTimeList] = useState(selectedTimeList);
+
+  useEffect(() => {
+    setDraftSelectedTimeList(selectedTimeList);
+  }, [selectedTimeList]);
 
   useEffect(() => {
     const token = localStorage.getItem('meeting_token');
+
     if (token && isSuccess && myTimeList.result) {
       const converted = convertToSelectedTimeList(myTimeList.result);
-      setSelectedTimeList(converted);
+      setDraftSelectedTimeList(converted);
     }
-  }, [isSuccess, myTimeList, setSelectedTimeList]);
+  }, [isSuccess, myTimeList]);
 
   const handleSave = () => {
     const token = localStorage.getItem('meeting_token');
-    const convertedData = convertToAvailabilities(selectedTimeList, dateType);
+    const convertedData = convertToAvailabilities(draftSelectedTimeList, dateType);
+
     if (token) {
       saveTime(
         { availabilities: convertedData },
         {
           onSuccess: () => {
+            setSelectedTimeList(draftSelectedTimeList);
+
             toast.success('가능 시간 등록 완료!', {
               description: '가능 시간이 정상적으로 등록되었어요',
               icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
             });
+
             navigate(`/meeting/${code}/`);
           },
           onError: (error) => {
             if (axios.isAxiosError(error)) {
-              //실패 토스트
               toast.error('오류 발생!', {
                 description: error.message,
                 icon: <AlertCircle className="h-5 w-5 text-red-500" />,
               });
             } else {
-              //실패 토스트
               toast.error('오류 발생!', {
                 description: '인터넷 연결 상태를 확인해보세요!',
                 icon: <AlertCircle className="h-5 w-5 text-red-500" />,
@@ -67,6 +74,7 @@ export default function TimeInputPage() {
         },
       );
     } else {
+      setSelectedTimeList(draftSelectedTimeList);
       navigate(`/meeting/${code}/join`);
     }
   };
@@ -80,7 +88,7 @@ export default function TimeInputPage() {
             dateType={dateType}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            selectedTimeList={selectedTimeList}
+            selectedTimeList={draftSelectedTimeList}
             participantsNum={1}
             timeRange={timeRange}
           />
@@ -107,8 +115,8 @@ export default function TimeInputPage() {
           dateType={dateType}
           timeRange={timeRange}
           selectedDate={selectedDate}
-          selectedTimeList={selectedTimeList}
-          setSelectedTimeList={setSelectedTimeList}
+          selectedTimeList={draftSelectedTimeList}
+          setSelectedTimeList={setDraftSelectedTimeList}
         />
       </div>
     </AppLayout>

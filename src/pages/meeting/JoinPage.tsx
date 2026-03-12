@@ -36,6 +36,7 @@ export default function JoinPage() {
     selectedTimeList,
     selectedPlace,
     dateType,
+    resetGuestDraft,
   } = useMeetingContext();
 
   const participantSummary = useMemo(
@@ -132,6 +133,7 @@ export default function JoinPage() {
           await Promise.all(promises);
         }
 
+        resetGuestDraft();
         navigate(`/meeting/${code}`, { replace: true });
       }
     } catch (error) {

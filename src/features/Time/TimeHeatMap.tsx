@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { AvailableParticipantCard } from './AvailableParticipantCard';
-import { getMaxAvailableNum } from './timeFunctions';
 
 import { type SelectedTime, type TimeCandidate } from '@/types/meetingTypes';
 
@@ -24,7 +23,7 @@ interface TimeHeatMapProps {
   dateType: string;
   selectedDate: Date;
   selectedTimeList: SelectedTime[];
-  setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
+  setSelectedTimeList?: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
   selectedCandidate?: TimeCandidate | undefined;
 }
 
@@ -174,6 +173,11 @@ export default function TimeHeatMap({
         //범위 안 시작 시간 리스트
         const startTimeListInBound = currentTimeSlots.slice(minY, maxY + 1);
 
+        if (!setSelectedTimeList) {
+          setDragState({ isDragging: false, start: null, current: null, action: null });
+          return;
+        }
+
         setSelectedTimeList((prev) => {
           //현재 주 문자열 리스트
           const visibleDates = currentWeekdays.map((d) => format(d, 'yyyy-MM-dd'));
@@ -301,13 +305,6 @@ export default function TimeHeatMap({
               return isSameDay(date, parseISO(String(selectedCandidate.date)));
             }
           })();
-          const matched = selectedTimeList.find((item) =>
-            dateType === 'WEEKLY'
-              ? item.dayOfWeek === dayIndex
-              : item.date
-                ? isSameDay(parseISO(item.date), date)
-                : false,
-          );
           const todayStart = startOfDay(new Date());
           const currentDayStart = startOfDay(date);
           const isPastDate = dateType !== 'WEEKLY' && isBefore(currentDayStart, todayStart);

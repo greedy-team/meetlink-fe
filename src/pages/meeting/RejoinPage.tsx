@@ -18,7 +18,7 @@ export default function RejoinPage() {
   const { code } = useParams<{ code: string }>();
 
   // Context에서 모임명 가져오기
-  const { meetingName, isLoading: isMeetingLoading } = useMeetingContext();
+  const { meetingName, isLoading: isMeetingLoading, resetGuestDraft } = useMeetingContext();
 
   // 참여자 목록 조회
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
@@ -47,6 +47,9 @@ export default function RejoinPage() {
 
     // 로컬 스토리지에 토큰 저장
     localStorage.setItem('meeting_token', selectedInfo.token);
+
+    // guest draft 초기화
+    resetGuestDraft();
 
     // 메인 대시보드로 이동
     navigate(`/meeting/${code}`, { replace: true });

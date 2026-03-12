@@ -13,7 +13,7 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 import { type TimeCandidate } from '@/types/meetingTypes';
 
 export default function TimeRecommendPage() {
-  const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
+  const { dateType, timeRange, participantStatusList } = useMeetingContext();
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -77,7 +77,6 @@ export default function TimeRecommendPage() {
           timeRange={timeRange}
           selectedDate={selectedDate}
           selectedTimeList={commonTimeList}
-          setSelectedTimeList={setSelectedTimeList}
           selectedCandidate={selectedCandidate}
         />
       </div>

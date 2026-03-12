@@ -16,16 +16,19 @@ type BestPlace = GetRecommendResultResponse['result']['placeCandidate'];
 
 //추천 스크립트 제작 함수
 const makeTimeDescription = (bestTime: BestTime | undefined): string => {
-  if (!bestTime?.startTime || !bestTime?.endTime || bestTime.dayOfWeek === undefined)
-    return '시간 정보가 없습니다';
+  if (!bestTime?.startTime || !bestTime?.endTime) return '시간 정보가 없습니다';
 
   const { date, dayOfWeek, startTime, endTime } = bestTime;
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
+  if ((!date || date === '') && dayOfWeek === undefined) {
+    return '시간 정보가 없습니다';
+  }
+
   const datePart =
     date && date !== ''
       ? `${date}\u00A0(${dayNames[new Date(date).getDay()]})` // 날짜가 있을 때
-      : `${dayNames[dayOfWeek]}요일`; // 요일
+      : `${dayNames[dayOfWeek as number]}요일`; // 요일
 
   const formatTime = (timeStr: string) => {
     const [hourStr, minuteStr] = timeStr.split(':');

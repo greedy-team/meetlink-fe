@@ -34,6 +34,7 @@ export interface MeetingOutletContext {
   nickName: string;
 
   isLoading: boolean;
+  resetGuestDraft: () => void;
 }
 
 interface RawParticipantStatus {
@@ -42,6 +43,13 @@ interface RawParticipantStatus {
   isPlaceSubmitted?: boolean;
   isTimeSubmitted?: boolean;
 }
+
+const EMPTY_PLACE: UpdateMyStartPlaceRequest = {
+  name: '',
+  address: '',
+  latitude: 0,
+  longitude: 0,
+};
 
 export default function MeetingLayout() {
   const { code } = useParams<{ code: string }>();
@@ -54,6 +62,7 @@ export default function MeetingLayout() {
     isError: isMeetingError,
     error: meetingError,
   } = useGetMeetingDetail();
+
   useEffect(() => {
     if (
       isMeetingError &&
@@ -73,14 +82,23 @@ export default function MeetingLayout() {
   } = useMyStatus();
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
 
-  const [selectedTimeList, setSelectedTimeList] = useState<SelectedTime[]>([]);
-  const [selectedPlace, setSelectedPlace] = useState<UpdateMyStartPlaceRequest>({
-    name: '',
-    address: '',
-    latitude: 0,
-    longitude: 0,
-  });
-  const [tempNickName, setTempNickName] = useState<string>('');
+  // 토큰 유효할 경우 draft
+  const [memberSelectedTimeList, setMemberSelectedTimeList] = useState<SelectedTime[]>([]);
+  const [memberSelectedPlace, setMemberSelectedPlace] =
+    useState<UpdateMyStartPlaceRequest>(EMPTY_PLACE);
+  const [memberTempNickName, setMemberTempNickName] = useState<string>('');
+
+  // 그 이외 draft
+  const [guestSelectedTimeList, setGuestSelectedTimeList] = useState<SelectedTime[]>([]);
+  const [guestSelectedPlace, setGuestSelectedPlace] =
+    useState<UpdateMyStartPlaceRequest>(EMPTY_PLACE);
+  const [guestTempNickName, setGuestTempNickName] = useState<string>('');
+
+  const resetGuestDraft = () => {
+    setGuestTempNickName('');
+    setGuestSelectedTimeList([]);
+    setGuestSelectedPlace(EMPTY_PLACE);
+  };
 
   const token = localStorage.getItem('meeting_token');
 
@@ -100,6 +118,7 @@ export default function MeetingLayout() {
     //토큰은 있는데 참가 페이지가 아니고 잘못된 토큰을 가지고 있는 경우
     if (token && !isJoinPage && (isMyStatusError || !myStatusData?.status)) {
       navigate(`/meeting/${code}/join`, { replace: true });
+      return;
     }
 
     //토큰이 있고 모임에 이미 참여했었는데 참가 페이지라면
@@ -117,6 +136,19 @@ export default function MeetingLayout() {
     code,
     navigate,
   ]);
+
+  const hasValidMemberSession = Boolean(token) && Boolean(myStatusData?.status) && !isMyStatusError;
+
+  const selectedTimeList = hasValidMemberSession ? memberSelectedTimeList : guestSelectedTimeList;
+  const setSelectedTimeList = hasValidMemberSession
+    ? setMemberSelectedTimeList
+    : setGuestSelectedTimeList;
+
+  const selectedPlace = hasValidMemberSession ? memberSelectedPlace : guestSelectedPlace;
+  const setSelectedPlace = hasValidMemberSession ? setMemberSelectedPlace : setGuestSelectedPlace;
+
+  const tempNickName = hasValidMemberSession ? memberTempNickName : guestTempNickName;
+  const setTempNickName = hasValidMemberSession ? setMemberTempNickName : setGuestTempNickName;
 
   const contextValue: MeetingOutletContext = {
     meetingName: meetingData?.result?.name || '',
@@ -147,6 +179,7 @@ export default function MeetingLayout() {
     nickName: myStatusData?.result?.nickname || '',
 
     isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
+    resetGuestDraft,
   };
 
   return (
