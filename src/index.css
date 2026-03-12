@@ -22,7 +22,7 @@
 }
 
 @theme {
-  --animate-relative-pulse: relative-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-relative-pulse: relative-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes relative-pulse {
     0%,

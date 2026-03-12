@@ -432,13 +432,13 @@ export default function TimeHeatMap({
                           : '',
                         isMaxAvailableSlot &&
                           isSelectedDate &&
-                          'border-l-greedy-strong border-r-greedy-strong border-r-2 border-l-2 border-solid',
+                          'border-l-greedy-strong border-r-greedy-strong border-r-3 border-l-3 border-solid',
                         isMaxAvailableSlot &&
                           isStart &&
-                          'border-t-greedy-strong border-t-2 border-solid',
+                          'border-t-greedy-strong border-t-3 border-solid',
                         isMaxAvailableSlot &&
                           isEnd &&
-                          'border-b-greedy-strong border-b-2 border-solid',
+                          'border-b-greedy-strong border-b-3 border-solid',
                       )}
                       aria-label={ariaLabel}
                       aria-pressed={mode === 'INPUT' ? availableNum > 0 : undefined}
@@ -455,13 +455,6 @@ export default function TimeHeatMap({
                             opacity: opacityValue,
                           }}
                         />
-                      )}
-                      {isMaxAvailableSlot && isStart && (
-                        <div className="absolute -top-2.5 left-1/2 z-20 flex -translate-x-1/2 items-center justify-center">
-                          <div className="relative flex rounded-full bg-white p-0.5 shadow-sm ring-1 ring-gray-200/50">
-                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                          </div>
-                        </div>
                       )}
                     </button>
                   </AvailableParticipantCard>
