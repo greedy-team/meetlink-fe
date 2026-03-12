@@ -10,13 +10,14 @@ import TimeHeader from '@/features/Time/TimeHeader';
 import TimeHeatMap from '@/features/Time/TimeHeatMap';
 import TimeRecommendModal from '@/features/Time/TimeRecommendModal';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
+import { type TimeCandidate } from '@/types/meetingTypes';
 
 export default function TimeRecommendPage() {
   const { dateType, timeRange, setSelectedTimeList, participantStatusList } = useMeetingContext();
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedRecommendDate, setSelectedRecommendDate] = useState<string | number>();
+  const [selectedCandidate, setSelectedCandidate] = useState<TimeCandidate>();
 
   const participantsNum = participantStatusList.length;
   const commonTimeList = useMemo(() => {
@@ -61,7 +62,7 @@ export default function TimeRecommendPage() {
             commonTimeList={commonTimeList}
             dateType={dateType}
             timeRange={timeRange}
-            setSelectedRecommendDate={setSelectedRecommendDate}
+            setSelectedCandidate={setSelectedCandidate}
           />
         </div>
       }
@@ -77,7 +78,7 @@ export default function TimeRecommendPage() {
           selectedDate={selectedDate}
           selectedTimeList={commonTimeList}
           setSelectedTimeList={setSelectedTimeList}
-          selectedRecommendDate={selectedRecommendDate}
+          selectedCandidate={selectedCandidate}
         />
       </div>
     </AppLayout>
