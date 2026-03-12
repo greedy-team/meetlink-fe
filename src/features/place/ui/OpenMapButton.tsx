@@ -1,3 +1,5 @@
+import { useKakaoLoader } from '@/hooks/useKakaoLoader';
+
 type OpenMapButtonProps = {
   placeName: string;
   latitude: string;
@@ -41,27 +43,6 @@ function openWithMobileFallback(appUrl: string, fallbackUrl: string) {
   window.setTimeout(() => (window.location.href = fallbackUrl), 800);
 }
 
-// 좌표(위도/경도) -> 실제 주소로 변환
-const getAddressFromCoords = (lat: number, lng: number): Promise<string | null> => {
-  return new Promise((resolve) => {
-    const kakao = window.kakao;
-    if (!kakao?.maps?.services?.Geocoder) {
-      resolve(null);
-      return;
-    }
-    const geocoder = new kakao.maps.services.Geocoder();
-    geocoder.coord2Address(lng, lat, (result, status) => {
-      if (status === kakao.maps.services.Status.OK && result[0]) {
-        // 도로명 주소가 있으면 우선 사용, 없으면 지번 주소 사용
-        const address = result[0].road_address?.address_name || result[0].address?.address_name;
-        resolve(address || null);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-};
-
 export function OpenMapButton({
   placeName,
   latitude,
@@ -71,10 +52,33 @@ export function OpenMapButton({
   memberName,
   disabled,
 }: OpenMapButtonProps) {
+  const isKakaoLoaded = useKakaoLoader();
   const isDisabled = disabled || !latitude || !longitude;
 
+  // 컴포넌트 내부에서 isKakaoLoaded 상태를 사용하여 주소 변환 수행
+  const getAddressFromCoords = (lat: number, lng: number): Promise<string | null> => {
+    return new Promise((resolve) => {
+      if (!isKakaoLoaded || !window.kakao?.maps?.services?.Geocoder) {
+        resolve(null);
+        return;
+      }
+
+      const kakao = window.kakao;
+      const geocoder = new kakao.maps.services.Geocoder();
+
+      geocoder.coord2Address(lng, lat, (result, status) => {
+        if (status === kakao.maps.services.Status.OK && result[0]) {
+          const address = result[0].road_address?.address_name || result[0].address?.address_name;
+          resolve(address || null);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  };
+
   const handleClick = async () => {
-    if (isDisabled) return;
+    if (isDisabled || !isKakaoLoaded) return;
 
     const ep = `${latitude},${longitude}`;
     const en = placeName; // 도착지 이름은 장소명으로 고정
@@ -135,10 +139,12 @@ export function OpenMapButton({
     <button
       type="button"
       onClick={handleClick}
-      disabled={isDisabled}
+      disabled={isDisabled || !isKakaoLoaded}
       className={[
         'w-full cursor-pointer rounded-none px-4 py-4 text-base font-semibold',
-        isDisabled ? 'bg-gray-200 text-gray-500' : 'bg-greedy text-white active:opacity-90',
+        isDisabled || !isKakaoLoaded
+          ? 'bg-gray-200 text-gray-500'
+          : 'bg-greedy text-white active:opacity-90',
       ].join(' ')}
       aria-label={`${placeName}까지 카카오맵 길찾기 열기`}
     >

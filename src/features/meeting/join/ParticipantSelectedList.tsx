@@ -22,7 +22,7 @@ export function ParticipantSelectedList({
       <div
         className={cn(
           'text-base font-bold',
-          isLoading ? 'w-32 rounded-lg bg-gray-100 text-gray-100' : '',
+          isLoading ? 'w-32 animate-pulse rounded-lg bg-gray-100 text-gray-100' : '',
         )}
       >
         참여자 목록{' '}

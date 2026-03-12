@@ -92,7 +92,7 @@ export default function RejoinPage() {
           <div
             className={cn(
               'text-xl font-extrabold',
-              isPageLoading ? 'w-32 rounded-lg bg-gray-100 text-gray-100' : '',
+              isPageLoading ? 'w-32 animate-pulse rounded-lg bg-gray-100 text-gray-100' : '',
             )}
           >
             다시 오셨군요!
@@ -100,7 +100,9 @@ export default function RejoinPage() {
           <div
             className={cn(
               'text-sm',
-              isPageLoading ? 'w-48 rounded-lg bg-gray-100 text-gray-100' : 'text-muted-foreground',
+              isPageLoading
+                ? 'w-48 animate-pulse rounded-lg bg-gray-100 text-gray-100'
+                : 'text-muted-foreground',
             )}
           >
             참여 중인 닉네임을 선택해주세요

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import { useKakaoLoader } from '@/hooks/useKakaoLoader';
+
 import { CenterPin } from '@/features/place/confirm/CenterPin';
 import { type PathSegment } from '@/types/meetingTypes';
 
@@ -13,6 +15,7 @@ type KakaoMapViewProps = {
 };
 
 export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoMapViewProps) {
+  const isKakaoLoaded = useKakaoLoader();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<KakaoMap | null>(null);
 
@@ -23,30 +26,29 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
 
   const polylinesRef = useRef<KakaoPolyline[]>([]);
 
-  // 1) 지도 최초 1회 생성 + relayout
+  // 1) 지도 최초 1회 생성
   useEffect(() => {
+    // 로드 상태 및 컨테이너 체크
+    if (!isKakaoLoaded || !containerRef.current) return;
+
     const kakao = window.kakao;
-    if (!kakao?.maps?.load) return;
+    if (!kakao) return;
 
-    kakao.maps.load(() => {
-      if (!containerRef.current) return;
+    const initialPos = new kakao.maps.LatLng(center.lat, center.lng);
+    const map = new kakao.maps.Map(containerRef.current, { center: initialPos, level });
+    mapRef.current = map;
 
-      const initialPos = new kakao.maps.LatLng(center.lat, center.lng);
-      const map = new kakao.maps.Map(containerRef.current, { center: initialPos, level });
-      mapRef.current = map;
-
-      requestAnimationFrame(() => {
-        map.relayout?.();
-        map.setCenter(initialPos);
-        setIsMapLoaded(true);
-      });
+    requestAnimationFrame(() => {
+      map.relayout?.();
+      map.setCenter(initialPos);
+      setIsMapLoaded(true);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isKakaoLoaded]);
 
-  // 2) 장소 변경 시 center/level만 반영
+  // 2) 장소 변경 시 반영
   useEffect(() => {
-    if (!isMapLoaded) return;
+    if (!isMapLoaded || !isKakaoLoaded) return; // 로드 상태 체크 추가
 
     const kakao = window.kakao;
     const map = mapRef.current;
@@ -55,11 +57,11 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
     const next = new kakao.maps.LatLng(center.lat, center.lng);
     map.setCenter(next);
     map.setLevel?.(level);
-  }, [center.lat, center.lng, level, isMapLoaded]);
+  }, [center.lat, center.lng, level, isMapLoaded, isKakaoLoaded]);
 
-  // 3) 경로 유무에 따른 오버레이 렌더링/정리
+  // 3) 경로 렌더링 로직
   useEffect(() => {
-    if (!isMapLoaded) return;
+    if (!isMapLoaded || !isKakaoLoaded) return;
 
     const kakao = window.kakao;
     const map = mapRef.current;
@@ -70,24 +72,21 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
     const createPinElement = (type: 'start' | 'end') => {
       const wrapper = document.createElement('div');
       const root = createRoot(wrapper);
-      // isFixed=false로 넘겨주어 화면 고정이 아닌 마커용으로 사용
       root.render(<CenterPin type={type} isFixed={false} />);
       return wrapper;
     };
 
-    // 기존 선 지우기
     polylinesRef.current.forEach((line) => line.setMap(null));
     polylinesRef.current = [];
 
-    // 경로가 없을 때 (장소 카드만 눌렀을 때)
     if (!routeSegments || routeSegments.length === 0) {
-      startOverlayRef.current?.setMap(null); // 출발핀은 숨김
+      startOverlayRef.current?.setMap(null);
 
       if (!endOverlayRef.current) {
         endOverlayRef.current = new kakao.maps.CustomOverlay({
           position: endPos,
-          content: createPinElement('end'), // 진한 색(end) 적용
-          yAnchor: 1, // 핀의 뾰족한 맨 아래를 좌표에 맞춤
+          content: createPinElement('end'),
+          yAnchor: 1,
         });
         endOverlayRef.current.setMap(map);
       } else {
@@ -98,7 +97,6 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
       return;
     }
 
-    // 경로가 있을 때 (멤버 칩을 눌렀을 때)
     const bounds = new kakao.maps.LatLngBounds();
     let firstPos: KakaoLatLng | null = null;
 
@@ -107,20 +105,17 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
 
       const pathLatLng = seg.path.map((p) => {
         const pos = new kakao.maps.LatLng(p.lat, p.lng);
-        bounds.extend(pos); // 화면 영역 확장을 위해 좌표 추가
-        if (!firstPos) firstPos = pos; // 첫 번째 좌표 기록
+        bounds.extend(pos);
+        if (!firstPos) firstPos = pos;
         return pos;
       });
 
-      const greedyColor = '#008e4c';
-      const isWalk = seg.mode === 'WALK';
-
       const polyline = new kakao.maps.Polyline({
         path: pathLatLng,
-        strokeWeight: isWalk ? 8 : 6,
-        strokeColor: greedyColor,
+        strokeWeight: seg.mode === 'WALK' ? 8 : 6,
+        strokeColor: '#008e4c',
         strokeOpacity: 0.9,
-        strokeStyle: isWalk ? 'shortdot' : 'solid',
+        strokeStyle: seg.mode === 'WALK' ? 'shortdot' : 'solid',
       });
       polyline.setMap(map);
       polylinesRef.current.push(polyline);
@@ -128,7 +123,6 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
 
     bounds.extend(endPos);
 
-    // 출발 핀
     if (firstPos) {
       if (!startOverlayRef.current) {
         startOverlayRef.current = new kakao.maps.CustomOverlay({
@@ -136,7 +130,6 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
           content: createPinElement('start'),
           yAnchor: 1,
         });
-        startOverlayRef.current.setMap(map);
       } else {
         startOverlayRef.current.setContent(createPinElement('start'));
         startOverlayRef.current.setPosition(firstPos);
@@ -144,7 +137,6 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
       startOverlayRef.current.setMap(map);
     }
 
-    // 도착 핀
     if (!endOverlayRef.current) {
       endOverlayRef.current = new kakao.maps.CustomOverlay({
         position: endPos,
@@ -156,10 +148,8 @@ export function KakaoMapView({ center, level = 4, routeSegments = null }: KakaoM
       endOverlayRef.current.setPosition(endPos);
     }
     endOverlayRef.current.setMap(map);
-
-    // 지도 영역 딱 맞게 조절
     map.setBounds(bounds);
-  }, [routeSegments, center.lat, center.lng, isMapLoaded]);
+  }, [routeSegments, center.lat, center.lng, isMapLoaded, isKakaoLoaded]);
 
-  return <div ref={containerRef} className="h-full w-full" />;
+  return <div ref={containerRef} className="h-full w-full bg-gray-100" />;
 }

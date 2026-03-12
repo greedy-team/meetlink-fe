@@ -12,10 +12,19 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
     <link
+      rel="preload"
+      as="style"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+      crossorigin
+    />
+    <link
       rel="stylesheet"
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+      media="print"
+      onload="this.media = 'all'"
     />
+
     <script type="text/javascript">
       (function (c, l, a, r, i, t, y) {
         c[a] =
@@ -30,12 +39,6 @@
         y.parentNode.insertBefore(t, y);
       })(window, document, 'clarity', 'script', 'vtkqfbp2h4');
     </script>
-
-    <script
-      src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=682bb2dfb6a8ebee89c494ad75d17ad0&libraries=services"
-      onload="console.log('[kakao sdk] loaded', !!window.kakao)"
-      onerror="console.error('[kakao sdk] load failed')"
-    ></script>
   </head>
   <body>
     <div id="root"></div>
