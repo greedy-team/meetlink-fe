@@ -208,7 +208,7 @@ export default function TimeRecommendModal({
                 candidate={candidate}
                 participantsNum={participantsNum}
                 maxAvailableNum={maxAvailableNum}
-                isTopRank={selectedCardKey === cardKey}
+                isSelected={selectedCardKey === cardKey}
                 onClick={() => handleCardClick(candidate)}
                 commonTimeList={commonTimeList}
                 dateType={dateType}

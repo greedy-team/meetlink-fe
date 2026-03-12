@@ -38,7 +38,7 @@ interface TimeRecommendCardProps {
   candidate: Candidate;
   participantsNum: number;
   maxAvailableNum: number;
-  isTopRank: boolean;
+  isSelected: boolean;
   onClick: (dateString: string) => void;
   timeRange: [number, number];
   commonTimeList: SelectedTime[];
@@ -49,7 +49,7 @@ export function TimeRecommendCard({
   candidate,
   participantsNum,
   maxAvailableNum,
-  isTopRank,
+  isSelected,
   onClick,
   timeRange,
   commonTimeList,
@@ -80,7 +80,7 @@ export function TimeRecommendCard({
     <button
       onClick={() => onClick(candidate.date)}
       className={`relative flex cursor-pointer flex-col gap-4 rounded-2xl border-2 p-5 transition-colors ${
-        isTopRank ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-white hover:bg-gray-50'
+        isSelected ? 'border-greedy bg-greedy/5' : 'border-gray-200 bg-white hover:bg-gray-50'
       }`}
       aria-label={`${candidate.rank} 순위 추천 카드 - ${dateType === 'WEEKLY' ? getDayText(candidate.dayOfWeek) : candidate.date} - ${candidate.availableCount}명 가능`}
     >
@@ -88,7 +88,7 @@ export function TimeRecommendCard({
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-gray-900">{titleText}</span>
-            {isTopRank && (
+            {candidate.rank === 1 && (
               <span className="bg-greedy rounded-lg px-2 py-0.5 text-xs font-medium text-white">
                 추천
               </span>
