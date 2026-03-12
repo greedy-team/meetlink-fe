@@ -56,3 +56,12 @@ export interface PathSegment {
   mode: string; // 'WALK', 'BUS', 'SUBWAY' 등
   path: { lat: number; lng: number }[];
 }
+
+export interface TimeCandidate {
+  availableCount: number;
+  date: string;
+  dayOfWeek: number;
+  endTime: string;
+  rank: number;
+  startTime: string;
+}

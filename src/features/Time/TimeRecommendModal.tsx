@@ -4,7 +4,7 @@ import { animate, motion, type PanInfo, useMotionValue } from 'framer-motion';
 
 import { TimeRecommendCard } from './TimeRecommendCard';
 
-import { type SelectedTime } from '@/types/meetingTypes';
+import { type SelectedTime, type TimeCandidate } from '@/types/meetingTypes';
 
 const SHEET_CONFIG = {
   FULL_VH: 90,
@@ -16,24 +16,15 @@ const SPRING = { type: 'spring', damping: 30, stiffness: 300, mass: 0.8 } as con
 
 type SheetState = 'peek' | 'half' | 'full';
 
-export interface Candidate {
-  availableCount: number;
-  date: string;
-  dayOfWeek: number;
-  endTime: string;
-  rank: number;
-  startTime: string;
-}
-
 interface TimeRecommendModalProps {
-  candidateList: Candidate[] | undefined;
+  candidateList: TimeCandidate[] | undefined;
   participantsNum: number;
   maxAvailableNum: number;
   setSelectedDate: (date: Date) => void;
   timeRange: [number, number];
   commonTimeList: SelectedTime[];
   dateType: string;
-  setSelectedRecommendDate: (date: string | number) => void;
+  setSelectedCandidate: (candidate: TimeCandidate | undefined) => void;
 }
 
 function getSafeAreaBottom(): number {
@@ -60,7 +51,7 @@ export default function TimeRecommendModal({
   timeRange,
   commonTimeList,
   dateType,
-  setSelectedRecommendDate,
+  setSelectedCandidate,
 }: TimeRecommendModalProps) {
   const [sheetState, setSheetState] = useState<SheetState>('peek');
   const [viewportHeight, setViewportHeight] = useState(getViewportHeight);
@@ -142,20 +133,13 @@ export default function TimeRecommendModal({
   );
 
   const handleCardClick = useCallback(
-    (candidate: Candidate) => {
+    (candidate: TimeCandidate) => {
       setSelectedCardKey(`${candidate.date}-${candidate.dayOfWeek}-${candidate.startTime}`);
 
-      if (dateType !== 'WEEKLY' && candidate.date) {
-        setSelectedDate(new Date(candidate.date));
-      }
-      if (dateType === 'WEEKLY') {
-        setSelectedRecommendDate(candidate.dayOfWeek);
-      } else {
-        setSelectedRecommendDate(candidate.date);
-      }
+      setSelectedCandidate(candidate);
       snapTo('peek');
     },
-    [dateType, setSelectedDate, snapTo, setSelectedRecommendDate],
+    [dateType, setSelectedDate, snapTo, setSelectedCandidate],
   );
 
   if (!candidateList || candidateList.length === 0) return null;

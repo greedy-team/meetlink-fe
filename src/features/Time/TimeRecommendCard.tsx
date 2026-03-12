@@ -1,16 +1,7 @@
 import { getDay } from 'date-fns';
 import { Users } from 'lucide-react';
 
-import { type SelectedTime } from '@/types/meetingTypes';
-
-export interface Candidate {
-  availableCount: number;
-  date: string;
-  dayOfWeek: number;
-  endTime: string;
-  rank: number;
-  startTime: string;
-}
+import { type SelectedTime, type TimeCandidate } from '@/types/meetingTypes';
 
 const getDayText = (day: number) => {
   const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -35,7 +26,7 @@ const findAvailableNum = (startTime: string, timeData: SelectedTime | undefined)
 };
 
 interface TimeRecommendCardProps {
-  candidate: Candidate;
+  candidate: TimeCandidate;
   participantsNum: number;
   maxAvailableNum: number;
   isSelected: boolean;

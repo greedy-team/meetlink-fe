@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addDays, format, isBefore, isSameDay, parseISO, startOfDay, startOfWeek } from 'date-fns';
-import { Star } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -9,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { AvailableParticipantCard } from './AvailableParticipantCard';
 import { getMaxAvailableNum } from './timeFunctions';
 
-import { type SelectedTime } from '@/types/meetingTypes';
+import { type SelectedTime, type TimeCandidate } from '@/types/meetingTypes';
 
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -26,7 +25,7 @@ interface TimeHeatMapProps {
   selectedDate: Date;
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
-  selectedRecommendDate?: string | number | undefined;
+  selectedCandidate?: TimeCandidate | undefined;
 }
 
 interface DragState {
@@ -45,7 +44,7 @@ export default function TimeHeatMap({
   selectedDate,
   selectedTimeList,
   setSelectedTimeList,
-  selectedRecommendDate = undefined,
+  selectedCandidate = undefined,
 }: TimeHeatMapProps) {
   const [startHour, endHour] = timeRange;
 
@@ -294,12 +293,12 @@ export default function TimeHeatMap({
         {weekdays.map((date, dayIndex) => {
           const dateStr = format(date, 'yyyy-MM-dd');
           const isSelectedDate = (() => {
-            if (selectedRecommendDate === undefined || selectedRecommendDate === null) return false;
+            if (selectedCandidate === undefined || selectedCandidate === null) return false;
 
             if (dateType === 'WEEKLY') {
-              return dayIndex === selectedRecommendDate;
+              return dayIndex === selectedCandidate.dayOfWeek;
             } else {
-              return isSameDay(date, parseISO(String(selectedRecommendDate)));
+              return isSameDay(date, parseISO(String(selectedCandidate.date)));
             }
           })();
           const matched = selectedTimeList.find((item) =>
@@ -309,7 +308,6 @@ export default function TimeHeatMap({
                 ? isSameDay(parseISO(item.date), date)
                 : false,
           );
-          const dateMaxAvailableNum = getMaxAvailableNum(matched, timeRange);
           const todayStart = startOfDay(new Date());
           const currentDayStart = startOfDay(date);
           const isPastDate = dateType !== 'WEEKLY' && isBefore(currentDayStart, todayStart);
@@ -338,24 +336,18 @@ export default function TimeHeatMap({
                     : 0
                   : timeDataMap[mapKey]?.[startTime]?.availableNumber || 0;
 
-                const isMaxAvailableSlot =
-                  mode === 'OUTPUT' && availableNum > 0 && availableNum === dateMaxAvailableNum;
-
-                const isStart = (() => {
-                  if (!isSelectedDate || !isMaxAvailableSlot) return false;
-                  const prevStartTime = timeSlots[slotIdx - 1];
-                  if (!prevStartTime) return true;
-                  const prevAvailableNum =
-                    timeDataMap[mapKey]?.[prevStartTime]?.availableNumber || 0;
-                  return prevAvailableNum !== availableNum;
+                const isSelectedTimeSlot = (() => {
+                  if (!isSelectedDate || !selectedCandidate) return false;
+                  return (
+                    startTime >= selectedCandidate.startTime &&
+                    startTime < selectedCandidate.endTime
+                  );
                 })();
+                const isStart = isSelectedTimeSlot && startTime === selectedCandidate?.startTime;
                 const isEnd = (() => {
-                  if (!isSelectedDate || !isMaxAvailableSlot) return false;
+                  if (!isSelectedTimeSlot) return false;
                   const nextStartTime = timeSlots[slotIdx + 1];
-                  if (!nextStartTime) return true;
-                  const nextAvailableNum =
-                    timeDataMap[mapKey]?.[nextStartTime]?.availableNumber || 0;
-                  return nextAvailableNum !== availableNum;
+                  return !nextStartTime || nextStartTime === selectedCandidate?.endTime;
                 })();
 
                 const isTopHour = startTime.endsWith(':00:00');
@@ -430,13 +422,13 @@ export default function TimeHeatMap({
                         mode === 'INPUT' && availableNum === 0 && !isPastDate
                           ? 'hover:bg-gray-50'
                           : '',
-                        isMaxAvailableSlot &&
+                        isSelectedTimeSlot &&
                           isSelectedDate &&
                           'border-l-greedy-strong border-r-greedy-strong border-r-3 border-l-3 border-solid',
-                        isMaxAvailableSlot &&
+                        isSelectedTimeSlot &&
                           isStart &&
                           'border-t-greedy-strong border-t-3 border-solid',
-                        isMaxAvailableSlot &&
+                        isSelectedTimeSlot &&
                           isEnd &&
                           'border-b-greedy-strong border-b-3 border-solid',
                       )}
@@ -448,7 +440,7 @@ export default function TimeHeatMap({
                         <div
                           className={cn(
                             'bg-greedy pointer-events-none absolute inset-0',
-                            isMaxAvailableSlot && isSelectedDate && 'animate-relative-pulse',
+                            isSelectedTimeSlot && isSelectedDate && 'animate-relative-pulse',
                           )}
                           style={{
                             // OUTPUT 모드일 때만 비율에 따른 투명도 적용, INPUT일 때는 1(100%)
