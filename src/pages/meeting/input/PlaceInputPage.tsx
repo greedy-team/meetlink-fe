@@ -33,30 +33,41 @@ export default function PlaceInputPage() {
   const { selectedPlace, setSelectedPlace } = useMeetingContext();
 
   const { mutate: savePlace, isPending } = useUpdateMyStartPlace();
-
   const { data: myStartPlaceData, isSuccess: isGetPlaceSuccess } = useGetMyStartPlace();
 
   const state = (location.state as LocationState | null) ?? null;
-  // 이전 페이지(주소 검색/지도)에서 선택된 장소
   const incomingSelected = state?.selectedPlace ?? null;
   const from: FromPage | undefined = state?.from;
 
   const [recentPlaces, setRecentPlaces] = useState<RecentPlaceItem[]>(() => loadRecentPlaces());
 
+  // 편집용 임시 상태
+  const [draftSelectedPlace, setDraftSelectedPlace] =
+    useState<UpdateMyStartPlaceRequest>(selectedPlace);
+
+  // context에 저장된 값이 바뀌면 draft도 맞춰줌
+  useEffect(() => {
+    setDraftSelectedPlace(selectedPlace);
+  }, [selectedPlace]);
+
   useEffect(() => {
     if (incomingSelected) {
-      // 1순위: 주소 검색/지도에서 방금 선택해서 넘어온 장소가 있으면 그걸 세팅
-      setSelectedPlace(incomingSelected);
+      // 주소 검색/지도에서 방금 선택해서 넘어온 장소는 draft에만 반영
+      setDraftSelectedPlace(incomingSelected);
 
-      // 무한 덮어쓰기 방지 위해 URL에서 selectedPlace 정보 제거
+      // 무한 덮어쓰기 방지 위해 history state에서 selectedPlace 제거
       navigate(location.pathname, {
         replace: true,
         state: { ...(state || {}), selectedPlace: undefined },
       });
-    }
-    // 2순위: 고른 장소도 없고, 서버에서 내 출발지를 성공적으로 가져왔다면?
-    else if (!selectedPlace?.address && isGetPlaceSuccess && myStartPlaceData?.result?.address) {
-      setSelectedPlace({
+    } else if (
+      !incomingSelected &&
+      !selectedPlace?.address &&
+      isGetPlaceSuccess &&
+      myStartPlaceData?.result?.address
+    ) {
+      // 저장된 context 값이 아직 없을 때만 서버값으로 draft 초기화
+      setDraftSelectedPlace({
         name: myStartPlaceData.result.name,
         address: myStartPlaceData.result.address,
         latitude: myStartPlaceData.result.latitude,
@@ -68,14 +79,13 @@ export default function PlaceInputPage() {
     isGetPlaceSuccess,
     myStartPlaceData,
     selectedPlace?.address,
-    setSelectedPlace,
     navigate,
     location.pathname,
     state,
   ]);
 
   const handleSelectRecent = (place: UpdateMyStartPlaceRequest) => {
-    setSelectedPlace(place);
+    setDraftSelectedPlace(place);
   };
 
   const goBackByFrom = () => {
@@ -86,37 +96,40 @@ export default function PlaceInputPage() {
   };
 
   const handleSave = () => {
-    if (!selectedPlace || !selectedPlace.address) return;
+    if (!draftSelectedPlace || !draftSelectedPlace.address) return;
+
     const token = localStorage.getItem('meeting_token');
 
-    const next = upsertRecentPlace(selectedPlace as RecentPlaceItem);
+    const next = upsertRecentPlace(draftSelectedPlace as RecentPlaceItem);
     setRecentPlaces(next);
 
     if (token) {
       const requestPayload = {
-        name: selectedPlace.name || selectedPlace.address,
-        address: selectedPlace.address,
-        latitude: selectedPlace.latitude,
-        longitude: selectedPlace.longitude,
+        name: draftSelectedPlace.name || draftSelectedPlace.address,
+        address: draftSelectedPlace.address,
+        latitude: draftSelectedPlace.latitude,
+        longitude: draftSelectedPlace.longitude,
       };
 
       savePlace(requestPayload, {
         onSuccess: () => {
+          // 저장 성공한 경우에만 context 반영
+          setSelectedPlace(draftSelectedPlace);
+
           toast.success('출발지 등록 완료!', {
             description: '출발지가 정상적으로 등록되었습니다',
             icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
           });
+
           goBackByFrom();
         },
         onError: (error) => {
           if (axios.isAxiosError(error)) {
-            //실패 토스트
             toast.error('오류 발생!', {
               description: error.message,
               icon: <AlertCircle className="h-5 w-5 text-red-500" />,
             });
           } else {
-            //실패 토스트
             toast.error('오류 발생!', {
               description: '인터넷 연결 상태를 확인해보세요!',
               icon: <AlertCircle className="h-5 w-5 text-red-500" />,
@@ -125,6 +138,8 @@ export default function PlaceInputPage() {
         },
       });
     } else {
+      // join 전에는 서버 저장 없이 context에만 반영
+      setSelectedPlace(draftSelectedPlace);
       goBackByFrom();
     }
   };
@@ -145,7 +160,7 @@ export default function PlaceInputPage() {
       bottom={
         <FixedBottomButton
           onClick={handleSave}
-          disabled={!selectedPlace?.address || isPending}
+          disabled={!draftSelectedPlace?.address || isPending}
           loading={isPending}
           className="bg-greedy hover:bg-greedy/50 text-white"
         >
@@ -156,7 +171,7 @@ export default function PlaceInputPage() {
       <div className="space-y-4">
         <PlaceSearchBar onClick={goToAddressSearch} />
         <UseCurrentLocationCard onClick={goToConfirmOnMap} />
-        <SelectedPlaceSummary selected={selectedPlace} />
+        <SelectedPlaceSummary selected={draftSelectedPlace} />
         <RecentPlaceList places={currentPlaceList} onSelect={handleSelectRecent} />
       </div>
     </AppLayout>
