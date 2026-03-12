@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { addDays, format, isBefore, isSameDay, parseISO, startOfDay, startOfWeek } from 'date-fns';
+import { Star } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -445,12 +446,22 @@ export default function TimeHeatMap({
                       {/* 투명도와 배경색만 담당하는 내부 요소 */}
                       {availableNum > 0 && (
                         <div
-                          className="bg-greedy pointer-events-none absolute inset-0"
+                          className={cn(
+                            'bg-greedy pointer-events-none absolute inset-0',
+                            isMaxAvailableSlot && isSelectedDate && 'animate-relative-pulse',
+                          )}
                           style={{
                             // OUTPUT 모드일 때만 비율에 따른 투명도 적용, INPUT일 때는 1(100%)
                             opacity: opacityValue,
                           }}
                         />
+                      )}
+                      {isMaxAvailableSlot && isStart && (
+                        <div className="absolute -top-2.5 left-1/2 z-20 flex -translate-x-1/2 items-center justify-center">
+                          <div className="relative flex rounded-full bg-white p-0.5 shadow-sm ring-1 ring-gray-200/50">
+                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                          </div>
+                        </div>
                       )}
                     </button>
                   </AvailableParticipantCard>

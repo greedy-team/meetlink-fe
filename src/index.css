@@ -21,6 +21,20 @@
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
+@theme {
+  --animate-relative-pulse: relative-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes relative-pulse {
+    0%,
+    100% {
+      filter: opacity(100%);
+    }
+    50% {
+      filter: opacity(50%);
+    }
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
