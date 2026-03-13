@@ -33,7 +33,7 @@ export function useKakaoLoader() {
     script.id = 'kakao-map-script';
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=682bb2dfb6a8ebee89c494ad75d17ad0&libraries=services&autoload=false`;
     script.onload = initKakao;
-    script.onerror = () => console.error('카카오맵 SDK 로드 실패');
+    //script.onerror = () => console.error('카카오맵 SDK 로드 실패');
 
     document.head.appendChild(script);
   }, [isLoaded]);

@@ -28,7 +28,6 @@ export default function MainPage() {
   const { code } = useParams<{ code: string }>();
 
   const isLoading = isMeetingLoading;
-  console.log(resultData);
 
   const navigate = useNavigate();
   const handleGoToButton = (url: string) => {
@@ -83,7 +82,7 @@ export default function MainPage() {
     } catch (err) {
       // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크
       if ((err as Error).name !== 'AbortError') {
-        console.error('공유 중 에러 발생:', err);
+        //console.error('공유 중 에러 발생:', err);
       }
     }
   };

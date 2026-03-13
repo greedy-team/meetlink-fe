@@ -137,7 +137,7 @@ export default function JoinPage() {
         navigate(`/meeting/${code}`, { replace: true });
       }
     } catch (error) {
-      console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
+      //console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
 
       const err = error as {
         response?: {
