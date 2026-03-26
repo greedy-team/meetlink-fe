@@ -32,6 +32,7 @@ export interface MeetingOutletContext {
   setTempNickName: React.Dispatch<React.SetStateAction<string>>;
 
   nickName: string;
+  isHost: boolean;
 
   isLoading: boolean;
   resetGuestDraft: () => void;
@@ -42,6 +43,7 @@ interface RawParticipantStatus {
   token?: string;
   isPlaceSubmitted?: boolean;
   isTimeSubmitted?: boolean;
+  isHost: boolean;
 }
 
 const EMPTY_PLACE: UpdateMyStartPlaceRequest = {
@@ -167,6 +169,7 @@ export default function MeetingLayout() {
         token: p?.token,
         hasPlaceInput: p?.isPlaceSubmitted,
         hasTimeInput: p?.isTimeSubmitted,
+        isHost: p?.isHost,
       }),
     ),
     selectedTimeList,
@@ -177,6 +180,7 @@ export default function MeetingLayout() {
     setTempNickName,
 
     nickName: myStatusData?.result?.nickname || '',
+    isHost: myStatusData?.result?.isHost || false,
 
     isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
     resetGuestDraft,
