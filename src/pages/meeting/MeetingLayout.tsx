@@ -139,6 +139,16 @@ export default function MeetingLayout() {
     navigate,
   ]);
 
+  //세팅 페이지에 있는가?
+  const isSettingPage = pathname.includes('/settings');
+
+  useEffect(() => {
+    //세팅 페이지에 있는데 호스트가 아니라면
+    if (isSettingPage && !myStatusData?.result?.isHost) {
+      navigate(`/meeting/${code}`, { replace: true });
+    }
+  }, [isSettingPage, myStatusData, code, navigate]);
+
   const hasValidMemberSession = Boolean(token) && Boolean(myStatusData?.status) && !isMyStatusError;
 
   const selectedTimeList = hasValidMemberSession ? memberSelectedTimeList : guestSelectedTimeList;

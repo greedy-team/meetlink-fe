@@ -22,6 +22,7 @@ export default function MainPage() {
     isPlaceRecommendEnabled,
     participantStatusList,
     nickName,
+    isHost,
     isLoading: isMeetingLoading,
   } = useMeetingContext();
   const { data: resultData } = useRecommendResult();
@@ -48,6 +49,7 @@ export default function MainPage() {
             nickName: '안보여요',
             hasTimeInput: false,
             hasPlaceInput: false,
+            isHost: false,
           },
         ];
 
@@ -93,7 +95,7 @@ export default function MainPage() {
         <Header
           title={meetingName || '임시'}
           showBackButton={false}
-          showSettingButton={true}
+          showSettingButton={isHost}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
         />
       }
