@@ -1,13 +1,15 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock } from 'lucide-react';
-import { MapPin } from 'lucide-react';
+import axios from 'axios';
+import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { useTransferHost } from '@/hooks/useParticipant';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
@@ -27,6 +29,8 @@ export default function MainPage() {
   } = useMeetingContext();
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
+
+  const { mutate: transferHost } = useTransferHost();
 
   const isLoading = isMeetingLoading;
 
@@ -63,6 +67,36 @@ export default function MainPage() {
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
   const totalCount = sortedParticipantStatusList.length;
+
+  const handleTransferHost = async (nickName: string) => {
+    const requestData = {
+      nickname: nickName,
+    };
+    transferHost(requestData, {
+      onSuccess: () => {
+        toast.success('양도 성공!', {
+          description: '모임장이 성공적으로 양도되었어요!',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -166,6 +200,8 @@ export default function MainPage() {
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
             isLoading={isLoading}
+            isHost={isHost}
+            onTransferHost={handleTransferHost}
           />
         </div>
       </div>

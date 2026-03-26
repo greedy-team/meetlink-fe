@@ -7,11 +7,12 @@ import { type ParticipantStatus } from '@/types/meetingTypes';
 
 interface ParticipantStatusItemProps extends ParticipantStatus {
   isMe: boolean;
-  isLast: boolean;
   isHost: boolean;
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   isLoading?: boolean;
+  isClickable: boolean;
+  onClick: () => void;
 }
 
 export function ParticipantStatusItem({
@@ -19,18 +20,20 @@ export function ParticipantStatusItem({
   isMe,
   hasTimeInput,
   hasPlaceInput,
-  isLast,
   isHost,
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
   isLoading = false,
-}: ParticipantStatusItemProps & { isLast: boolean }) {
+  isClickable,
+  onClick,
+}: ParticipantStatusItemProps) {
   return (
-    <div
+    <button
       className={cn(
-        'mx-3 flex items-center justify-between py-3',
-        !isLast && 'border-b-2 border-gray-100',
+        'flex w-full items-center justify-between rounded-3xl p-3',
+        isClickable && !isMe && 'cursor-pointer hover:bg-gray-100',
       )}
+      onClick={onClick}
     >
       {/* 프로필 및 닉네임 */}
       <div className="flex items-center justify-center gap-3 text-base font-bold text-black">
@@ -93,6 +96,6 @@ export function ParticipantStatusItem({
           </div>
         )}
       </div>
-    </div>
+    </button>
   );
 }

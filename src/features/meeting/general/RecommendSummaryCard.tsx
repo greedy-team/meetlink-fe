@@ -134,7 +134,7 @@ export function RecommendSummaryCard({
       )}
 
       {isTimeRecommendEnabled && isPlaceRecommendEnabled && (
-        <div className="py-1">
+        <div className="px-2 py-1">
           <div className="h-px w-full bg-gray-200" />
         </div>
       )}
