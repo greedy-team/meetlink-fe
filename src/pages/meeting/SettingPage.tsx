@@ -203,6 +203,7 @@ export default function SettingPage() {
           value={meetingName}
           onChange={(e) => setMeetingName(e.target.value)}
           isLoading={isLoading}
+          placeholder=""
         />
 
         <div className="h-2" />
