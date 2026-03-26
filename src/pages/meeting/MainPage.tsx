@@ -10,6 +10,7 @@ import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useTransferHost } from '@/hooks/useParticipant';
+import { useLeaveMeeting } from '@/hooks/useParticipant';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
@@ -31,6 +32,7 @@ export default function MainPage() {
   const { code } = useParams<{ code: string }>();
 
   const { mutate: transferHost } = useTransferHost();
+  const { mutate: leaveMeeting } = useLeaveMeeting();
 
   const isLoading = isMeetingLoading;
 
@@ -98,6 +100,33 @@ export default function MainPage() {
     });
   };
 
+  const handleLeave = () => {
+    leaveMeeting(undefined, {
+      onSuccess: () => {
+        toast.success('나가기 성공!', {
+          description: '모임에서 성공적으로 나갔어요',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}/join`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
+
   const handleShare = async () => {
     // 공유할 데이터 설정
     const shareUrl = `${window.location.origin}/meeting/${code}`;
@@ -130,7 +159,9 @@ export default function MainPage() {
           title={meetingName || '임시'}
           showBackButton={false}
           showSettingButton={isHost}
+          showLeaveButton={!isHost}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
+          onLeave={handleLeave}
         />
       }
       pageBackgroundClassName="bg-white"

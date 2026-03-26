@@ -18,7 +18,7 @@ interface LeaveButtonProps {
   children: ReactNode;
 }
 
-export function LeaveButton({ onLeave, className, children }: LeaveButtonProps) {
+export function LeaveButton({ onLeave, children }: LeaveButtonProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
