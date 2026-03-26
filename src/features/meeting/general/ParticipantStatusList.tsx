@@ -47,7 +47,7 @@ export function ParticipantStatusList({
   return (
     <div className={cn('flex flex-col gap-1', className)}>
       <div className="overflow-hidden rounded-3xl border-2 border-gray-200 bg-gray-50">
-        <div className="flex flex-col">
+        <div className="flex flex-col p-1">
           {visibleList.map((participant, index) => {
             const isMe = index === 0;
             const canTransfer = isHost && !isMe; // 방장이고 본인이 아닐 때만 클릭 가능

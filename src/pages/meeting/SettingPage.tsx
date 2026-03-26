@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
+import { LogOut } from 'lucide-react';
 import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,7 +21,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { useUpdateMeetingDetail } from '@/hooks/useMeeting';
 import { useLeaveMeeting } from '@/hooks/useParticipant';
 
@@ -240,7 +243,24 @@ export default function SettingPage() {
             <NotifyBox variant="emphasis" className="mt-3">
               변경 사항은 모두에게 적용되니 주의해주세요
             </NotifyBox>
-            <LeaveButton onLeave={handleLeave} />
+            <LeaveButton onLeave={handleLeave}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  'bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600',
+                  'my-3 h-14 w-full cursor-pointer rounded-2xl py-3 font-semibold transition-all',
+                  'flex flex-row items-center justify-start gap-3',
+                )}
+              >
+                <div className="w-1" />
+                <LogOut
+                  size={22}
+                  strokeWidth={2.5}
+                  className="h-auto! w-auto! shrink-0 transition-colors"
+                />
+                <span className="text-base">모임 나가기</span>
+              </Button>
+            </LeaveButton>
           </>
         )}
       </div>

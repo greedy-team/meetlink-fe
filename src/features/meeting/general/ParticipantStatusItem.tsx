@@ -30,7 +30,7 @@ export function ParticipantStatusItem({
   return (
     <button
       className={cn(
-        'flex w-full items-center justify-between rounded-3xl p-3',
+        'flex w-full items-center justify-between rounded-3xl p-2',
         isClickable && !isMe && 'cursor-pointer hover:bg-gray-100',
       )}
       onClick={onClick}
