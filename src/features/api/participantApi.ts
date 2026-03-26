@@ -4,6 +4,8 @@ import {
   type JoinMeetingRequest,
   type JoinMeetingResponse,
   type LeaveMeetingResponse,
+  type TransferHostRequest,
+  type TransferHostResponse,
 } from '../../types/apiTypes';
 import { axiosInstance } from './axiosInstance';
 
@@ -37,6 +39,18 @@ export const getParticipantList = async (code: string): Promise<GetParticipantLi
 export const getMyStatus = async (code: string): Promise<GetMyStatusResponse> => {
   const { data } = await axiosInstance.get<GetMyStatusResponse>(
     `/meetings/${code}/participants/me`,
+  );
+  return data;
+};
+
+//모임장 양도
+export const transferHost = async (
+  code: string,
+  body: TransferHostRequest,
+): Promise<TransferHostResponse> => {
+  const { data } = await axiosInstance.post<TransferHostResponse>(
+    `/meetings/${code}/participants/host`,
+    body,
   );
   return data;
 };
