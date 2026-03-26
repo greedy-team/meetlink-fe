@@ -159,7 +159,7 @@ export default function MainPage() {
           title={meetingName || '임시'}
           showBackButton={false}
           showSettingButton={isHost}
-          showLeaveButton={!isHost}
+          showLeaveButton={true}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
           onLeave={handleLeave}
         />

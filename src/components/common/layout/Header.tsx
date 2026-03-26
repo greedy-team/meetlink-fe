@@ -49,7 +49,7 @@ export function Header({
         <span className={cn('text-lg font-bold', className)}>{title}</span>
       </div>
 
-      {showSettingButton && !showLeaveButton && (
+      {showSettingButton && (
         <button
           type="button"
           onClick={() => navigate('settings')}
@@ -59,7 +59,7 @@ export function Header({
           <Settings className="h-6 w-6" />
         </button>
       )}
-      {!showSettingButton && showLeaveButton && (
+      {showLeaveButton && (
         <LeaveButton onLeave={onLeave}>
           <button
             type="button"
