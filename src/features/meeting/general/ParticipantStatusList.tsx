@@ -41,6 +41,7 @@ export function ParticipantStatusList({
               hasTimeInput={participant.hasTimeInput}
               hasPlaceInput={participant.hasPlaceInput}
               isLast={index === visibleList.length - 1 && !showExpandButton}
+              isHost={participant.isHost}
               isTimeRecommendEnabled={isTimeRecommendEnabled}
               isPlaceRecommendEnabled={isPlaceRecommendEnabled}
               isLoading={isLoading}

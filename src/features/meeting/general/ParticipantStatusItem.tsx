@@ -1,4 +1,4 @@
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, Crown, MapPin } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,7 @@ import { type ParticipantStatus } from '@/types/meetingTypes';
 interface ParticipantStatusItemProps extends ParticipantStatus {
   isMe: boolean;
   isLast: boolean;
+  isHost: boolean;
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   isLoading?: boolean;
@@ -19,6 +20,7 @@ export function ParticipantStatusItem({
   hasTimeInput,
   hasPlaceInput,
   isLast,
+  isHost,
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
   isLoading = false,
@@ -46,10 +48,21 @@ export function ParticipantStatusItem({
         {isMe && !isLoading && (
           <Badge
             variant="secondary"
-            className="bg-greedy/10 text-greedy hover:bg-greedy/10 h-5 w-5 rounded-full border-none p-3 text-xs font-bold"
+            className="bg-greedy/10 text-greedy h-5 w-5 rounded-full border-none p-3 text-xs font-bold"
           >
             나
           </Badge>
+        )}
+        {isHost && !isLoading && (
+          <div
+            className={cn(
+              'flex h-6 w-6 items-center justify-center rounded-full transition-colors',
+              'bg-amber-100 text-amber-600',
+              isLoading ? 'bg-gray-100 text-gray-100' : '',
+            )}
+          >
+            <Crown className="h-3 w-3" />
+          </div>
         )}
       </div>
 

@@ -34,7 +34,6 @@ export default function MainPage() {
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
-
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
@@ -55,7 +54,8 @@ export default function MainPage() {
 
   const sortedParticipantStatusList = [
     ...safeParticipantList.filter((p) => p.nickName === nickName),
-    ...safeParticipantList.filter((p) => p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.isHost === true && p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.nickName !== nickName && !p.isHost),
   ];
   const myStatus = sortedParticipantStatusList[0];
 
