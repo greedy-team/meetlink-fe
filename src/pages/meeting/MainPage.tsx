@@ -1,13 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock } from 'lucide-react';
-import { MapPin } from 'lucide-react';
+import axios from 'axios';
+import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { useTransferHost } from '@/hooks/useParticipant';
+import { useLeaveMeeting } from '@/hooks/useParticipant';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
@@ -22,10 +25,14 @@ export default function MainPage() {
     isPlaceRecommendEnabled,
     participantStatusList,
     nickName,
+    isHost,
     isLoading: isMeetingLoading,
   } = useMeetingContext();
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
+
+  const { mutate: transferHost } = useTransferHost();
+  const { mutate: leaveMeeting } = useLeaveMeeting();
 
   const isLoading = isMeetingLoading;
 
@@ -33,7 +40,6 @@ export default function MainPage() {
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
-
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
@@ -48,12 +54,14 @@ export default function MainPage() {
             nickName: '안보여요',
             hasTimeInput: false,
             hasPlaceInput: false,
+            isHost: false,
           },
         ];
 
   const sortedParticipantStatusList = [
     ...safeParticipantList.filter((p) => p.nickName === nickName),
-    ...safeParticipantList.filter((p) => p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.isHost === true && p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.nickName !== nickName && !p.isHost),
   ];
   const myStatus = sortedParticipantStatusList[0];
 
@@ -61,6 +69,63 @@ export default function MainPage() {
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
   const totalCount = sortedParticipantStatusList.length;
+
+  const handleTransferHost = async (nickName: string) => {
+    const requestData = {
+      nickname: nickName,
+    };
+    transferHost(requestData, {
+      onSuccess: () => {
+        toast.success('양도 성공!', {
+          description: '모임장이 성공적으로 양도되었어요!',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
+
+  const handleLeave = () => {
+    leaveMeeting(undefined, {
+      onSuccess: () => {
+        toast.success('나가기 성공!', {
+          description: '모임에서 성공적으로 나갔어요',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}/join`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -93,8 +158,10 @@ export default function MainPage() {
         <Header
           title={meetingName || '임시'}
           showBackButton={false}
-          showSettingButton={true}
+          showSettingButton={isHost}
+          showLeaveButton={true}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
+          onLeave={handleLeave}
         />
       }
       pageBackgroundClassName="bg-white"
@@ -164,6 +231,8 @@ export default function MainPage() {
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
             isLoading={isLoading}
+            isHost={isHost}
+            onTransferHost={handleTransferHost}
           />
         </div>
       </div>

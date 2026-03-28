@@ -4,6 +4,7 @@ export interface ParticipantStatus {
   token?: string;
   hasTimeInput?: boolean;
   hasPlaceInput?: boolean;
+  isHost: boolean;
 }
 //참가자 현황 리스트
 export type ParticipantList = ParticipantStatus[];

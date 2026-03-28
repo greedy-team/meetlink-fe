@@ -1,14 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 
-import { ChevronLeft, Settings } from 'lucide-react';
+import { ChevronLeft, LogOut, Settings } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+
+import { LeaveButton } from '@/features/meeting/setting/LeaveButton';
 
 type HeaderProps = {
   title: string;
   showBackButton?: boolean;
   showSettingButton?: boolean;
+  showLeaveButton?: boolean;
   onBack?: () => void;
+  onLeave?: () => void;
   className?: string;
 };
 
@@ -16,7 +20,9 @@ export function Header({
   title,
   showBackButton = true,
   showSettingButton = false,
+  showLeaveButton = false,
   onBack,
+  onLeave = () => {},
   className,
 }: HeaderProps) {
   const navigate = useNavigate();
@@ -52,6 +58,17 @@ export function Header({
         >
           <Settings className="h-6 w-6" />
         </button>
+      )}
+      {showLeaveButton && (
+        <LeaveButton onLeave={onLeave}>
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 cursor-pointer items-center justify-center"
+            aria-label="모임 나기기"
+          >
+            <LogOut className="h-6 w-6" />
+          </button>
+        </LeaveButton>
       )}
     </header>
   );
