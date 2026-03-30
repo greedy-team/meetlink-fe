@@ -71,7 +71,7 @@ export function ParticipantStatusList({
                   }}
                 />
 
-                {!(index === visibleList.length - 1 && !showExpandButton) && (
+                {index !== visibleList.length - 1 && (
                   <div className="px-3 py-1">
                     <div className="h-0.5 w-full bg-gray-100" />
                   </div>
