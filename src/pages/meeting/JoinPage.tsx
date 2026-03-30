@@ -175,13 +175,16 @@ export default function JoinPage() {
       header={<Header title="모임 참여" showBackButton={false} />}
       bottom={
         <div className="space-y-3">
-          <button
-            type="button"
-            onClick={goRejoin}
-            className="text-greedy-strong hover:text-greedy w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
-          >
-            이미 참여하셨나요?
-          </button>
+          {/* 참여자가 1명이라도 있을 때만 버튼 노출 */}
+          {participantStatusList && participantStatusList.length > 0 && (
+            <button
+              type="button"
+              onClick={goRejoin}
+              className="text-greedy-strong hover:text-greedy w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
+            >
+              이미 참여하셨나요?
+            </button>
+          )}
 
           <FixedBottomButton
             disabled={!canSubmit || isPending}
