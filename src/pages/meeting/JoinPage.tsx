@@ -85,7 +85,7 @@ export default function JoinPage() {
         {
           onSuccess: () => {
             toast.success('모임 참여 완료!', {
-              description: '모임에 정상적으로 참여했습니다',
+              description: '모임에 정상적으로 참여했어요',
               icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
             });
             navigate(`/meeting/${code}/`);

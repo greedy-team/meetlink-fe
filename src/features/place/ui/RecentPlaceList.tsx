@@ -20,7 +20,7 @@ export function RecentPlaceList({
       <section className="mt-6">
         {showTitle && <h2 className="mb-2 text-sm font-semibold text-gray-500">{title}</h2>}
         <div className="rounded-xl bg-gray-50 px-4 py-5 text-sm text-gray-500">
-          {title === '검색 결과' ? '검색 결과가 없습니다' : '저장된 최근 위치가 없습니다'}
+          {title === '검색 결과' ? '검색 결과가 없어요' : '저장된 최근 위치가 없어요'}
         </div>
       </section>
     );
