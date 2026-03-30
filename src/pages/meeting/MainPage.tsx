@@ -2,8 +2,14 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import { AlertCircle, CheckCircle2, ChevronRight, Clock, Instagram, MapPin } from 'lucide-react';
-import { MessagesSquare } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  MapPin,
+  MessagesSquare,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import { NotifyBox } from '@/components/common/general/NotifyBox';
@@ -257,24 +263,28 @@ export default function MainPage() {
             isHost={isHost}
             onTransferHost={handleTransferHost}
           />
-        </div>
-        <div className="mt-4 px-1">
+
           <a
             href="https://www.instagram.com/meetlink.now/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center gap-3 py-4"
+            className="group hover:border-greedy/30 mt-2 flex items-center justify-between rounded-3xl border-2 border-gray-100 bg-white p-4 transition-all"
           >
-            {/* 아이콘 크기를 h-5에서 h-7로 키워 시각적 포인트를 줌 */}
-            <MessagesSquare className="text-greedy h-7 w-7" strokeWidth={2.2} />
+            <div className="flex items-center gap-4">
+              <div className="bg-greedy/10 text-greedy group-hover:bg-greedy flex h-12 w-12 items-center justify-center rounded-2xl transition-colors group-hover:text-white">
+                <MessagesSquare size={24} />
+              </div>
 
-            <div className="flex flex-col items-center gap-1 text-center">
-              {/* 타이틀을 text-sm으로, 볼드 처리하여 명확하게 표현 */}
-              <span className="text-sm font-bold text-gray-800">함께 만드는 MeetLink</span>
-              {/* 설명을 text-xs로 키워 가독성 확보 */}
-              <span className="text-xs text-gray-500">
-                더 나은 서비스를 위해 소중한 의견을 들려주세요
-              </span>
+              <div className="flex flex-col">
+                <span className="text-base font-bold text-gray-800">함께 만드는 MeetLink</span>
+                <span className="text-sm text-gray-500">
+                  더 나은 MeetLink를 위해 여러분의 소중한 의견을 들려주세요
+                </span>
+              </div>
+            </div>
+
+            <div className="ml-4 flex shrink-0 text-gray-500">
+              <ChevronRight strokeWidth={3} className="h-6 w-6" />
             </div>
           </a>
         </div>
