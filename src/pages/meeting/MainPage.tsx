@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
@@ -28,6 +29,21 @@ export default function MainPage() {
     isHost,
     isLoading: isMeetingLoading,
   } = useMeetingContext();
+
+  // 브라우저 타이틀 변경 로직 추가
+  useEffect(() => {
+    if (meetingName) {
+      document.title = `${meetingName} | MeetLink`;
+    } else {
+      document.title = 'MeetLink';
+    }
+
+    // 메인 페이지를 벗어나 다른 페이지로 이동하면 다시 기본값으로
+    return () => {
+      document.title = 'MeetLink';
+    };
+  }, [meetingName]);
+
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
 
@@ -197,7 +213,7 @@ export default function MainPage() {
             <GoToButton
               icon={Clock}
               title="가능한 시간 선택하기"
-              description="모임 만남 시간을 추천하는데 활용돼요."
+              description="모임 만남 시간을 추천하는데 활용돼요"
               onClick={() => handleGoToButton('input/time')}
               isDone={myStatus?.hasTimeInput}
               isLoading={isLoading}
@@ -207,7 +223,7 @@ export default function MainPage() {
             <GoToButton
               icon={MapPin}
               title="출발지 입력하기"
-              description={'모임 만남 장소를 추천하는데 활용돼요.'}
+              description={'모임 만남 장소를 추천하는데 활용돼요'}
               onClick={() => navigate('input/place', { state: { from: 'main' } })}
               isDone={myStatus?.hasPlaceInput}
               isLoading={isLoading}
