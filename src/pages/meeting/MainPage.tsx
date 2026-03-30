@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronRight, Clock, Instagram, MapPin } from 'lucide-react';
+import { MessagesSquare } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
@@ -242,6 +244,11 @@ export default function MainPage() {
               </div>
             )}
           </div>
+          {isHost && (
+            <NotifyBox variant="emphasis" className="">
+              참여자를 클릭하면 모임장을 양도할 수 있어요
+            </NotifyBox>
+          )}
           <ParticipantStatusList
             list={sortedParticipantStatusList || []}
             isTimeRecommendEnabled={isTimeRecommendEnabled}
@@ -250,6 +257,26 @@ export default function MainPage() {
             isHost={isHost}
             onTransferHost={handleTransferHost}
           />
+        </div>
+        <div className="mt-4 px-1">
+          <a
+            href="https://www.instagram.com/meetlink.now/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center gap-3 py-4"
+          >
+            {/* 아이콘 크기를 h-5에서 h-7로 키워 시각적 포인트를 줌 */}
+            <MessagesSquare className="text-greedy h-7 w-7" strokeWidth={2.2} />
+
+            <div className="flex flex-col items-center gap-1 text-center">
+              {/* 타이틀을 text-sm으로, 볼드 처리하여 명확하게 표현 */}
+              <span className="text-sm font-bold text-gray-800">함께 만드는 MeetLink</span>
+              {/* 설명을 text-xs로 키워 가독성 확보 */}
+              <span className="text-xs text-gray-500">
+                더 나은 서비스를 위해 소중한 의견을 들려주세요
+              </span>
+            </div>
+          </a>
         </div>
       </div>
     </AppLayout>
