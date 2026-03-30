@@ -29,7 +29,7 @@ export function PlaceConfirmSheet({
 
       <div className="mt-4">
         <NotifyBox variant="default" className="bg-red-50 text-red-600">
-          지도의 표시와 실제 주소가 맞는지 확인해주세요.
+          지도의 표시와 실제 주소가 맞는지 확인해주세요
         </NotifyBox>
       </div>
 
