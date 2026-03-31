@@ -14,6 +14,7 @@ export default defineConfig({
   // 서버 프록시 설정 추가
   server: {
     host: true,
+    allowedHosts: true,
     proxy: {
       // '/api'로 시작하는 요청을 대상 서버로 전달합니다.
       '/api': {
