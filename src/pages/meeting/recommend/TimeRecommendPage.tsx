@@ -53,7 +53,7 @@ export default function TimeRecommendPage() {
           )}
         </>
       }
-      pageBackgroundClassName="bg-gray-100/70"
+      pageBackgroundClassName="bg-white"
       bottom={
         <div className="relative space-y-3">
           {!isLoading && (

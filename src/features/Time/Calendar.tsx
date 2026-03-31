@@ -50,7 +50,10 @@ export default function Calendar({
     <div className="relative z-20 w-full">
       <div className="w-full" style={{ height: `${ROW_HEIGHT + 24}px` }}>
         <div
-          className="overflow-hidden bg-white px-10 transition-all duration-300 ease-in-out"
+          className={cn(
+            'overflow-hidden bg-white px-10 transition-all duration-300 ease-in-out',
+            'border-r border-l border-gray-100',
+          )}
           style={{ height: isOpen ? `${contentHeight}px` : `${ROW_HEIGHT}px` }} //열리면 달력 크기로
         >
           <div
@@ -128,7 +131,8 @@ export default function Calendar({
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            '-mt-px h-6 w-full rounded-b-xl bg-white text-gray-400 transition-colors hover:bg-gray-50',
+            '-mt-px h-6 w-full rounded-b-3xl bg-white text-gray-400 transition-colors hover:bg-gray-50',
+            'border-r border-b border-l border-r-gray-100 border-b-gray-100 border-l-gray-100',
             'flex cursor-pointer items-center justify-center',
           )}
           aria-label={isOpen ? '달력 닫기' : '달력 펼치기'}
