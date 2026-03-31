@@ -13,7 +13,7 @@ import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 import { type TimeCandidate } from '@/types/meetingTypes';
 
 export default function TimeRecommendPage() {
-  const { dateType, timeRange, participantStatusList } = useMeetingContext();
+  const { dateType, timeRange, participantStatusList, isLoading } = useMeetingContext();
   const { data: wholeTimeData } = useGetWholeAvailableTime();
   const { data: timeRecommendData } = useRecommendTime();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -41,44 +41,50 @@ export default function TimeRecommendPage() {
       header={
         <>
           <Header title="추천 시간 후보" showBackButton={true} showSettingButton={false} />
-          <TimeHeader
-            dateType={dateType}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            selectedTimeList={commonTimeList}
-            participantsNum={maxAvailableNum}
-            timeRange={timeRange}
-          />
+          {!isLoading && (
+            <TimeHeader
+              dateType={dateType}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              selectedTimeList={commonTimeList}
+              participantsNum={maxAvailableNum}
+              timeRange={timeRange}
+            />
+          )}
         </>
       }
-      pageBackgroundClassName="bg-gray-100/70"
+      pageBackgroundClassName="bg-white"
       bottom={
         <div className="relative space-y-3">
-          <TimeRecommendModal
-            candidateList={candidateList}
-            participantsNum={participantsNum}
-            maxAvailableNum={maxAvailableNum}
-            setSelectedDate={setSelectedDate}
-            commonTimeList={commonTimeList}
-            dateType={dateType}
-            timeRange={timeRange}
-            setSelectedCandidate={setSelectedCandidate}
-          />
+          {!isLoading && (
+            <TimeRecommendModal
+              candidateList={candidateList}
+              participantsNum={participantsNum}
+              maxAvailableNum={maxAvailableNum}
+              setSelectedDate={setSelectedDate}
+              commonTimeList={commonTimeList}
+              dateType={dateType}
+              timeRange={timeRange}
+              setSelectedCandidate={setSelectedCandidate}
+            />
+          )}
         </div>
       }
       disableBottomPadding={true}
     >
       <div className="mb-10 space-y-4">
-        <TimeHeatMap
-          mode="OUTPUT"
-          participantsNum={participantsNum}
-          maxAvailableNum={maxAvailableNum}
-          dateType={dateType}
-          timeRange={timeRange}
-          selectedDate={selectedDate}
-          selectedTimeList={commonTimeList}
-          selectedCandidate={selectedCandidate}
-        />
+        {!isLoading && (
+          <TimeHeatMap
+            mode="OUTPUT"
+            participantsNum={participantsNum}
+            maxAvailableNum={maxAvailableNum}
+            dateType={dateType}
+            timeRange={timeRange}
+            selectedDate={selectedDate}
+            selectedTimeList={commonTimeList}
+            selectedCandidate={selectedCandidate}
+          />
+        )}
       </div>
     </AppLayout>
   );

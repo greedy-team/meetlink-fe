@@ -95,6 +95,7 @@ export interface GetParticipantListResponse {
     token?: string;
     isPlaceSubmitted?: boolean;
     isTimeSubmitted?: boolean;
+    isHost: boolean;
   }[];
 }
 
@@ -105,7 +106,19 @@ export interface GetMyStatusResponse {
     nickname: string;
     placeSubmitted: boolean;
     timeSubmitted: boolean;
+    isHost: boolean;
   };
+}
+
+//모임장 양도
+export interface TransferHostRequest {
+  nickname: string;
+}
+
+export interface TransferHostResponse {
+  status: boolean;
+  code?: string;
+  message?: string;
 }
 
 //모임 나가기

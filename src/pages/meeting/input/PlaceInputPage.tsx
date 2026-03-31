@@ -117,7 +117,7 @@ export default function PlaceInputPage() {
           setSelectedPlace(draftSelectedPlace);
 
           toast.success('출발지 등록 완료!', {
-            description: '출발지가 정상적으로 등록되었습니다',
+            description: '출발지가 정상적으로 등록되었어요',
             icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
           });
 

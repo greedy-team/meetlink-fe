@@ -84,17 +84,19 @@ export default function TimeInputPage() {
       header={
         <>
           <Header title="가능 시간 선택" showBackButton={true} showSettingButton={false} />
-          <TimeHeader
-            dateType={dateType}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            selectedTimeList={draftSelectedTimeList}
-            participantsNum={1}
-            timeRange={timeRange}
-          />
+          {!isLoading && (
+            <TimeHeader
+              dateType={dateType}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              selectedTimeList={draftSelectedTimeList}
+              participantsNum={1}
+              timeRange={timeRange}
+            />
+          )}
         </>
       }
-      pageBackgroundClassName="bg-gray-100/70"
+      pageBackgroundClassName="bg-white"
       bottom={
         <div className="space-y-3">
           {!isLoading && (
@@ -110,14 +112,16 @@ export default function TimeInputPage() {
       }
     >
       <div className="space-y-4">
-        <TimeHeatMap
-          mode="INPUT"
-          dateType={dateType}
-          timeRange={timeRange}
-          selectedDate={selectedDate}
-          selectedTimeList={draftSelectedTimeList}
-          setSelectedTimeList={setDraftSelectedTimeList}
-        />
+        {!isLoading && (
+          <TimeHeatMap
+            mode="INPUT"
+            dateType={dateType}
+            timeRange={timeRange}
+            selectedDate={selectedDate}
+            selectedTimeList={draftSelectedTimeList}
+            setSelectedTimeList={setDraftSelectedTimeList}
+          />
+        )}
       </div>
     </AppLayout>
   );

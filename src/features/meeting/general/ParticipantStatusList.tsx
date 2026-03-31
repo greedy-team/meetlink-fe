@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 
 import { ParticipantStatusItem } from './ParticipantStatusItem';
@@ -14,6 +24,8 @@ interface ParticipantStatusListProps {
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   isLoading?: boolean;
+  isHost: boolean;
+  onTransferHost: (nickName: string) => void;
 }
 
 export function ParticipantStatusList({
@@ -22,8 +34,11 @@ export function ParticipantStatusList({
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
   isLoading = false,
+  isHost,
+  onTransferHost,
 }: ParticipantStatusListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [targetNickName, setTargetNickName] = useState<string | null>(null);
 
   //처음에는 최대 3명만 보기
   const visibleList = isExpanded ? list : list.slice(0, 3);
@@ -32,21 +47,40 @@ export function ParticipantStatusList({
   return (
     <div className={cn('flex flex-col gap-1', className)}>
       <div className="overflow-hidden rounded-3xl border-2 border-gray-200 bg-gray-50">
-        <div className="flex flex-col">
-          {visibleList.map((participant, index) => (
-            <ParticipantStatusItem
-              key={`${participant.nickName}-${index}`}
-              {...participant}
-              isMe={index === 0}
-              hasTimeInput={participant.hasTimeInput}
-              hasPlaceInput={participant.hasPlaceInput}
-              isLast={index === visibleList.length - 1 && !showExpandButton}
-              isTimeRecommendEnabled={isTimeRecommendEnabled}
-              isPlaceRecommendEnabled={isPlaceRecommendEnabled}
-              isLoading={isLoading}
-            />
-          ))}
+        <div className="flex flex-col p-1">
+          {visibleList.map((participant, index) => {
+            const isMe = index === 0;
+            const canTransfer = isHost && !isMe; // 방장이고 본인이 아닐 때만 클릭 가능
+
+            return (
+              <div key={`${participant.nickName}-${index}`}>
+                <ParticipantStatusItem
+                  {...participant}
+                  isMe={isMe}
+                  hasTimeInput={participant.hasTimeInput}
+                  hasPlaceInput={participant.hasPlaceInput}
+                  isHost={participant.isHost}
+                  isTimeRecommendEnabled={isTimeRecommendEnabled}
+                  isPlaceRecommendEnabled={isPlaceRecommendEnabled}
+                  isLoading={isLoading}
+                  isClickable={canTransfer}
+                  onClick={() => {
+                    if (canTransfer) {
+                      setTargetNickName(participant.nickName);
+                    }
+                  }}
+                />
+
+                {index !== visibleList.length - 1 && (
+                  <div className="px-3 py-1">
+                    <div className="h-0.5 w-full bg-gray-100" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
+
         {/* 모든 참여자 리스트 보기 */}
         {showExpandButton && (
           <button
@@ -68,6 +102,39 @@ export function ParticipantStatusList({
           </button>
         )}
       </div>
+
+      {/* 리스트 바깥에서 단일 모달로 렌더링 (상태에 따라 열림/닫힘) */}
+      <AlertDialog
+        open={targetNickName !== null}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setTargetNickName(null);
+        }}
+      >
+        <AlertDialogContent className="w-[90%] rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>모임장을 양도할까요?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {targetNickName}님에게 모임장 권한을 넘겨요
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row gap-2">
+            <AlertDialogCancel className="h-10 flex-1 cursor-pointer rounded-xl border-2 bg-white shadow-none! hover:bg-gray-100">
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (targetNickName) {
+                  onTransferHost(targetNickName);
+                  setTargetNickName(null); // 양도 후 모달 닫기
+                }
+              }}
+              className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
+            >
+              양도하기
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

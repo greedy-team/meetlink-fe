@@ -24,7 +24,23 @@
       media="print"
       onload="this.media = 'all'"
     />
+    <script type="text/javascript">
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          var gaScript = document.createElement('script');
+          gaScript.async = true;
+          gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-MWK0L3E9EK';
+          document.head.appendChild(gaScript);
 
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-MWK0L3E9EK');
+        }, 2000);
+      });
+    </script>
     <script type="text/javascript">
       window.addEventListener('load', function () {
         setTimeout(function () {
