@@ -1,13 +1,25 @@
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock } from 'lucide-react';
-import { MapPin } from 'lucide-react';
+import axios from 'axios';
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  MapPin,
+  MessagesSquare,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
+import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { useTransferHost } from '@/hooks/useParticipant';
+import { useLeaveMeeting } from '@/hooks/useParticipant';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
 import { GoToButton } from '@/features/meeting/general/GotoButton';
@@ -22,10 +34,29 @@ export default function MainPage() {
     isPlaceRecommendEnabled,
     participantStatusList,
     nickName,
+    isHost,
     isLoading: isMeetingLoading,
   } = useMeetingContext();
+
+  // 브라우저 타이틀 변경 로직 추가
+  useEffect(() => {
+    if (meetingName) {
+      document.title = `${meetingName} | MeetLink`;
+    } else {
+      document.title = 'MeetLink';
+    }
+
+    // 메인 페이지를 벗어나 다른 페이지로 이동하면 다시 기본값으로
+    return () => {
+      document.title = 'MeetLink';
+    };
+  }, [meetingName]);
+
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
+
+  const { mutate: transferHost } = useTransferHost();
+  const { mutate: leaveMeeting } = useLeaveMeeting();
 
   const isLoading = isMeetingLoading;
 
@@ -33,7 +64,6 @@ export default function MainPage() {
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
-
   const bestRecommendedTime = resultData?.result.timeCandidate;
   const bestRecommendedPlace = resultData?.result.placeCandidate;
 
@@ -48,12 +78,14 @@ export default function MainPage() {
             nickName: '안보여요',
             hasTimeInput: false,
             hasPlaceInput: false,
+            isHost: false,
           },
         ];
 
   const sortedParticipantStatusList = [
     ...safeParticipantList.filter((p) => p.nickName === nickName),
-    ...safeParticipantList.filter((p) => p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.isHost === true && p.nickName !== nickName),
+    ...safeParticipantList.filter((p) => p.nickName !== nickName && !p.isHost),
   ];
   const myStatus = sortedParticipantStatusList[0];
 
@@ -61,6 +93,63 @@ export default function MainPage() {
     (p) => p.hasTimeInput && p.hasPlaceInput,
   ).length;
   const totalCount = sortedParticipantStatusList.length;
+
+  const handleTransferHost = async (nickName: string) => {
+    const requestData = {
+      nickname: nickName,
+    };
+    transferHost(requestData, {
+      onSuccess: () => {
+        toast.success('양도 성공!', {
+          description: '모임장이 성공적으로 양도되었어요!',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
+
+  const handleLeave = () => {
+    leaveMeeting(undefined, {
+      onSuccess: () => {
+        toast.success('나가기 성공!', {
+          description: '모임에서 성공적으로 나갔어요',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}/join`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
 
   const handleShare = async () => {
     // 공유할 데이터 설정
@@ -93,8 +182,10 @@ export default function MainPage() {
         <Header
           title={meetingName || '임시'}
           showBackButton={false}
-          showSettingButton={true}
+          showSettingButton={isHost}
+          showLeaveButton={true}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
+          onLeave={handleLeave}
         />
       }
       pageBackgroundClassName="bg-white"
@@ -130,7 +221,7 @@ export default function MainPage() {
             <GoToButton
               icon={Clock}
               title="가능한 시간 선택하기"
-              description="모임 만남 시간을 추천하는데 활용돼요."
+              description="모임 만남 시간을 추천하는데 활용돼요"
               onClick={() => handleGoToButton('input/time')}
               isDone={myStatus?.hasTimeInput}
               isLoading={isLoading}
@@ -140,7 +231,7 @@ export default function MainPage() {
             <GoToButton
               icon={MapPin}
               title="출발지 입력하기"
-              description={'모임 만남 장소를 추천하는데 활용돼요.'}
+              description={'모임 만남 장소를 추천하는데 활용돼요'}
               onClick={() => navigate('input/place', { state: { from: 'main' } })}
               isDone={myStatus?.hasPlaceInput}
               isLoading={isLoading}
@@ -159,12 +250,43 @@ export default function MainPage() {
               </div>
             )}
           </div>
+          {isHost && (
+            <NotifyBox variant="emphasis" className="">
+              참여자를 클릭하면 모임장을 양도할 수 있어요
+            </NotifyBox>
+          )}
           <ParticipantStatusList
             list={sortedParticipantStatusList || []}
             isTimeRecommendEnabled={isTimeRecommendEnabled}
             isPlaceRecommendEnabled={isPlaceRecommendEnabled}
             isLoading={isLoading}
+            isHost={isHost}
+            onTransferHost={handleTransferHost}
           />
+
+          <a
+            href="https://www.instagram.com/meetlink.now/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group hover:border-greedy/30 mt-2 flex items-center justify-between rounded-3xl border-2 border-gray-100 bg-white p-4 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="bg-greedy/10 text-greedy group-hover:bg-greedy flex h-12 w-12 items-center justify-center rounded-2xl transition-colors group-hover:text-white">
+                <MessagesSquare size={24} />
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-base font-bold text-gray-800">함께 만드는 MeetLink</span>
+                <span className="text-sm text-gray-500">
+                  더 나은 MeetLink를 위해 여러분의 소중한 의견을 들려주세요
+                </span>
+              </div>
+            </div>
+
+            <div className="ml-4 flex shrink-0 text-gray-500">
+              <ChevronRight strokeWidth={3} className="h-6 w-6" />
+            </div>
+          </a>
         </div>
       </div>
     </AppLayout>

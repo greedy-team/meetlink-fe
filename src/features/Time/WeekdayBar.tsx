@@ -32,6 +32,8 @@ export default function WeekdayBar({
     <div
       className={cn(
         'flex flex-row justify-between bg-white px-10 pt-2 text-center',
+
+        dateType !== 'WEEKLY' && 'border-r border-l border-gray-100',
         dateType === 'WEEKLY' ? 'border-b border-gray-200 pb-2' : '', // 주간 이면 하단 보더 생성
       )}
     >

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 interface DateNavigatorProps {
   selectedDate: Date;
   isPrevDisabled: boolean;
+  dateType: string;
   handlePrevClick: () => void;
   handleNextClick: () => void;
 }
@@ -14,11 +15,18 @@ interface DateNavigatorProps {
 export default function DateNavigator({
   selectedDate,
   isPrevDisabled,
+  dateType,
   handlePrevClick,
   handleNextClick,
 }: DateNavigatorProps) {
   return (
-    <div className="flex-eow flex items-center justify-center gap-10 bg-white pt-4 pb-2 text-lg font-bold text-gray-800">
+    <div
+      className={cn(
+        'flex-eow flex items-center justify-center gap-10 bg-white pt-4 pb-2 text-lg font-bold text-gray-800',
+
+        dateType !== 'WEEKLY' && 'border-r border-l border-gray-100',
+      )}
+    >
       <button // 이전 주/달 버튼
         onClick={handlePrevClick}
         disabled={isPrevDisabled}
