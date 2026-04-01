@@ -83,10 +83,10 @@ export function RecommendSummaryCard({
 
   const timeValue = !isTimeCalculating
     ? makeTimeDescription(bestTime)
-    : '추천 시간을 계산 중입니다!';
+    : '추천 시간을 계산 중이에요!';
   const placeValue = !isPlaceCalculating
     ? makePlaceDescription(bestPlace)
-    : '추천 장소를 계산 중입니다!';
+    : '추천 장소를 계산 중이에요!';
 
   if (!isTimeRecommendEnabled && !isPlaceRecommendEnabled) {
     return null; // 혹시나 방지
