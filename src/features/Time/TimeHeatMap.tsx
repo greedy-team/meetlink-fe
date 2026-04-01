@@ -410,7 +410,6 @@ export default function TimeHeatMap({
                       }}
                       className={cn(
                         'relative transition-colors duration-100',
-                        'bg-gray-100/40',
                         mode === 'INPUT' ? 'cursor-pointer' : '',
                         isTopHour
                           ? 'border-t border-gray-200'

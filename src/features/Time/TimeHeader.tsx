@@ -99,7 +99,6 @@ export default function TimeHeader({
         {/* 달력 헤더 - 특정 날짜 일때 */}
         {dateType === 'SPECIFIC_DATE' && (
           <DateNavigator
-            dateType={dateType}
             handleNextClick={handleNextClick}
             handlePrevClick={handlePrevClick}
             isPrevDisabled={isPrevDisabled}

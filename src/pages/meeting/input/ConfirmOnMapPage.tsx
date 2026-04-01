@@ -207,7 +207,7 @@ export default function ConfirmOnMapPage() {
           roadAddress={
             roadAddress ||
             jibunAddress ||
-            (isLocating ? '현재 위치 불러오는 중…' : '위치를 찾을 수 없어요')
+            (isLocating ? '현재 위치 불러오는 중…' : '위치를 찾을 수 없습니다')
           }
           jibunAddress={roadAddress ? jibunAddress : ''} // 도로명이 메인에 들어갔을 때만 지번을 서브로 띄움
           onConfirm={handleConfirm}

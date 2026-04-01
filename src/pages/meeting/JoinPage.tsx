@@ -2,18 +2,14 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import { Bell, Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
-import { isIosSafari } from '@/lib/device';
-import { requestPushPermission } from '@/lib/firebase';
-import { cn } from '@/lib/utils';
 import { useJoinMeeting } from '@/hooks/useParticipant';
 import { useUpdateMyStartPlace } from '@/hooks/usePlace';
 import { useUpdateMyAvailableTime } from '@/hooks/useTime';
@@ -54,19 +50,6 @@ export default function JoinPage() {
   const { mutateAsync: saveTimeAsync, isPending: timePending } = useUpdateMyAvailableTime();
   const { mutateAsync: savePlaceAsync, isPending: placePending } = useUpdateMyStartPlace();
 
-  const [isPushEnabled, setIsPushEnabled] = useState(false);
-  const [isIosModalOpen, setIsIosModalOpen] = useState(false);
-  const [showIosNotify, setShowIosNotify] = useState(false);
-
-  const handleTogglePush = () => {
-    if (isIosSafari()) {
-      setIsIosModalOpen(true); // 아이폰 모달 띄우기
-      setShowIosNotify(true); // 밑에 NotifyBox도 보여주기
-      return; // 토글이 켜지지 않게 막음
-    }
-    setIsPushEnabled(!isPushEnabled);
-  };
-
   const goRejoin = () => {
     if (!code) return;
     navigate(`/meeting/${code}/rejoin`);
@@ -102,9 +85,10 @@ export default function JoinPage() {
         {
           onSuccess: () => {
             toast.success('모임 참여 완료!', {
-              description: '모임에 정상적으로 참여했어요',
+              description: '모임에 정상적으로 참여했습니다',
               icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
             });
+            navigate(`/meeting/${code}/`);
           },
           onError: (error) => {
             if (axios.isAxiosError(error)) {
@@ -150,27 +134,6 @@ export default function JoinPage() {
         }
 
         resetGuestDraft();
-
-        // 푸시 알림 권한 묻기 (토글 켠 사람만)
-        if (isPushEnabled) {
-          try {
-            const fcmToken = await requestPushPermission();
-
-            if (fcmToken) {
-              // TODO: 백엔드 API 연동하여 토큰 저장하기
-              // await registerFcmToken({ token: fcmToken });
-
-              toast.success('알림 설정이 완료되었어요!', {
-                description: '모두가 입력하면 알려드릴게요',
-              });
-            }
-          } catch (error) {
-            // 알림 권한 거부 또는 기타 에러 발생 시에도 모임 참여는 성공시켜야 하므로, 에러는 콘솔에만 기록하고 사용자에게는 알리지 않음
-            console.error('푸시 알림 설정 실패:', error);
-          }
-        }
-
-        // 알림 설정 결과와 상관없이 모임 메인 페이지로 이동
         navigate(`/meeting/${code}`, { replace: true });
       }
     } catch (error) {
@@ -212,16 +175,13 @@ export default function JoinPage() {
       header={<Header title="모임 참여" showBackButton={false} />}
       bottom={
         <div className="space-y-3">
-          {/* 참여자가 1명이라도 있을 때만 버튼 노출 */}
-          {participantStatusList && participantStatusList.length > 0 && (
-            <button
-              type="button"
-              onClick={goRejoin}
-              className="text-greedy-strong hover:text-greedy w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
-            >
-              이미 참여하셨나요?
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={goRejoin}
+            className="text-greedy-strong hover:text-greedy w-full cursor-pointer text-center text-sm font-semibold underline underline-offset-4"
+          >
+            이미 참여하셨나요?
+          </button>
 
           <FixedBottomButton
             disabled={!canSubmit || isPending}
@@ -279,74 +239,8 @@ export default function JoinPage() {
               isLoading={isPageLoading}
             />
           )}
-          {/* 알림 설정 토글 UI */}
-          <div
-            className={cn(
-              'flex w-full items-center justify-between rounded-3xl border-2 p-4 transition-all duration-200',
-              'border-gray-200 bg-gray-50 hover:bg-gray-100',
-              isPushEnabled ? 'border-greedy/20 bg-greedy/15 hover:bg-greedy/30' : '', // 토글 켜지면 초록색 배경
-            )}
-          >
-            <div className="flex flex-col gap-1 text-left">
-              <div className="flex items-center gap-2">
-                <Bell
-                  size={24}
-                  className={cn(
-                    'h-auto! w-auto! text-gray-900 transition-colors',
-                    isPushEnabled ? 'text-greedy' : '', // 토글 켜지면 아이콘 초록색
-                  )}
-                />
-                <span
-                  className={cn(
-                    'text-base leading-tight font-bold text-gray-900',
-                    isPushEnabled ? 'text-greedy' : '', // 토글 켜지면 텍스트 초록색
-                  )}
-                >
-                  결과 알림 받기
-                </span>
-              </div>
-              <span
-                className={cn(
-                  'text-xs leading-relaxed font-medium text-gray-400',
-                  isPushEnabled ? 'text-greedy' : '',
-                )}
-              >
-                모든 멤버가 입력하면 알려드려요
-              </span>
-            </div>
-
-            <div className="ml-4 flex h-11 shrink-0 items-center justify-center">
-              {/* 토글 스위치 */}
-              <button
-                type="button"
-                onClick={handleTogglePush}
-                className={cn(
-                  'relative inline-flex h-7 w-12 items-center rounded-full transition-colors',
-                  isPushEnabled ? 'bg-greedy' : 'bg-gray-200',
-                )}
-              >
-                <span
-                  className={cn(
-                    'inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform',
-                    isPushEnabled ? 'translate-x-6' : 'translate-x-1',
-                  )}
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* 아이폰 경고 NotifyBox */}
-          {showIosNotify && (
-            <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
-              아이폰은 브라우저 하단 <strong>공유 버튼</strong>을 눌러{' '}
-              <strong>[홈 화면에 추가]</strong>를 해야만 알림을 받을 수 있어요!
-            </NotifyBox>
-          )}
         </div>
       </div>
-
-      {/* 아이폰 PWA 가이드 모달 */}
-      <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
     </AppLayout>
   );
 }

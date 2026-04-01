@@ -22,8 +22,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { useUpdateMeetingDetail } from '@/hooks/useMeeting';
+import { useLeaveMeeting } from '@/hooks/useParticipant';
 
 import { DateTypeSelector } from '@/features/meeting/setting/DateTypeSelector';
+import { LeaveButton } from '@/features/meeting/setting/LeaveButton';
 import { MeetingNameInput } from '@/features/meeting/setting/MeetingNameInput';
 import { PlaceTypeSelector } from '@/features/meeting/setting/PlaceTypeSelector';
 import { RecommendCheckBox } from '@/features/meeting/setting/RecommendCheckBox';
@@ -42,6 +44,7 @@ export default function SettingPage() {
     isLoading,
   } = useMeetingContext();
   const { mutate: updateMeeting } = useUpdateMeetingDetail();
+  const { mutate: leaveMeeting } = useLeaveMeeting();
 
   const [meetingName, setMeetingName] = useState(initialMeetingName);
   const [isTimeRecommendEnabled, setIsTimeRecommendEnabled] = useState(
@@ -55,6 +58,33 @@ export default function SettingPage() {
   const [placeType, setPlaceType] = useState('FAIR');
 
   const navigate = useNavigate();
+
+  const handleLeave = () => {
+    leaveMeeting(undefined, {
+      onSuccess: () => {
+        toast.success('나가기 성공!', {
+          description: '모임에서 성공적으로 나갔어요',
+          icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
+        });
+        navigate(`/meeting/${code}/join`);
+      },
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: error.message,
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        } else {
+          //실패 토스트
+          toast.error('오류 발생!', {
+            description: '인터넷 연결 상태를 확인해보세요!',
+            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          });
+        }
+      },
+    });
+  };
 
   const handleSave = () => {
     const formatTime = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`;
@@ -173,7 +203,6 @@ export default function SettingPage() {
           value={meetingName}
           onChange={(e) => setMeetingName(e.target.value)}
           isLoading={isLoading}
-          placeholder=""
         />
 
         <div className="h-2" />
@@ -206,9 +235,12 @@ export default function SettingPage() {
         </RecommendCheckBox>
 
         {!isLoading && (
-          <NotifyBox variant="emphasis" className="mt-3">
-            변경 사항은 모두에게 적용되니 주의해주세요
-          </NotifyBox>
+          <>
+            <NotifyBox variant="emphasis" className="mt-3">
+              변경 사항은 모두에게 적용되니 주의해주세요
+            </NotifyBox>
+            <LeaveButton onLeave={handleLeave} />
+          </>
         )}
       </div>
     </AppLayout>

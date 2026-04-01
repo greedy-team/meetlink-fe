@@ -1,4 +1,4 @@
-import { Clock, Crown, MapPin } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -7,12 +7,10 @@ import { type ParticipantStatus } from '@/types/meetingTypes';
 
 interface ParticipantStatusItemProps extends ParticipantStatus {
   isMe: boolean;
-  isHost: boolean;
+  isLast: boolean;
   isTimeRecommendEnabled: boolean;
   isPlaceRecommendEnabled: boolean;
   isLoading?: boolean;
-  isClickable: boolean;
-  onClick: () => void;
 }
 
 export function ParticipantStatusItem({
@@ -20,20 +18,17 @@ export function ParticipantStatusItem({
   isMe,
   hasTimeInput,
   hasPlaceInput,
-  isHost,
+  isLast,
   isTimeRecommendEnabled,
   isPlaceRecommendEnabled,
   isLoading = false,
-  isClickable,
-  onClick,
-}: ParticipantStatusItemProps) {
+}: ParticipantStatusItemProps & { isLast: boolean }) {
   return (
-    <button
+    <div
       className={cn(
-        'flex w-full items-center justify-between rounded-3xl p-2',
-        isClickable && !isMe && 'cursor-pointer hover:bg-gray-100',
+        'mx-3 flex items-center justify-between py-3',
+        !isLast && 'border-b-2 border-gray-100',
       )}
-      onClick={onClick}
     >
       {/* 프로필 및 닉네임 */}
       <div className="flex items-center justify-center gap-3 text-base font-bold text-black">
@@ -51,21 +46,10 @@ export function ParticipantStatusItem({
         {isMe && !isLoading && (
           <Badge
             variant="secondary"
-            className="bg-greedy/10 text-greedy h-5 w-5 rounded-full border-none p-3 text-xs font-bold"
+            className="bg-greedy/10 text-greedy hover:bg-greedy/10 h-5 w-5 rounded-full border-none p-3 text-xs font-bold"
           >
             나
           </Badge>
-        )}
-        {isHost && !isLoading && (
-          <div
-            className={cn(
-              'flex h-6 w-6 items-center justify-center rounded-full transition-colors',
-              'bg-amber-100 text-amber-600',
-              isLoading ? 'bg-gray-100 text-gray-100' : '',
-            )}
-          >
-            <Crown className="h-3 w-3" />
-          </div>
         )}
       </div>
 
@@ -96,6 +80,6 @@ export function ParticipantStatusItem({
           </div>
         )}
       </div>
-    </button>
+    </div>
   );
 }

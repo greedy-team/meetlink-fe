@@ -112,15 +112,6 @@ export default function PlaceRecommendPage() {
   const routeSegments = activeMovement?.segments ?? null;
   const routePath = activeMovement?.movementPath ?? null;
 
-  // 특정 멤버가 선택되지 않았을 때 모든 멤버의 출발지 좌표를 찾아서 지도에 표시
-  const allStartPoints = useMemo(() => {
-    if (selectedNickName || !selectedPlace?.participantMovementList) return null;
-
-    return selectedPlace.participantMovementList
-      .map((m) => m.movementPath?.[0])
-      .filter((coord): coord is { lat: number; lng: number } => !!coord);
-  }, [selectedPlace, selectedNickName]);
-
   return (
     <AppLayout
       header={<Header title="추천 장소 후보" showBackButton />}
@@ -148,12 +139,7 @@ export default function PlaceRecommendPage() {
           {isLoading ? (
             <div className="h-full w-full animate-pulse bg-gray-50" />
           ) : (
-            <KakaoMapView
-              center={center}
-              level={level}
-              routeSegments={routeSegments}
-              allStartPoints={allStartPoints}
-            />
+            <KakaoMapView center={center} level={level} routeSegments={routeSegments} />
           )}
         </div>
 

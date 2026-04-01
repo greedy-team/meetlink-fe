@@ -21,22 +21,17 @@ const INFO_LIST: InfoItem[] = [
   {
     icon: Calendar,
     title: '모임 생성',
-    description: '복잡한 과정 없이, 몇 번의 클릭으로 모임을 만들어 드릴게요',
+    description: '미뤄 두었던 모임을 시작하세요',
   },
   {
     icon: Clock,
     title: '시간 추천',
-    description: '모두가 모일 수 있는 시간을 자동으로 찾아드릴게요',
+    description: '만남 시간을 결정하세요',
   },
   {
     icon: MapPin,
     title: '장소 추천',
-    description: '이동 시간을 고려해 모두에게 공평한 장소를 찾아드릴게요',
-  },
-  {
-    icon: Link,
-    title: '링크 기반',
-    description: '가입 없이 링크 하나로 바로 약속을 잡을 수 있게 도와드릴게요',
+    description: '만남 장소를 결정하세요',
   },
 ];
 
@@ -86,7 +81,8 @@ export default function StartPage() {
         </div>
 
         <div className="text-gray-500">
-          번거로운 일정 조율과 이동 시간 고민 없이 <br />딱 맞는 시간과 장소를 찾아드릴게요
+          모두의 시간과 위치를 고려해 <br />
+          가장 납득이 되는 약속을 만들어 드릴게요
         </div>
 
         {/* 캐러셀 */}
@@ -94,7 +90,7 @@ export default function StartPage() {
           setApi={setApi}
           opts={{ loop: true, duration: 50 }}
           plugins={[plugin.current]}
-          className="mt-25 w-75"
+          className="mt-25 w-55"
         >
           <CarouselContent>
             {INFO_LIST.map((item, index) => (
@@ -104,7 +100,7 @@ export default function StartPage() {
                 </div>
                 <div className="flex flex-col text-left">
                   <div className="text-lg font-bold">{item.title}</div>
-                  <div className="w-50 text-sm break-keep text-gray-500">{item.description}</div>
+                  <div className="w-35 text-sm break-keep text-gray-500">{item.description}</div>
                 </div>
               </CarouselItem>
             ))}

@@ -10,9 +10,8 @@ import {
   getParticipantList,
   joinMeeting,
   leaveMeeting,
-  transferHost,
 } from '@/features/api/participantApi';
-import { type JoinMeetingRequest, type TransferHostRequest } from '@/types/apiTypes';
+import { type JoinMeetingRequest } from '@/types/apiTypes';
 
 //모임 참여
 export const useJoinMeeting = () => {
@@ -68,25 +67,6 @@ export const useMyStatus = () => {
       }
       // 그 외 일시적 에러(네트워크 끊김 등)는 기본값처럼 최대 3번까지 재시도
       return failureCount < 3;
-    },
-  });
-};
-
-//모임장 양도
-export const useTransferHost = () => {
-  const { code } = useParams<{ code: string }>();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (body: TransferHostRequest) => transferHost(code!, body),
-
-    onSuccess: (data) => {
-      if (data.status) {
-        queryClient.invalidateQueries({ queryKey: participantKeys.all });
-      }
-    },
-    onError: () => {
-      //실패시 처리
     },
   });
 };

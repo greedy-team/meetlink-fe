@@ -14,13 +14,7 @@ declare global {
     setCenter(pos: KakaoLatLng): void;
     getCenter(): KakaoLatLng;
     setLevel(level: number): void;
-    setBounds(
-      bounds: KakaoLatLngBounds,
-      paddingTop?: number,
-      paddingRight?: number,
-      paddingBottom?: number,
-      paddingLeft?: number,
-    ): void;
+    setBounds(bounds: KakaoLatLngBounds): void;
     relayout?(): void;
     setDraggable(draggable: boolean): void;
     setZoomable(zoomable: boolean): void;

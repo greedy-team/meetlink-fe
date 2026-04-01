@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { LogOut } from 'lucide-react';
 
 import {
   AlertDialog,
@@ -11,17 +11,36 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface LeaveButtonProps {
   onLeave: () => void;
   className?: string;
-  children: ReactNode;
 }
 
-export function LeaveButton({ onLeave, children }: LeaveButtonProps) {
+export function LeaveButton({ onLeave, className }: LeaveButtonProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="ghost"
+          className={cn(
+            'bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600',
+            'my-3 h-14 w-full cursor-pointer rounded-2xl py-3 font-semibold transition-all',
+            'flex flex-row items-center justify-start gap-3',
+            className, // 외부에서 위치 조정을 위한 커스텀 클래스 허용
+          )}
+        >
+          <div className="w-1" />
+          <LogOut
+            size={22}
+            strokeWidth={2.5}
+            className="h-auto! w-auto! shrink-0 transition-colors"
+          />
+          <span className="text-base">모임 나가기</span>
+        </Button>
+      </AlertDialogTrigger>
 
       <AlertDialogContent className="w-[85%] rounded-2xl md:w-full">
         <AlertDialogHeader>

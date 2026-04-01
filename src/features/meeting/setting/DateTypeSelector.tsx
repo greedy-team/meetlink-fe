@@ -18,14 +18,14 @@ export function DateTypeSelector({ value, onChange }: DateTypeSelectorProps) {
         <SelectCardButton
           icon={Repeat}
           title="매주 반복"
-          description="요일을 기준으로 선택해요"
+          description="요일 기준 선택"
           isSelected={value === 'WEEKLY'}
           onClick={() => onChange('WEEKLY')}
         />
         <SelectCardButton
           icon={Calendar}
           title="특정 날짜"
-          description="날짜를 직접 선택해요"
+          description="날짜 직접 선택"
           isSelected={value === 'SPECIFIC_DATE'}
           onClick={() => onChange('SPECIFIC_DATE')}
         />
