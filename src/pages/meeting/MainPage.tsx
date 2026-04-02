@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -22,6 +23,7 @@ import { useTransferHost } from '@/hooks/useParticipant';
 import { useLeaveMeeting } from '@/hooks/useParticipant';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
+import { DisablePushModal } from '@/features/meeting/general/DisablePushModal';
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
@@ -36,21 +38,11 @@ export default function MainPage() {
     nickName,
     isHost,
     isLoading: isMeetingLoading,
+    isPushEnabled,
+    isPushProcessing,
+    enablePush,
+    disablePush,
   } = useMeetingContext();
-
-  // 브라우저 타이틀 변경 로직 추가
-  useEffect(() => {
-    if (meetingName) {
-      document.title = `${meetingName} | MeetLink`;
-    } else {
-      document.title = 'MeetLink';
-    }
-
-    // 메인 페이지를 벗어나 다른 페이지로 이동하면 다시 기본값으로
-    return () => {
-      document.title = 'MeetLink';
-    };
-  }, [meetingName]);
 
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
@@ -61,6 +53,47 @@ export default function MainPage() {
   const isLoading = isMeetingLoading;
 
   const navigate = useNavigate();
+
+  const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
+  const [isIosModalOpen, setIsIosModalOpen] = useState(false);
+
+  const handleNotificationClick = async () => {
+    if (isPushProcessing) return;
+
+    if (isPushEnabled) {
+      setIsDisableModalOpen(true);
+      return;
+    }
+
+    const isPushSuccess = await enablePush();
+
+    if (isPushSuccess) {
+      toast.success('알림이 켜졌어요', {
+        description: '결과가 나오면 알려드릴게요',
+      });
+    } else {
+      toast.error('알림 설정에 실패했어요', {
+        description: '브라우저 권한을 확인한 뒤 다시 시도해주세요',
+      });
+    }
+  };
+
+  const handleDisableConfirm = async () => {
+    setIsDisableModalOpen(false);
+
+    const isDisableSuccess = await disablePush();
+
+    if (isDisableSuccess) {
+      toast.success('알림이 꺼졌어요', {
+        description: '더 이상 결과 알림을 받지 않아요',
+      });
+    } else {
+      toast.success('알림은 꺼졌어요', {
+        description: '일부 토큰 정리는 브라우저 상태에 따라 지연될 수 있어요',
+      });
+    }
+  };
+
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
@@ -184,6 +217,10 @@ export default function MainPage() {
           showBackButton={false}
           showSettingButton={isHost}
           showLeaveButton={true}
+          showNotificationButton={true}
+          isPushEnabled={isPushEnabled}
+          onNotificationClick={handleNotificationClick}
+          onShowIosGuide={() => setIsIosModalOpen(true)}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
           onLeave={handleLeave}
         />
@@ -289,6 +326,12 @@ export default function MainPage() {
           </a>
         </div>
       </div>
+      <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
+      <DisablePushModal
+        isOpen={isDisableModalOpen}
+        onClose={() => setIsDisableModalOpen(false)}
+        onConfirm={handleDisableConfirm}
+      />
     </AppLayout>
   );
 }
