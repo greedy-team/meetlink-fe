@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken } from 'firebase/messaging';
+import { deleteToken, getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -29,4 +29,27 @@ export const requestPushPermission = async () => {
     console.error('푸시 권한 요청 중 에러 발생:', error);
     return null;
   }
+};
+
+export const deletePushPermission = async () => {
+  try {
+    if (!messaging) return false;
+    const isDeleted = await deleteToken(messaging);
+    return isDeleted;
+  } catch (error) {
+    console.error('토큰 삭제 실패:', error);
+    return false;
+  }
+};
+
+export const subscribeForegroundMessage = () => {
+  return onMessage(messaging, (payload) => {
+    const title = payload.notification?.title ?? 'MeetLink';
+    const body = payload.notification?.body ?? '';
+
+    new Notification(title, {
+      body,
+      icon: '/logo2.svg',
+    });
+  });
 };
