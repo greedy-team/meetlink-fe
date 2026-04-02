@@ -87,6 +87,24 @@ export interface JoinMeetingResponse {
   message?: string;
 }
 
+// 푸시 토큰 등록
+export interface RegisterPushTokenRequest {
+  token: string;
+}
+
+export interface RegisterPushTokenResponse {
+  status: boolean;
+  code?: string;
+  message?: string;
+}
+
+// 푸시 토큰 삭제
+export interface DeletePushTokenResponse {
+  status: boolean;
+  code?: string;
+  message?: string;
+}
+
 //모임 참여자 목록 조회
 export interface GetParticipantListResponse {
   status: boolean;

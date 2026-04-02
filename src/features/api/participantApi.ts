@@ -1,9 +1,12 @@
 import {
+  type DeletePushTokenResponse,
   type GetMyStatusResponse,
   type GetParticipantListResponse,
   type JoinMeetingRequest,
   type JoinMeetingResponse,
   type LeaveMeetingResponse,
+  type RegisterPushTokenRequest,
+  type RegisterPushTokenResponse,
   type TransferHostRequest,
   type TransferHostResponse,
 } from '../../types/apiTypes';
@@ -61,6 +64,26 @@ export const transferHost = async (
 export const leaveMeeting = async (code: string): Promise<LeaveMeetingResponse> => {
   const { data } = await axiosInstance.delete<LeaveMeetingResponse>(
     `/meetings/${code}/participants/me`,
+  );
+  return data;
+};
+
+//푸시 토큰 등록
+export const registerPushToken = async (
+  code: string,
+  body: RegisterPushTokenRequest,
+): Promise<RegisterPushTokenResponse> => {
+  const { data } = await axiosInstance.post<RegisterPushTokenResponse>(
+    `/meetings/${code}/participants/me/push-token`,
+    body,
+  );
+  return data;
+};
+
+// 푸시 토큰 삭제
+export const deletePushToken = async (code: string): Promise<DeletePushTokenResponse> => {
+  const { data } = await axiosInstance.delete<DeletePushTokenResponse>(
+    `/meetings/${code}/participants/me/push-token`,
   );
   return data;
 };
