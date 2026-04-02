@@ -6,13 +6,19 @@ import { AxiosError } from 'axios';
 import { participantKeys } from './queryKeys';
 
 import {
+  deletePushToken,
   getMyStatus,
   getParticipantList,
   joinMeeting,
   leaveMeeting,
+  registerPushToken,
   transferHost,
 } from '@/features/api/participantApi';
-import { type JoinMeetingRequest, type TransferHostRequest } from '@/types/apiTypes';
+import {
+  type JoinMeetingRequest,
+  type RegisterPushTokenRequest,
+  type TransferHostRequest,
+} from '@/types/apiTypes';
 
 //모임 참여
 export const useJoinMeeting = () => {
@@ -107,6 +113,31 @@ export const useLeaveMeeting = () => {
     },
     onError: () => {
       //실패 시 처리
+    },
+  });
+};
+
+//푸시 토큰 등록
+export const useRegisterPushToken = () => {
+  const { code } = useParams<{ code: string }>();
+
+  return useMutation({
+    mutationFn: (body: RegisterPushTokenRequest) => registerPushToken(code!, body),
+
+    onError: () => {
+      // 필요하면 에러 처리
+    },
+  });
+};
+
+//푸시 토큰 삭제
+export const useDeletePushToken = () => {
+  const { code } = useParams<{ code: string }>();
+
+  return useMutation({
+    mutationFn: () => deletePushToken(code!),
+    onError: () => {
+      // 필요하면 에러 처리
     },
   });
 };
