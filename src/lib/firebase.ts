@@ -10,23 +10,12 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-console.log('🔥 firebaseConfig', firebaseConfig);
-console.log('🔥 firebase env raw', {
-  VITE_FIREBASE_API_KEY: import.meta.env.VITE_FIREBASE_API_KEY,
-  VITE_FIREBASE_AUTH_DOMAIN: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  VITE_FIREBASE_PROJECT_ID: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  VITE_FIREBASE_STORAGE_BUCKET: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  VITE_FIREBASE_MESSAGING_SENDER_ID: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  VITE_FIREBASE_APP_ID: import.meta.env.VITE_FIREBASE_APP_ID,
-  VITE_FIREBASE_VAPID_KEY: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-});
-
 const missingFirebaseKeys = Object.entries(firebaseConfig)
   .filter(([, value]) => !value)
   .map(([key]) => key);
 
-if (missingFirebaseKeys.length > 0) {
-  console.error('❌ Firebase config 누락:', missingFirebaseKeys);
+if (import.meta.env.DEV && missingFirebaseKeys.length > 0) {
+  console.error('Firebase config 누락:', missingFirebaseKeys);
 }
 
 const app = initializeApp(firebaseConfig);
