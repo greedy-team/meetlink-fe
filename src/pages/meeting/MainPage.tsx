@@ -69,7 +69,7 @@ export default function MainPage() {
 
     if (isPushSuccess) {
       toast.success('알림이 켜졌어요', {
-        description: '결과가 나오면 알려드릴게요',
+        description: '여러 알림을 받아요',
       });
     } else {
       toast.error('알림 설정에 실패했어요', {
@@ -85,7 +85,7 @@ export default function MainPage() {
 
     if (isDisableSuccess) {
       toast.success('알림이 꺼졌어요', {
-        description: '더 이상 결과 알림을 받지 않아요',
+        description: '더 이상 알림을 받지 않아요',
       });
     } else {
       toast.success('알림은 꺼졌어요', {
@@ -133,8 +133,8 @@ export default function MainPage() {
     };
     transferHost(requestData, {
       onSuccess: () => {
-        toast.success('양도 성공!', {
-          description: '모임장이 성공적으로 양도되었어요!',
+        toast.success('양도 성공', {
+          description: '모임장이 성공적으로 양도되었어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
         navigate(`/meeting/${code}`);
@@ -142,14 +142,14 @@ export default function MainPage() {
       onError: (error) => {
         if (axios.isAxiosError(error)) {
           //실패 토스트
-          toast.error('오류 발생!', {
+          toast.error('오류가 발생했어요', {
             description: error.message,
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         } else {
           //실패 토스트
-          toast.error('오류 발생!', {
-            description: '인터넷 연결 상태를 확인해보세요!',
+          toast.error('오류가 발생했어요', {
+            description: '잠시 후에 다시 시도해보세요',
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         }
@@ -160,7 +160,7 @@ export default function MainPage() {
   const handleLeave = () => {
     leaveMeeting(undefined, {
       onSuccess: () => {
-        toast.success('나가기 성공!', {
+        toast.success('나가기 성공', {
           description: '모임에서 성공적으로 나갔어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
@@ -169,14 +169,14 @@ export default function MainPage() {
       onError: (error) => {
         if (axios.isAxiosError(error)) {
           //실패 토스트
-          toast.error('오류 발생!', {
+          toast.error('오류가 발생했어요', {
             description: error.message,
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         } else {
           //실패 토스트
-          toast.error('오류 발생!', {
-            description: '인터넷 연결 상태를 확인해보세요!',
+          toast.error('오류가 발생했어요', {
+            description: '잠시 후에 다시 시도해보세요',
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         }

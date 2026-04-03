@@ -87,7 +87,7 @@ export default function MeetingLayout() {
       axios.isAxiosError(meetingError) &&
       meetingError.response?.status === 404
     ) {
-      toast.error('존재하지 않는 모임입니다.');
+      toast.error('존재하지 않는 모임입니다');
       navigate('/');
     }
   }, [isMeetingError, meetingError, navigate]);

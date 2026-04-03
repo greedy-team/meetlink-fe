@@ -116,7 +116,7 @@ export default function PlaceInputPage() {
           // 저장 성공한 경우에만 context 반영
           setSelectedPlace(draftSelectedPlace);
 
-          toast.success('출발지 등록 완료!', {
+          toast.success('출발지 등록 완료', {
             description: '출발지가 정상적으로 등록되었어요',
             icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
           });
@@ -125,13 +125,13 @@ export default function PlaceInputPage() {
         },
         onError: (error) => {
           if (axios.isAxiosError(error)) {
-            toast.error('오류 발생!', {
+            toast.error('오류가 발생했어요', {
               description: error.message,
               icon: <AlertCircle className="h-5 w-5 text-red-500" />,
             });
           } else {
-            toast.error('오류 발생!', {
-              description: '인터넷 연결 상태를 확인해보세요!',
+            toast.error('오류가 발생했어요', {
+              description: '잠시 후에 다시 시도해보세요',
               icon: <AlertCircle className="h-5 w-5 text-red-500" />,
             });
           }
