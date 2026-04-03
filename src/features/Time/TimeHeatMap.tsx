@@ -423,12 +423,12 @@ export default function TimeHeatMap({
                       }}
                       className={cn(
                         'relative transition-colors duration-100',
-                        'bg-gray-100/40',
+                        'border-gray-200 bg-gray-100/40',
                         mode === 'INPUT' ? 'cursor-pointer' : '',
                         isTopHour
-                          ? 'border-t border-gray-200'
-                          : 'border-t border-dashed border-gray-100',
-                        isLastSlot ? 'border-b border-gray-200' : '',
+                          ? 'border-t [border-top-style:solid]'
+                          : 'border-t [border-top-style:dashed]',
+                        isLastSlot ? 'border-b [border-bottom-style:solid]' : '',
                         isPastDate ? 'cursor-auto bg-gray-300 opacity-50' : '',
                         mode === 'INPUT' && availableNum === 0 && !isPastDate
                           ? 'hover:bg-gray-50'
