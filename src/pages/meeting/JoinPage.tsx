@@ -288,52 +288,64 @@ export default function JoinPage() {
           )}
 
           {/* 알림 설정 UI */}
-          <div
-            className={cn(
-              'flex flex-col rounded-3xl border-2 p-3 transition-all duration-200',
-              joinPushOptIn
-                ? 'border-greedy bg-greedy/5'
-                : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
-            )}
-          >
-            <button
-              className="flex w-full cursor-pointer items-center justify-between p-1"
-              type="button"
-              onClick={handleTogglePush}
-            >
-              <div className="flex flex-col gap-2 text-left">
-                <div className="flex items-center gap-2">
-                  <Bell
-                    size={24}
-                    className={cn(
-                      'h-auto! w-auto! transition-colors',
-                      joinPushOptIn ? 'text-greedy' : 'text-gray-900',
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      'text-base font-bold transition-colors',
-                      joinPushOptIn ? 'text-greedy' : 'text-gray-900',
-                    )}
-                  >
-                    알림 받기
-                  </span>
+          {isPageLoading ? (
+            <div className="animate-pulse rounded-3xl border-2 border-gray-200 bg-gray-50 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2">
+                  <div className="h-5 w-24 rounded bg-gray-200" />
+                  <div className="h-3 w-44 rounded bg-gray-200" />
                 </div>
-                <div className="text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400">
-                  모임의 새로운 소식을 놓치지 않게 알려드려요
-                </div>
+                <div className="h-12 w-12 rounded-[15px] bg-gray-200" />
               </div>
+            </div>
+          ) : (
+            <div
+              className={cn(
+                'flex flex-col rounded-3xl border-2 p-3 transition-all duration-200',
+                joinPushOptIn
+                  ? 'border-greedy bg-greedy/5'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
+              )}
+            >
+              <button
+                className="flex w-full cursor-pointer items-center justify-between p-1"
+                type="button"
+                onClick={handleTogglePush}
+              >
+                <div className="flex flex-col gap-2 text-left">
+                  <div className="flex items-center gap-2">
+                    <Bell
+                      size={24}
+                      className={cn(
+                        'h-auto! w-auto! transition-colors',
+                        joinPushOptIn ? 'text-greedy' : 'text-gray-900',
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        'text-base font-bold transition-colors',
+                        joinPushOptIn ? 'text-greedy' : 'text-gray-900',
+                      )}
+                    >
+                      알림 받기
+                    </span>
+                  </div>
+                  <div className="text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400">
+                    모임 진행 상황을 놓치지 않게 알려드려요
+                  </div>
+                </div>
 
-              <Check
-                strokeWidth={4}
-                size={30}
-                className={cn(
-                  'ml-4 h-auto! w-auto! shrink-0 rounded-[15px] p-3 transition-colors',
-                  joinPushOptIn ? 'bg-[#CCE3D3] text-[#4A8B5F]' : 'bg-gray-200 text-transparent',
-                )}
-              />
-            </button>
-          </div>
+                <Check
+                  strokeWidth={4}
+                  size={30}
+                  className={cn(
+                    'ml-4 h-auto! w-auto! shrink-0 rounded-[15px] p-3 transition-colors',
+                    joinPushOptIn ? 'bg-[#CCE3D3] text-[#4A8B5F]' : 'bg-gray-200 text-transparent',
+                  )}
+                />
+              </button>
+            </div>
+          )}
 
           {showInAppNotify && (
             <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
