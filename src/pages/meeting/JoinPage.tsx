@@ -316,11 +316,11 @@ export default function JoinPage() {
                       joinPushOptIn ? 'text-greedy' : 'text-gray-900',
                     )}
                   >
-                    결과 알림 받기
+                    알림 받기
                   </span>
                 </div>
                 <div className="text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400">
-                  모든 멤버가 입력하거나 설정이 변경되면 알려드려요
+                  모임의 새로운 소식을 놓치지 않게 알려드려요
                 </div>
               </div>
 
