@@ -6,6 +6,7 @@ import { Bell, Check, Clock, MapPin } from 'lucide-react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { InAppBrowserGuideModal } from '@/components/common/general/InAppBrowserGuideModal';
 import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
@@ -59,10 +60,12 @@ export default function JoinPage() {
 
   const [isIosModalOpen, setIsIosModalOpen] = useState(false);
   const [showIosNotify, setShowIosNotify] = useState(false);
+  const [isInAppModalOpen, setIsInAppModalOpen] = useState(false);
   const [showInAppNotify, setShowInAppNotify] = useState(false);
 
   const handleTogglePush = () => {
     if (isInAppBrowser()) {
+      setIsInAppModalOpen(true);
       setShowInAppNotify(true);
       setShowIosNotify(false);
       return;
@@ -349,7 +352,10 @@ export default function JoinPage() {
         </div>
       </div>
 
-      {/* 아이폰 PWA 가이드 모달 */}
+      <InAppBrowserGuideModal
+        isOpen={isInAppModalOpen}
+        onClose={() => setIsInAppModalOpen(false)}
+      />
       <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
     </AppLayout>
   );
