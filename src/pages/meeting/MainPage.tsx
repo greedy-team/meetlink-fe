@@ -2,14 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import {
-  AlertCircle,
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  MapPin,
-  MessagesSquare,
-} from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
@@ -26,6 +19,7 @@ import { useRecommendResult } from '@/hooks/useRecommend';
 import { DisablePushModal } from '@/features/meeting/general/DisablePushModal';
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
+import { QABox } from '@/features/meeting/general/QABox';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
@@ -303,30 +297,7 @@ export default function MainPage() {
             isHost={isHost}
             onTransferHost={handleTransferHost}
           />
-
-          <a
-            href="https://www.instagram.com/meetlink.now/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group hover:border-greedy/30 mt-2 flex items-center justify-between rounded-3xl border-2 border-gray-100 bg-white p-4 transition-all"
-          >
-            <div className="flex items-center gap-4">
-              <div className="bg-greedy/10 text-greedy group-hover:bg-greedy flex h-12 w-12 items-center justify-center rounded-2xl transition-colors group-hover:text-white">
-                <MessagesSquare size={24} />
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-base font-bold text-gray-800">함께 만드는 MeetLink</span>
-                <span className="text-sm text-gray-500">
-                  더 나은 MeetLink를 위해 여러분의 소중한 의견을 들려주세요
-                </span>
-              </div>
-            </div>
-
-            <div className="ml-4 flex shrink-0 text-gray-500">
-              <ChevronRight strokeWidth={3} className="h-6 w-6" />
-            </div>
-          </a>
+          <QABox />
         </div>
       </div>
       <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
