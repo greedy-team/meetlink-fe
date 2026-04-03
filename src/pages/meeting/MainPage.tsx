@@ -300,7 +300,7 @@ export default function MainPage() {
             isHost={isHost}
             onTransferHost={handleTransferHost}
           />
-          <QABox />
+          <QABox isLoading={isLoading} />
         </div>
       </div>
       <InAppBrowserGuideModal
