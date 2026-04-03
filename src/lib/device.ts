@@ -10,3 +10,9 @@ export const isIosSafari = () => {
   // 아이폰이지만 아직 홈 화면에 추가되지 않은 일반 사파리/크롬 브라우저일 때만 true
   return isIos && !isStandalone;
 };
+
+export const isInAppBrowser = () => {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+
+  return /kakaotalk|naver|line|instagram|fbav|fban|wv/.test(userAgent);
+};

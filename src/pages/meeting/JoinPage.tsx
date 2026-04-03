@@ -11,7 +11,7 @@ import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
-import { isIosSafari } from '@/lib/device';
+import { isInAppBrowser, isIosSafari } from '@/lib/device';
 import { cn } from '@/lib/utils';
 import { useJoinMeeting } from '@/hooks/useParticipant';
 import { useUpdateMyStartPlace } from '@/hooks/usePlace';
@@ -59,14 +59,24 @@ export default function JoinPage() {
 
   const [isIosModalOpen, setIsIosModalOpen] = useState(false);
   const [showIosNotify, setShowIosNotify] = useState(false);
+  const [showInAppNotify, setShowInAppNotify] = useState(false);
 
   const handleTogglePush = () => {
+    if (isInAppBrowser()) {
+      setShowInAppNotify(true);
+      setShowIosNotify(false);
+      return;
+    }
+
     if (isIosSafari()) {
+      setShowInAppNotify(false);
       setIsIosModalOpen(true);
       setShowIosNotify(true);
       return;
     }
 
+    setShowInAppNotify(false);
+    setShowIosNotify(false);
     setJoinPushOptIn((prev) => !prev);
   };
 
@@ -321,6 +331,13 @@ export default function JoinPage() {
               />
             </button>
           </div>
+
+          {showInAppNotify && (
+            <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
+              카카오톡 같은 인앱 브라우저에서는 알림 설정이 지원되지 않아요{' '}
+              <strong>크롬 또는 사파리에서 열어주세요</strong>
+            </NotifyBox>
+          )}
 
           {/* 아이폰 경고 NotifyBox */}
           {showIosNotify && (
