@@ -93,8 +93,17 @@ export default function MeetingLayout() {
   }, [isMeetingError, meetingError, navigate]);
 
   useEffect(() => {
-    const unsubscribe = subscribeForegroundMessage();
-    return () => unsubscribe();
+    let unsubscribe: (() => void) | undefined;
+
+    const setupForegroundMessage = async () => {
+      unsubscribe = await subscribeForegroundMessage();
+    };
+
+    setupForegroundMessage();
+
+    return () => {
+      unsubscribe?.();
+    };
   }, []);
 
   const {

@@ -1,5 +1,12 @@
 import { initializeApp } from 'firebase/app';
-import { deleteToken, getMessaging, getToken, onMessage } from 'firebase/messaging';
+import {
+  deleteToken,
+  getMessaging,
+  getToken,
+  isSupported,
+  type Messaging,
+  onMessage,
+} from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,20 +26,38 @@ if (import.meta.env.DEV && missingFirebaseKeys.length > 0) {
 }
 
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+
+let messagingPromise: Promise<Messaging | null> | null = null;
+
+const getMessagingSafely = async (): Promise<Messaging | null> => {
+  if (!messagingPromise) {
+    messagingPromise = (async () => {
+      const supported = await isSupported().catch(() => false);
+      if (!supported) return null;
+      return getMessaging(app);
+    })();
+  }
+
+  return messagingPromise;
+};
 
 export const requestPushPermission = async () => {
   try {
+    const messaging = await getMessagingSafely();
+    if (!messaging) return null;
+
     const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-      });
-      return token;
-    } else {
+
+    if (permission !== 'granted') {
       console.warn('푸시 알림 권한이 거부되었습니다');
       return null;
     }
+
+    const token = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+    });
+
+    return token;
   } catch (error) {
     console.error('푸시 권한 요청 중 에러 발생:', error);
     return null;
@@ -41,7 +66,9 @@ export const requestPushPermission = async () => {
 
 export const deletePushPermission = async () => {
   try {
+    const messaging = await getMessagingSafely();
     if (!messaging) return false;
+
     const isDeleted = await deleteToken(messaging);
     return isDeleted;
   } catch (error) {
@@ -50,7 +77,10 @@ export const deletePushPermission = async () => {
   }
 };
 
-export const subscribeForegroundMessage = () => {
+export const subscribeForegroundMessage = async () => {
+  const messaging = await getMessagingSafely();
+  if (!messaging) return () => {};
+
   return onMessage(messaging, (payload) => {
     const title = payload.notification?.title ?? 'MeetLink';
     const body = payload.notification?.body ?? '';
