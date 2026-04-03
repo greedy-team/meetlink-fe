@@ -162,7 +162,7 @@ export default function PlaceInputPage() {
           onClick={handleSave}
           disabled={!draftSelectedPlace?.address || isPending}
           loading={isPending}
-          className="bg-greedy hover:bg-greedy/50 text-white"
+          className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2 text-white"
         >
           저장하기
         </FixedBottomButton>

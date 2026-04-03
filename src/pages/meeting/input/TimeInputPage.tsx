@@ -101,7 +101,7 @@ export default function TimeInputPage() {
         <div className="space-y-3">
           {!isLoading && (
             <FixedBottomButton
-              className="bg-greedy hover:bg-greedy/50"
+              className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
               loading={isPending}
               onClick={handleSave}
             >

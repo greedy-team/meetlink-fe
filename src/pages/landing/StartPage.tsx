@@ -68,7 +68,10 @@ export default function StartPage() {
       pageBackgroundClassName="bg-white"
       bottom={
         <div className="flex items-center pt-2">
-          <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleStartClick}>
+          <FixedBottomButton
+            className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
+            onClick={handleStartClick}
+          >
             시작하기
           </FixedBottomButton>
         </div>

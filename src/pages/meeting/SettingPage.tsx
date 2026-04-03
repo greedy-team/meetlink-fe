@@ -130,7 +130,7 @@ export default function SettingPage() {
                 </FixedBottomButton>
               ) : !hasChanges ? (
                 <FixedBottomButton
-                  className="bg-greedy hover:bg-greedy/50"
+                  className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
                   onClick={() => navigate(`/meeting/${code}`)}
                 >
                   완료
@@ -138,7 +138,7 @@ export default function SettingPage() {
               ) : (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
+                    <FixedBottomButton className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2">
                       완료
                     </FixedBottomButton>
                   </AlertDialogTrigger>
@@ -155,7 +155,7 @@ export default function SettingPage() {
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleSave}
-                        className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
+                        className="bg-greedy! hover:bg-greedy/50! border-greedy-strong h-10 flex-1 cursor-pointer rounded-xl border-2 text-white shadow-none!"
                       >
                         저장하기
                       </AlertDialogAction>

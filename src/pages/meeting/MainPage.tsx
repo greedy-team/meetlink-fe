@@ -229,7 +229,10 @@ export default function MainPage() {
       bottom={
         <div className="flex items-center pt-2">
           {!isLoading && (
-            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
+            <FixedBottomButton
+              className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
+              onClick={handleShare}
+            >
               초대 링크 복사 및 공유하기
             </FixedBottomButton>
           )}

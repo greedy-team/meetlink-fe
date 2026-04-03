@@ -234,7 +234,7 @@ export default function JoinPage() {
             disabled={!canSubmit || isPending}
             loading={isPending}
             onClick={onSubmit}
-            className="bg-greedy hover:bg-greedy/50 text-white"
+            className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
           >
             참여하기
           </FixedBottomButton>
