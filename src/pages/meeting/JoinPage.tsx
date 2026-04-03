@@ -288,64 +288,69 @@ export default function JoinPage() {
           )}
 
           {/* 알림 설정 UI */}
-          {isPageLoading ? (
-            <div className="animate-pulse rounded-3xl border-2 border-gray-200 bg-gray-50 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-2">
-                  <div className="h-5 w-24 rounded bg-gray-200" />
-                  <div className="h-3 w-44 rounded bg-gray-200" />
-                </div>
-                <div className="h-12 w-12 rounded-[15px] bg-gray-200" />
-              </div>
-            </div>
-          ) : (
-            <div
-              className={cn(
-                'flex flex-col rounded-3xl border-2 p-3 transition-all duration-200',
-                joinPushOptIn
+          <div
+            className={cn(
+              'flex flex-col rounded-3xl border-2 p-3 transition-all duration-200',
+              isPageLoading
+                ? 'border-gray-200 bg-gray-50'
+                : joinPushOptIn
                   ? 'border-greedy bg-greedy/5'
                   : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
+            )}
+          >
+            <button
+              className={cn(
+                'flex w-full items-center justify-between p-1',
+                isPageLoading ? 'cursor-default' : 'cursor-pointer',
               )}
+              type="button"
+              onClick={isPageLoading ? undefined : handleTogglePush}
+              disabled={isPageLoading}
             >
-              <button
-                className="flex w-full cursor-pointer items-center justify-between p-1"
-                type="button"
-                onClick={handleTogglePush}
-              >
-                <div className="flex flex-col gap-2 text-left">
-                  <div className="flex items-center gap-2">
-                    <Bell
-                      size={24}
-                      className={cn(
-                        'h-auto! w-auto! transition-colors',
-                        joinPushOptIn ? 'text-greedy' : 'text-gray-900',
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        'text-base font-bold transition-colors',
-                        joinPushOptIn ? 'text-greedy' : 'text-gray-900',
-                      )}
-                    >
-                      알림 받기
-                    </span>
-                  </div>
-                  <div className="text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400">
-                    모임 진행 상황을 놓치지 않게 알려드려요
-                  </div>
+              <div className="flex flex-col gap-2 text-left">
+                <div className="flex items-center gap-2">
+                  <Bell
+                    size={24}
+                    className={cn(
+                      'h-auto! w-auto! transition-colors',
+                      joinPushOptIn ? 'text-greedy' : 'text-gray-900',
+                      isPageLoading ? 'rounded-full bg-gray-100 text-gray-100' : '',
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      'text-base font-bold transition-colors',
+                      joinPushOptIn ? 'text-greedy' : 'text-gray-900',
+                      isPageLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
+                    )}
+                  >
+                    알림 받기
+                  </span>
                 </div>
-
-                <Check
-                  strokeWidth={4}
-                  size={30}
+                <div
                   className={cn(
-                    'ml-4 h-auto! w-auto! shrink-0 rounded-[15px] p-3 transition-colors',
-                    joinPushOptIn ? 'bg-[#CCE3D3] text-[#4A8B5F]' : 'bg-gray-200 text-transparent',
+                    'text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400',
+                    isPageLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
                   )}
-                />
-              </button>
-            </div>
-          )}
+                >
+                  모임 진행 상황을 놓치지 않게 알려드려요
+                </div>
+              </div>
+
+              <Check
+                strokeWidth={4}
+                size={30}
+                className={cn(
+                  'ml-4 h-auto! w-auto! shrink-0 rounded-[15px] p-3 transition-colors',
+                  isPageLoading
+                    ? 'bg-gray-100 text-transparent'
+                    : joinPushOptIn
+                      ? 'bg-[#CCE3D3] text-[#4A8B5F]'
+                      : 'bg-gray-200 text-transparent',
+                )}
+              />
+            </button>
+          </div>
 
           {showInAppNotify && (
             <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
