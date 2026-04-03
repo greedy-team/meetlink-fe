@@ -63,7 +63,7 @@ export default function MainPage() {
 
     if (isPushSuccess) {
       toast.success('알림이 켜졌어요', {
-        description: '여러 알림을 받아요',
+        description: '모임의 소식을 알림으로 보내드려요',
       });
     } else {
       toast.error('알림 설정에 실패했어요', {
