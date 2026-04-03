@@ -46,6 +46,8 @@ export const requestPushPermission = async () => {
     const messaging = await getMessagingSafely();
     if (!messaging) return null;
 
+    if (typeof Notification === 'undefined') return null;
+
     const permission = await Notification.requestPermission();
 
     if (permission !== 'granted') {
@@ -81,13 +83,17 @@ export const subscribeForegroundMessage = async () => {
   const messaging = await getMessagingSafely();
   if (!messaging) return () => {};
 
+  if (typeof Notification === 'undefined') return () => {};
+
   return onMessage(messaging, (payload) => {
     const title = payload.notification?.title ?? 'MeetLink';
     const body = payload.notification?.body ?? '';
 
-    new Notification(title, {
-      body,
-      icon: '/logo2.svg',
-    });
+    if (Notification.permission === 'granted') {
+      new Notification(title, {
+        body,
+        icon: '/logo2.svg',
+      });
+    }
   });
 };

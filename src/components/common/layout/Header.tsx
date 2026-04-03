@@ -72,7 +72,9 @@ export function Header({
       </div>
 
       {showNotificationButton &&
-        (isIosSafari() && !isPushEnabled && Notification.permission !== 'granted' ? (
+        (isIosSafari() &&
+        !isPushEnabled &&
+        (typeof Notification === 'undefined' || Notification.permission !== 'granted') ? (
           <button
             type="button"
             onClick={onShowIosGuide}
