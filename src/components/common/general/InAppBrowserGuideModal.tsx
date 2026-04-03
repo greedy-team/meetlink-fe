@@ -25,20 +25,15 @@ export function InAppBrowserGuideModal({ isOpen, onClose }: InAppBrowserGuideMod
           </div>
 
           <AlertDialogTitle className="text-center">
-            인앱 브라우저에서는
+            외부 브라우저에서 열어야
             <br />
-            알림을 설정할 수 없어요
+            알림을 설정할 수 있어요
           </AlertDialogTitle>
 
           <AlertDialogDescription className="mt-2 text-center leading-relaxed">
-            카카오톡 같은 인앱 브라우저에서는
+            메뉴에서 <b>[브라우저로 열기]</b>를 눌러
             <br />
-            웹 알림이 지원되지 않아요.
-            <br />
-            <br />
-            브라우저 메뉴에서 <b>[외부 브라우저로 열기]</b>를 눌러
-            <br />
-            크롬 또는 사파리에서 다시 접속해주세요.
+            크롬 또는 사파리에서 접속해주세요
           </AlertDialogDescription>
         </AlertDialogHeader>
 

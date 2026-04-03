@@ -337,7 +337,7 @@ export default function JoinPage() {
 
           {showInAppNotify && (
             <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
-              카카오톡 같은 인앱 브라우저에서는 알림 설정이 지원되지 않아요{' '}
+              앱에서 바로 열면 알림 설정이 지원되지 않아요.{' '}
               <strong>크롬 또는 사파리에서 열어주세요</strong>
             </NotifyBox>
           )}
