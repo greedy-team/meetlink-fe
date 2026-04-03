@@ -5,6 +5,7 @@ import axios from 'axios';
 import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { InAppBrowserGuideModal } from '@/components/common/general/InAppBrowserGuideModal';
 import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
@@ -50,6 +51,7 @@ export default function MainPage() {
 
   const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
   const [isIosModalOpen, setIsIosModalOpen] = useState(false);
+  const [isInAppModalOpen, setIsInAppModalOpen] = useState(false);
 
   const handleNotificationClick = async () => {
     if (isPushProcessing) return;
@@ -215,6 +217,7 @@ export default function MainPage() {
           isPushEnabled={isPushEnabled}
           onNotificationClick={handleNotificationClick}
           onShowIosGuide={() => setIsIosModalOpen(true)}
+          onShowInAppGuide={() => setIsInAppModalOpen(true)}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
           onLeave={handleLeave}
         />
@@ -300,6 +303,10 @@ export default function MainPage() {
           <QABox />
         </div>
       </div>
+      <InAppBrowserGuideModal
+        isOpen={isInAppModalOpen}
+        onClose={() => setIsInAppModalOpen(false)}
+      />
       <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
       <DisablePushModal
         isOpen={isDisableModalOpen}

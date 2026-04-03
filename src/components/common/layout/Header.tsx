@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Bell, BellOff, ChevronLeft, LogOut, Settings } from 'lucide-react';
 
-import { isIosSafari } from '@/lib/device';
+import { isInAppBrowser, isIosSafari } from '@/lib/device';
 import { cn } from '@/lib/utils';
 
 import { LeaveButton } from '@/features/meeting/setting/LeaveButton';
@@ -19,6 +19,7 @@ type HeaderProps = {
   onLeave?: () => void;
   onNotificationClick?: () => void;
   onShowIosGuide?: () => void;
+  onShowInAppGuide?: () => void;
   className?: string;
 };
 
@@ -33,6 +34,7 @@ export function Header({
   onLeave = () => {},
   onNotificationClick = () => {},
   onShowIosGuide = () => {},
+  onShowInAppGuide = () => {},
   className,
 }: HeaderProps) {
   const navigate = useNavigate();
@@ -71,31 +73,36 @@ export function Header({
         <span className={cn('text-lg font-bold', className)}>{title}</span>
       </div>
 
-      {showNotificationButton &&
-        (isIosSafari() &&
-        !isPushEnabled &&
-        (typeof Notification === 'undefined' || Notification.permission !== 'granted') ? (
-          <button
-            type="button"
-            onClick={onShowIosGuide}
-            className="inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors"
-          >
+      {showNotificationButton && (
+        <button
+          key={isPushEnabled ? 'push-on' : 'push-off'}
+          type="button"
+          onClick={() => {
+            if (isInAppBrowser() && !isPushEnabled) {
+              onShowInAppGuide();
+              return;
+            }
+
+            if (
+              isIosSafari() &&
+              !isPushEnabled &&
+              (typeof Notification === 'undefined' || Notification.permission !== 'granted')
+            ) {
+              onShowIosGuide();
+              return;
+            }
+
+            onNotificationClick();
+          }}
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors"
+        >
+          {isPushEnabled ? (
+            <Bell className="h-6 w-6" />
+          ) : (
             <BellOff className="h-6 w-6 text-gray-400" />
-          </button>
-        ) : (
-          <button
-            key={isPushEnabled ? 'push-on' : 'push-off'}
-            type="button"
-            onClick={onNotificationClick}
-            className="inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors"
-          >
-            {isPushEnabled ? (
-              <Bell className="h-6 w-6" />
-            ) : (
-              <BellOff className="h-6 w-6 text-gray-400" />
-            )}
-          </button>
-        ))}
+          )}
+        </button>
+      )}
 
       {showSettingButton && (
         <button
