@@ -182,6 +182,8 @@ export default function TimeHeatMap({
           //현재 주 문자열 리스트
           const visibleDates = currentWeekdays.map((d) => format(d, 'yyyy-MM-dd'));
 
+          const todayStart = startOfDay(new Date());
+
           //이미 존재하던 날짜 안에서
           const updatedExisting = prev.map((selectedTime) => {
             const nowX =
@@ -191,6 +193,11 @@ export default function TimeHeatMap({
 
             // 현재 주에 없는 날짜 이거나 바운드 밖인 경우 유지
             if (nowX === -1 || nowX < minX || maxX < nowX) return selectedTime;
+
+            const isPastDate =
+              currentDateType !== 'WEEKLY' &&
+              isBefore(startOfDay(currentWeekdays[nowX]), todayStart);
+            if (isPastDate) return selectedTime;
 
             if (action === 'ADD') {
               // 추가 모드일때
@@ -220,6 +227,11 @@ export default function TimeHeatMap({
             action === 'ADD'
               ? Array.from({ length: maxX - minX + 1 }, (_, i) => minX + i) // 범위에 포함되는 좌표 리스트
                   .filter((x) => {
+                    const isPastDate =
+                      currentDateType !== 'WEEKLY' &&
+                      isBefore(startOfDay(currentWeekdays[x]), todayStart);
+                    if (isPastDate) return false;
+
                     // 현재 드래그 범위 내의 x좌표가 기존 prev에 없는지 확인
                     const date = format(currentWeekdays[x], 'yyyy-MM-dd');
                     return !prev.some((selectedTime) =>
@@ -321,7 +333,8 @@ export default function TimeHeatMap({
                   ? dayIndex >= dragBounds.minX &&
                     dayIndex <= dragBounds.maxX &&
                     slotIdx >= dragBounds.minY &&
-                    slotIdx <= dragBounds.maxY
+                    slotIdx <= dragBounds.maxY &&
+                    !isPastDate
                   : false;
 
                 // 드래그 범위 안 이라면 Drag Action에 따라 미리 색칠
