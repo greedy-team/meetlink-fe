@@ -30,8 +30,11 @@ axiosInstance.interceptors.response.use(
   (res) => res,
   (err) => {
     const status = err.response?.status;
+    const url = err.config?.url ?? '';
 
-    if (status === 401 || status === 403) {
+    const isPushTokenApi = url.includes('/participants/me/push-token');
+
+    if ((status === 401 || status === 403) && !isPushTokenApi) {
       localStorage.removeItem('meeting_token');
     }
     return Promise.reject(err);
