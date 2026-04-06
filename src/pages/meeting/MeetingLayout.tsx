@@ -171,14 +171,14 @@ export default function MeetingLayout() {
       return true;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.log('push enable axios error');
-        console.log('status:', error.response?.status);
-        console.log('data:', error.response?.data);
-        console.log('code:', error.code);
-        console.log('message:', error.message);
-        console.log('url:', error.config?.url);
+        console.error('push enable axios error');
+        console.error('status:', error.response?.status);
+        console.error('data:', error.response?.data);
+        console.error('code:', error.code);
+        console.error('message:', error.message);
+        console.error('url:', error.config?.url);
       } else {
-        console.log('push enable unknown error:', error);
+        console.error('push enable unknown error:', error);
       }
 
       if (axios.isAxiosError(error) && !error.response) {
