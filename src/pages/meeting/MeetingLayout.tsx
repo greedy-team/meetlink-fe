@@ -1,12 +1,21 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 import axios from 'axios';
 import { toast } from 'sonner';
 
+import {
+  deletePushPermission,
+  requestPushPermission,
+  subscribeForegroundMessage,
+} from '@/lib/firebase';
 import { useGetMeetingDetail } from '@/hooks/useMeeting';
-import { useMyStatus, useParticipantList } from '@/hooks/useParticipant';
+import {
+  useDeletePushToken,
+  useMyStatus,
+  useParticipantList,
+  useRegisterPushToken,
+} from '@/hooks/useParticipant';
 
 import type { UpdateMyStartPlaceRequest } from '@/types/apiTypes';
 import {
@@ -23,19 +32,26 @@ export interface MeetingOutletContext {
   dateType: string;
   timeRange: [number, number];
   participantStatusList: ParticipantList;
+  // 공통 draft
   selectedTimeList: SelectedTime[];
   setSelectedTimeList: React.Dispatch<React.SetStateAction<SelectedTime[]>>;
   selectedPlace: UpdateMyStartPlaceRequest;
   setSelectedPlace: React.Dispatch<React.SetStateAction<UpdateMyStartPlaceRequest>>;
-  // 임시 닉네임 보관용
   tempNickName: string;
   setTempNickName: React.Dispatch<React.SetStateAction<string>>;
-
+  resetGuestDraft: () => void;
   nickName: string;
   isHost: boolean;
+  // 조인 페이지 전용 임시 알림 체크값
+  joinPushOptIn: boolean;
+  setJoinPushOptIn: React.Dispatch<React.SetStateAction<boolean>>;
+  // 실제 푸시 상태
+  isPushEnabled: boolean;
+  isPushProcessing: boolean;
+  enablePush: () => Promise<boolean>;
+  disablePush: () => Promise<boolean>;
 
   isLoading: boolean;
-  resetGuestDraft: () => void;
 }
 
 interface RawParticipantStatus {
@@ -71,10 +87,24 @@ export default function MeetingLayout() {
       axios.isAxiosError(meetingError) &&
       meetingError.response?.status === 404
     ) {
-      toast.error('존재하지 않는 모임입니다.');
+      toast.error('존재하지 않는 모임입니다');
       navigate('/');
     }
   }, [isMeetingError, meetingError, navigate]);
+
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
+    const setupForegroundMessage = async () => {
+      unsubscribe = await subscribeForegroundMessage();
+    };
+
+    setupForegroundMessage();
+
+    return () => {
+      unsubscribe?.();
+    };
+  }, []);
 
   const {
     data: myStatusData,
@@ -83,6 +113,8 @@ export default function MeetingLayout() {
     isError: isMyStatusError,
   } = useMyStatus();
   const { data: participantData, isLoading: isParticipantLoading } = useParticipantList();
+  const { mutateAsync: registerPushTokenAsync } = useRegisterPushToken();
+  const { mutateAsync: deletePushTokenAsync } = useDeletePushToken();
 
   // 토큰 유효할 경우 draft
   const [memberSelectedTimeList, setMemberSelectedTimeList] = useState<SelectedTime[]>([]);
@@ -96,10 +128,85 @@ export default function MeetingLayout() {
     useState<UpdateMyStartPlaceRequest>(EMPTY_PLACE);
   const [guestTempNickName, setGuestTempNickName] = useState<string>('');
 
+  // 조인 페이지에서만 쓰는 임시 알림 체크값
+  const [joinPushOptIn, setJoinPushOptIn] = useState(false);
+
+  // 실제 푸시 활성 상태
+  const [isPushEnabled, setIsPushEnabled] = useState<boolean>(
+    () => localStorage.getItem('push_enabled') === 'true',
+  );
+  const [isPushProcessing, setIsPushProcessing] = useState(false);
+
+  useEffect(() => {
+    if (isPushEnabled) {
+      localStorage.setItem('push_enabled', 'true');
+    } else {
+      localStorage.removeItem('push_enabled');
+    }
+  }, [isPushEnabled]);
+
+  const enablePush = useCallback(async (): Promise<boolean> => {
+    if (isPushProcessing) return false;
+
+    setIsPushProcessing(true);
+    setIsPushEnabled(true);
+
+    try {
+      const fcmToken = await requestPushPermission();
+
+      if (!fcmToken) {
+        setIsPushEnabled(false);
+        return false;
+      }
+
+      const response = await registerPushTokenAsync({
+        token: fcmToken,
+      });
+
+      if (!response.status) {
+        setIsPushEnabled(false);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('푸시 알림 설정 실패:', error);
+      setIsPushEnabled(false);
+      return false;
+    } finally {
+      setIsPushProcessing(false);
+    }
+  }, [isPushProcessing, registerPushTokenAsync]);
+
+  const disablePush = useCallback(async (): Promise<boolean> => {
+    if (isPushProcessing) return false;
+
+    setIsPushProcessing(true);
+
+    try {
+      const response = await deletePushTokenAsync();
+
+      if (!response.status) {
+        return false;
+      }
+
+      const isDeleted = await deletePushPermission();
+      setIsPushEnabled(false);
+
+      return isDeleted;
+    } catch (error) {
+      console.error('푸시 알림 해제 실패:', error);
+      return false;
+    } finally {
+      setIsPushProcessing(false);
+    }
+  }, [isPushProcessing, deletePushTokenAsync]);
+
   const resetGuestDraft = () => {
     setGuestTempNickName('');
     setGuestSelectedTimeList([]);
     setGuestSelectedPlace(EMPTY_PLACE);
+    setJoinPushOptIn(false);
   };
 
   const token = localStorage.getItem('meeting_token');
@@ -194,6 +301,13 @@ export default function MeetingLayout() {
 
     isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
     resetGuestDraft,
+
+    joinPushOptIn,
+    setJoinPushOptIn,
+    isPushEnabled,
+    isPushProcessing,
+    enablePush,
+    disablePush,
   };
 
   return (

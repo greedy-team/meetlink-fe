@@ -2,14 +2,18 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import { Clock, MapPin } from 'lucide-react';
+import { Bell, Check, Clock, MapPin } from 'lucide-react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { InAppBrowserGuideModal } from '@/components/common/general/InAppBrowserGuideModal';
+import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
 import { Header } from '@/components/common/layout/Header';
+import { isInAppBrowser, isIosSafari } from '@/lib/device';
+import { cn } from '@/lib/utils';
 import { useJoinMeeting } from '@/hooks/useParticipant';
 import { useUpdateMyStartPlace } from '@/hooks/usePlace';
 import { useUpdateMyAvailableTime } from '@/hooks/useTime';
@@ -37,6 +41,10 @@ export default function JoinPage() {
     selectedPlace,
     dateType,
     resetGuestDraft,
+    joinPushOptIn,
+    setJoinPushOptIn,
+    enablePush,
+    isPushProcessing,
   } = useMeetingContext();
 
   const participantSummary = useMemo(
@@ -49,6 +57,31 @@ export default function JoinPage() {
   const { mutateAsync: joinAsync, isPending: joinPending } = useJoinMeeting();
   const { mutateAsync: saveTimeAsync, isPending: timePending } = useUpdateMyAvailableTime();
   const { mutateAsync: savePlaceAsync, isPending: placePending } = useUpdateMyStartPlace();
+
+  const [isIosModalOpen, setIsIosModalOpen] = useState(false);
+  const [showIosNotify, setShowIosNotify] = useState(false);
+  const [isInAppModalOpen, setIsInAppModalOpen] = useState(false);
+  const [showInAppNotify, setShowInAppNotify] = useState(false);
+
+  const handleTogglePush = () => {
+    if (isInAppBrowser()) {
+      setIsInAppModalOpen(true);
+      setShowInAppNotify(true);
+      setShowIosNotify(false);
+      return;
+    }
+
+    if (isIosSafari()) {
+      setShowInAppNotify(false);
+      setIsIosModalOpen(true);
+      setShowIosNotify(true);
+      return;
+    }
+
+    setShowInAppNotify(false);
+    setShowIosNotify(false);
+    setJoinPushOptIn((prev) => !prev);
+  };
 
   const goRejoin = () => {
     if (!code) return;
@@ -84,23 +117,22 @@ export default function JoinPage() {
         { nickname: trimmed },
         {
           onSuccess: () => {
-            toast.success('모임 참여 완료!', {
+            toast.success('모임 참여 완료', {
               description: '모임에 정상적으로 참여했어요',
               icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
             });
-            navigate(`/meeting/${code}/`);
           },
           onError: (error) => {
             if (axios.isAxiosError(error)) {
               //실패 토스트
-              toast.error('오류 발생!', {
+              toast.error('오류가 발생했어요', {
                 description: error.message,
                 icon: <AlertCircle className="h-5 w-5 text-red-500" />,
               });
             } else {
               //실패 토스트
-              toast.error('오류 발생!', {
-                description: '인터넷 연결 상태를 확인해보세요!',
+              toast.error('오류가 발생했어요', {
+                description: '잠시 후에 다시 시도해보세요',
                 icon: <AlertCircle className="h-5 w-5 text-red-500" />,
               });
             }
@@ -133,12 +165,24 @@ export default function JoinPage() {
           await Promise.all(promises);
         }
 
+        if (joinPushOptIn) {
+          const isPushSuccess = await enablePush();
+
+          if (isPushSuccess) {
+            toast.success('알림 설정이 완료되었어요', {
+              description: '모두가 입력하면 알려드릴게요',
+            });
+          } else {
+            toast.error('알림 설정에 실패했어요', {
+              description: '권한 설정을 확인한 뒤 메인 화면에서 다시 시도해주세요',
+            });
+          }
+        }
+
         resetGuestDraft();
         navigate(`/meeting/${code}`, { replace: true });
       }
     } catch (error) {
-      //console.error('참여 및 정보 저장 중 에러가 발생했습니다:', error);
-
       const err = error as {
         response?: {
           status?: number;
@@ -166,7 +210,7 @@ export default function JoinPage() {
     }
   };
 
-  const isPending = joinPending || timePending || placePending;
+  const isPending = joinPending || timePending || placePending || isPushProcessing;
 
   const isPageLoading = isMeetingLoading;
 
@@ -190,7 +234,7 @@ export default function JoinPage() {
             disabled={!canSubmit || isPending}
             loading={isPending}
             onClick={onSubmit}
-            className="bg-greedy hover:bg-greedy/50 text-white"
+            className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
           >
             참여하기
           </FixedBottomButton>
@@ -242,8 +286,94 @@ export default function JoinPage() {
               isLoading={isPageLoading}
             />
           )}
+
+          {/* 알림 설정 UI */}
+          <div
+            className={cn(
+              'flex flex-col rounded-3xl border-2 p-3 transition-all duration-200',
+              isPageLoading
+                ? 'border-gray-200 bg-gray-50'
+                : joinPushOptIn
+                  ? 'border-greedy bg-greedy/5'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100',
+            )}
+          >
+            <button
+              className={cn(
+                'flex w-full items-center justify-between p-1',
+                isPageLoading ? 'cursor-default' : 'cursor-pointer',
+              )}
+              type="button"
+              onClick={isPageLoading ? undefined : handleTogglePush}
+              disabled={isPageLoading}
+            >
+              <div className="flex flex-col gap-2 text-left">
+                <div className="flex items-center gap-2">
+                  <Bell
+                    size={24}
+                    className={cn(
+                      'h-auto! w-auto! transition-colors',
+                      joinPushOptIn ? 'text-greedy' : 'text-gray-900',
+                      isPageLoading ? 'rounded-full bg-gray-100 text-gray-100' : '',
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      'text-base font-bold transition-colors',
+                      joinPushOptIn ? 'text-greedy' : 'text-gray-900',
+                      isPageLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
+                    )}
+                  >
+                    알림 받기
+                  </span>
+                </div>
+                <div
+                  className={cn(
+                    'text-xs leading-tight font-medium whitespace-pre-wrap text-gray-400',
+                    isPageLoading ? 'rounded-lg bg-gray-100 text-gray-100' : '',
+                  )}
+                >
+                  모임 진행 상황을 놓치지 않게 알려드려요
+                </div>
+              </div>
+
+              <Check
+                strokeWidth={4}
+                size={30}
+                className={cn(
+                  'ml-4 h-auto! w-auto! shrink-0 rounded-[15px] p-3 transition-colors',
+                  isPageLoading
+                    ? 'bg-gray-100 text-transparent'
+                    : joinPushOptIn
+                      ? 'bg-[#CCE3D3] text-[#4A8B5F]'
+                      : 'bg-gray-200 text-transparent',
+                )}
+              />
+            </button>
+          </div>
+
+          {showInAppNotify && (
+            <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
+              앱에서 바로 열면 알림 설정이 지원되지 않아요.{' '}
+              <strong>크롬 또는 사파리에서 열어주세요</strong>
+            </NotifyBox>
+          )}
+
+          {/* 아이폰 경고 NotifyBox */}
+          {showIosNotify && (
+            <NotifyBox variant="emphasis" className="animate-in fade-in slide-in-from-top-2">
+              아이폰은 브라우저 하단 <strong>공유 버튼</strong>을 눌러{' '}
+              <strong>[홈 화면에 추가]</strong>를 해야만 알림을 받을 수 있어요
+            </NotifyBox>
+          )}
         </div>
       </div>
+
+      <InAppBrowserGuideModal
+        isOpen={isInAppModalOpen}
+        onClose={() => setIsInAppModalOpen(false)}
+      />
+      <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
     </AppLayout>
   );
 }

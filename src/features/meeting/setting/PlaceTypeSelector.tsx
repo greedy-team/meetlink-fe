@@ -18,14 +18,14 @@ export function PlaceTypeSelector({ value, onChange }: PlaceTypeSelectorProps) {
         <SelectCardButton
           icon={Repeat}
           title="공평한 만남"
-          description="시간이 공평해요"
+          description="이동 시간 편차를 최소화해요"
           isSelected={value === 'FAIR'}
           onClick={() => onChange('FAIR')}
         />
         <SelectCardButton
           icon={Calendar}
           title="빠른 만남"
-          description="가장 빨리 만나요"
+          description="전체 이동 시간을 최소화해요"
           isSelected={value === 'FAST'}
           onClick={() => onChange('FAST')}
           isDisable={true}

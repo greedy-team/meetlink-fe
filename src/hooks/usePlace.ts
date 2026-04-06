@@ -38,23 +38,6 @@ export const useUpdateMyStartPlace = () => {
   return useMutation({
     mutationFn: (body: UpdateMyStartPlaceRequest) => updateMyStartPlace(code!, body),
     onSuccess: () => {
-      // 낙천적 업데이트
-      queryClient.setQueryData<GetRecommendResultResponse>(
-        recommendKeys.result(code!, token),
-        (oldData) => {
-          if (!oldData) return undefined;
-          return {
-            ...oldData,
-            result: {
-              ...oldData.result,
-              placeCandidate: {
-                ...oldData.result.placeCandidate,
-                calculationStatus: 'CALCULATING',
-              },
-            },
-          };
-        },
-      );
       //내 출발지 리패치
       queryClient.invalidateQueries({
         queryKey: placeKeys.all,

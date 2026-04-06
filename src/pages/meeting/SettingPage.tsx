@@ -70,7 +70,7 @@ export default function SettingPage() {
     // mutate 호출 시 콜백 추가
     updateMeeting(requestData, {
       onSuccess: () => {
-        toast.success('수정 성공!', {
+        toast.success('수정 성공', {
           description: '모임 설정이 정상적으로 수정되었어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
@@ -79,14 +79,14 @@ export default function SettingPage() {
       onError: (error) => {
         if (axios.isAxiosError(error)) {
           //실패 토스트
-          toast.error('오류 발생!', {
+          toast.error('오류가 발생했어요', {
             description: error.message,
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         } else {
           //실패 토스트
-          toast.error('오류 발생!', {
-            description: '인터넷 연결 상태를 확인해보세요!',
+          toast.error('오류가 발생했어요', {
+            description: '잠시 후에 다시 시도해보세요',
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         }
@@ -130,7 +130,7 @@ export default function SettingPage() {
                 </FixedBottomButton>
               ) : !hasChanges ? (
                 <FixedBottomButton
-                  className="bg-greedy hover:bg-greedy/50"
+                  className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
                   onClick={() => navigate(`/meeting/${code}`)}
                 >
                   완료
@@ -138,7 +138,7 @@ export default function SettingPage() {
               ) : (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <FixedBottomButton className="bg-greedy hover:bg-greedy/50">
+                    <FixedBottomButton className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2">
                       완료
                     </FixedBottomButton>
                   </AlertDialogTrigger>
@@ -155,7 +155,7 @@ export default function SettingPage() {
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleSave}
-                        className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
+                        className="bg-greedy! hover:bg-greedy/50! border-greedy-strong h-10 flex-1 cursor-pointer rounded-xl border-2 text-white shadow-none!"
                       >
                         저장하기
                       </AlertDialogAction>

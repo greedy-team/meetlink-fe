@@ -77,7 +77,7 @@ export default function RejoinPage() {
           <FixedBottomButton
             disabled={!selectedInfo || isPageLoading}
             onClick={onLogin}
-            className="bg-greedy hover:bg-greedy/50 cursor-pointer text-white"
+            className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
           >
             선택한 닉네임으로 참여하기
           </FixedBottomButton>

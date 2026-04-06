@@ -1,17 +1,12 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import {
-  AlertCircle,
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  MapPin,
-  MessagesSquare,
-} from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { InAppBrowserGuideModal } from '@/components/common/general/InAppBrowserGuideModal';
+import { IosPwaGuideModal } from '@/components/common/general/IosPwaGuideModal';
 import { NotifyBox } from '@/components/common/general/NotifyBox';
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -22,8 +17,10 @@ import { useTransferHost } from '@/hooks/useParticipant';
 import { useLeaveMeeting } from '@/hooks/useParticipant';
 import { useRecommendResult } from '@/hooks/useRecommend';
 
+import { DisablePushModal } from '@/features/meeting/general/DisablePushModal';
 import { GoToButton } from '@/features/meeting/general/GotoButton';
 import { ParticipantStatusList } from '@/features/meeting/general/ParticipantStatusList';
+import { QABox } from '@/features/meeting/general/QABox';
 import { RecommendSummaryCard } from '@/features/meeting/general/RecommendSummaryCard';
 import { useMeetingContext } from '@/pages/meeting/MeetingLayout';
 
@@ -36,21 +33,11 @@ export default function MainPage() {
     nickName,
     isHost,
     isLoading: isMeetingLoading,
+    isPushEnabled,
+    isPushProcessing,
+    enablePush,
+    disablePush,
   } = useMeetingContext();
-
-  // 브라우저 타이틀 변경 로직 추가
-  useEffect(() => {
-    if (meetingName) {
-      document.title = `${meetingName} | MeetLink`;
-    } else {
-      document.title = 'MeetLink';
-    }
-
-    // 메인 페이지를 벗어나 다른 페이지로 이동하면 다시 기본값으로
-    return () => {
-      document.title = 'MeetLink';
-    };
-  }, [meetingName]);
 
   const { data: resultData } = useRecommendResult();
   const { code } = useParams<{ code: string }>();
@@ -61,6 +48,48 @@ export default function MainPage() {
   const isLoading = isMeetingLoading;
 
   const navigate = useNavigate();
+
+  const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
+  const [isIosModalOpen, setIsIosModalOpen] = useState(false);
+  const [isInAppModalOpen, setIsInAppModalOpen] = useState(false);
+
+  const handleNotificationClick = async () => {
+    if (isPushProcessing) return;
+
+    if (isPushEnabled) {
+      setIsDisableModalOpen(true);
+      return;
+    }
+
+    const isPushSuccess = await enablePush();
+
+    if (isPushSuccess) {
+      toast.success('알림이 켜졌어요', {
+        description: '모임의 소식을 알림으로 보내드려요',
+      });
+    } else {
+      toast.error('알림 설정에 실패했어요', {
+        description: '브라우저 권한을 확인한 뒤 다시 시도해주세요',
+      });
+    }
+  };
+
+  const handleDisableConfirm = async () => {
+    setIsDisableModalOpen(false);
+
+    const isDisableSuccess = await disablePush();
+
+    if (isDisableSuccess) {
+      toast.success('알림이 꺼졌어요', {
+        description: '더 이상 알림을 받지 않아요',
+      });
+    } else {
+      toast.success('알림은 꺼졌어요', {
+        description: '일부 토큰 정리는 브라우저 상태에 따라 지연될 수 있어요',
+      });
+    }
+  };
+
   const handleGoToButton = (url: string) => {
     navigate(url);
   };
@@ -100,8 +129,8 @@ export default function MainPage() {
     };
     transferHost(requestData, {
       onSuccess: () => {
-        toast.success('양도 성공!', {
-          description: '모임장이 성공적으로 양도되었어요!',
+        toast.success('양도 성공', {
+          description: '모임장이 성공적으로 양도되었어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
         navigate(`/meeting/${code}`);
@@ -109,14 +138,14 @@ export default function MainPage() {
       onError: (error) => {
         if (axios.isAxiosError(error)) {
           //실패 토스트
-          toast.error('오류 발생!', {
+          toast.error('오류가 발생했어요', {
             description: error.message,
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         } else {
           //실패 토스트
-          toast.error('오류 발생!', {
-            description: '인터넷 연결 상태를 확인해보세요!',
+          toast.error('오류가 발생했어요', {
+            description: '잠시 후에 다시 시도해보세요',
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         }
@@ -127,7 +156,7 @@ export default function MainPage() {
   const handleLeave = () => {
     leaveMeeting(undefined, {
       onSuccess: () => {
-        toast.success('나가기 성공!', {
+        toast.success('나가기 성공', {
           description: '모임에서 성공적으로 나갔어요',
           icon: <CheckCircle2 className="text-greedy h-5 w-5" />,
         });
@@ -136,14 +165,14 @@ export default function MainPage() {
       onError: (error) => {
         if (axios.isAxiosError(error)) {
           //실패 토스트
-          toast.error('오류 발생!', {
+          toast.error('오류가 발생했어요', {
             description: error.message,
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         } else {
           //실패 토스트
-          toast.error('오류 발생!', {
-            description: '인터넷 연결 상태를 확인해보세요!',
+          toast.error('오류가 발생했어요', {
+            description: '잠시 후에 다시 시도해보세요',
             icon: <AlertCircle className="h-5 w-5 text-red-500" />,
           });
         }
@@ -184,6 +213,11 @@ export default function MainPage() {
           showBackButton={false}
           showSettingButton={isHost}
           showLeaveButton={true}
+          showNotificationButton={true}
+          isPushEnabled={isPushEnabled}
+          onNotificationClick={handleNotificationClick}
+          onShowIosGuide={() => setIsIosModalOpen(true)}
+          onShowInAppGuide={() => setIsInAppModalOpen(true)}
           className={cn(isLoading ? 'w-20 rounded-lg bg-gray-100 text-gray-100' : '')}
           onLeave={handleLeave}
         />
@@ -192,7 +226,10 @@ export default function MainPage() {
       bottom={
         <div className="flex items-center pt-2">
           {!isLoading && (
-            <FixedBottomButton className="bg-greedy hover:bg-greedy/50" onClick={handleShare}>
+            <FixedBottomButton
+              className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
+              onClick={handleShare}
+            >
               초대 링크 복사 및 공유하기
             </FixedBottomButton>
           )}
@@ -263,32 +300,19 @@ export default function MainPage() {
             isHost={isHost}
             onTransferHost={handleTransferHost}
           />
-
-          <a
-            href="https://www.instagram.com/meetlink.now/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group hover:border-greedy/30 mt-2 flex items-center justify-between rounded-3xl border-2 border-gray-100 bg-white p-4 transition-all"
-          >
-            <div className="flex items-center gap-4">
-              <div className="bg-greedy/10 text-greedy group-hover:bg-greedy flex h-12 w-12 items-center justify-center rounded-2xl transition-colors group-hover:text-white">
-                <MessagesSquare size={24} />
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-base font-bold text-gray-800">함께 만드는 MeetLink</span>
-                <span className="text-sm text-gray-500">
-                  더 나은 MeetLink를 위해 여러분의 소중한 의견을 들려주세요
-                </span>
-              </div>
-            </div>
-
-            <div className="ml-4 flex shrink-0 text-gray-500">
-              <ChevronRight strokeWidth={3} className="h-6 w-6" />
-            </div>
-          </a>
+          <QABox isLoading={isLoading} />
         </div>
       </div>
+      <InAppBrowserGuideModal
+        isOpen={isInAppModalOpen}
+        onClose={() => setIsInAppModalOpen(false)}
+      />
+      <IosPwaGuideModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
+      <DisablePushModal
+        isOpen={isDisableModalOpen}
+        onClose={() => setIsDisableModalOpen(false)}
+        onConfirm={handleDisableConfirm}
+      />
     </AppLayout>
   );
 }

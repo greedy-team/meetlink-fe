@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ChevronLeft, LogOut, Settings } from 'lucide-react';
+import { Bell, BellOff, ChevronLeft, LogOut, Settings } from 'lucide-react';
 
+import { isInAppBrowser, isIosSafari } from '@/lib/device';
 import { cn } from '@/lib/utils';
 
 import { LeaveButton } from '@/features/meeting/setting/LeaveButton';
@@ -11,8 +13,13 @@ type HeaderProps = {
   showBackButton?: boolean;
   showSettingButton?: boolean;
   showLeaveButton?: boolean;
+  showNotificationButton?: boolean;
+  isPushEnabled?: boolean;
   onBack?: () => void;
   onLeave?: () => void;
+  onNotificationClick?: () => void;
+  onShowIosGuide?: () => void;
+  onShowInAppGuide?: () => void;
   className?: string;
 };
 
@@ -21,11 +28,28 @@ export function Header({
   showBackButton = true,
   showSettingButton = false,
   showLeaveButton = false,
+  showNotificationButton = false,
+  isPushEnabled = false,
   onBack,
   onLeave = () => {},
+  onNotificationClick = () => {},
+  onShowIosGuide = () => {},
+  onShowInAppGuide = () => {},
   className,
 }: HeaderProps) {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (title) {
+      document.title = `${title} | MeetLink`;
+    } else {
+      document.title = 'MeetLink';
+    }
+
+    return () => {
+      document.title = 'MeetLink';
+    };
+  }, [title]);
 
   const handleBack = () => {
     if (onBack) return onBack();
@@ -49,6 +73,37 @@ export function Header({
         <span className={cn('text-lg font-bold', className)}>{title}</span>
       </div>
 
+      {showNotificationButton && (
+        <button
+          key={isPushEnabled ? 'push-on' : 'push-off'}
+          type="button"
+          onClick={() => {
+            if (isInAppBrowser() && !isPushEnabled) {
+              onShowInAppGuide();
+              return;
+            }
+
+            if (
+              isIosSafari() &&
+              !isPushEnabled &&
+              (typeof Notification === 'undefined' || Notification.permission !== 'granted')
+            ) {
+              onShowIosGuide();
+              return;
+            }
+
+            onNotificationClick();
+          }}
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors"
+        >
+          {isPushEnabled ? (
+            <Bell className="h-6 w-6" />
+          ) : (
+            <BellOff className="h-6 w-6 text-gray-400" />
+          )}
+        </button>
+      )}
+
       {showSettingButton && (
         <button
           type="button"
@@ -59,6 +114,7 @@ export function Header({
           <Settings className="h-6 w-6" />
         </button>
       )}
+
       {showLeaveButton && (
         <LeaveButton onLeave={onLeave}>
           <button
