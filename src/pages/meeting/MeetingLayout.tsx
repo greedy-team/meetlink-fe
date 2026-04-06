@@ -149,7 +149,6 @@ export default function MeetingLayout() {
     if (isPushProcessing) return false;
 
     setIsPushProcessing(true);
-    setIsPushEnabled(true);
 
     try {
       const fcmToken = await requestPushPermission();
@@ -167,6 +166,7 @@ export default function MeetingLayout() {
         setIsPushEnabled(false);
         return false;
       }
+      setIsPushEnabled(true);
 
       return true;
     } catch (error) {
@@ -299,7 +299,7 @@ export default function MeetingLayout() {
     nickName: myStatusData?.result?.nickname || '',
     isHost: myStatusData?.result?.isHost || false,
 
-    isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
+    isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading || isMyStatusFetching,
     resetGuestDraft,
 
     joinPushOptIn,
