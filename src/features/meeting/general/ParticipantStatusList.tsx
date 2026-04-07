@@ -128,7 +128,7 @@ export function ParticipantStatusList({
                   setTargetNickName(null); // 양도 후 모달 닫기
                 }
               }}
-              className="bg-greedy! hover:bg-greedy/50! h-10 flex-1 cursor-pointer rounded-xl text-white shadow-none!"
+              className="bg-greedy/15! hover:bg-greedy/50! border-greedy/20 text-greedy! h-10 flex-1 cursor-pointer rounded-xl border-2 shadow-none!"
             >
               양도하기
             </AlertDialogAction>

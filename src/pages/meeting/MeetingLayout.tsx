@@ -149,7 +149,6 @@ export default function MeetingLayout() {
     if (isPushProcessing) return false;
 
     setIsPushProcessing(true);
-    setIsPushEnabled(true);
 
     try {
       const fcmToken = await requestPushPermission();
@@ -167,10 +166,30 @@ export default function MeetingLayout() {
         setIsPushEnabled(false);
         return false;
       }
+      setIsPushEnabled(true);
 
       return true;
     } catch (error) {
-      console.error('푸시 알림 설정 실패:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('push enable axios error');
+        console.error('status:', error.response?.status);
+        console.error('data:', error.response?.data);
+        console.error('code:', error.code);
+        console.error('message:', error.message);
+        console.error('url:', error.config?.url);
+      } else {
+        console.error('push enable unknown error:', error);
+      }
+
+      if (axios.isAxiosError(error) && !error.response) {
+        toast.error('알림 설정에 실패했어요', {
+          description: '서버 연결 또는 CORS 설정 문제로 요청이 차단되었어요.',
+        });
+      } else {
+        toast.error('알림 설정에 실패했어요', {
+          description: '브라우저 권한을 확인한 뒤 다시 시도해주세요',
+        });
+      }
       setIsPushEnabled(false);
       return false;
     } finally {
@@ -299,7 +318,7 @@ export default function MeetingLayout() {
     nickName: myStatusData?.result?.nickname || '',
     isHost: myStatusData?.result?.isHost || false,
 
-    isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading,
+    isLoading: isMeetingLoading || isParticipantLoading || isMyStatusLoading || isMyStatusFetching,
     resetGuestDraft,
 
     joinPushOptIn,
