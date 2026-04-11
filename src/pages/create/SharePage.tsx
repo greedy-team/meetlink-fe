@@ -36,7 +36,7 @@ export default function SharePage() {
     const shareUrl = `${window.location.origin}/meeting/${code}`;
     const shareData = {
       title: `MeetLink 모임 초대 : ${meetingName}`,
-      text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
+      text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!\n\u200B',
       url: shareUrl,
     };
 
