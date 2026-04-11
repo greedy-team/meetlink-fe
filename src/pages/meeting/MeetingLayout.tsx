@@ -170,17 +170,6 @@ export default function MeetingLayout() {
 
       return true;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('push enable axios error');
-        console.error('status:', error.response?.status);
-        console.error('data:', error.response?.data);
-        console.error('code:', error.code);
-        console.error('message:', error.message);
-        console.error('url:', error.config?.url);
-      } else {
-        console.error('push enable unknown error:', error);
-      }
-
       if (axios.isAxiosError(error) && !error.response) {
         toast.error('알림 설정에 실패했어요', {
           description: '서버 연결 또는 CORS 설정 문제로 요청이 차단되었어요.',
