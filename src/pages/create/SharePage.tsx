@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock, MapPin } from 'lucide-react';
+import { AlertCircle, Clock, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -35,23 +36,34 @@ export default function SharePage() {
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/meeting/${code}`;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const shareData = {
-      title: `MeetLink 모임 초대 : ${meetingName}`,
-      text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
-      url: shareUrl,
-    };
+
+    const shareData = isMobile
+      ? {
+          title: `MeetLink 모임 초대 : ${meetingName}`,
+          text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
+          url: shareUrl,
+        }
+      : {
+          url: shareUrl,
+        };
 
     try {
-      if (isMobile && navigator.share && navigator.canShare?.(shareData)) {
+      if (navigator.share && navigator.canShare?.(shareData)) {
         await navigator.share(shareData);
       } else {
-        const clipboardText = `${shareData.text}\n\n${shareUrl}`;
-
-        await navigator.clipboard.writeText(clipboardText);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success('url 이 복사되었어요', {
+            description: '링크를 공유해보세요',
+          });
+        }
       }
     } catch (err) {
       if ((err as Error).name !== 'AbortError') {
-        //console.error('공유 중 에러 발생:', err);
+        toast.error('오류가 발생했어요', {
+          description: '잠시 후에 다시 시도해보세요',
+          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+        });
       }
     }
   };
