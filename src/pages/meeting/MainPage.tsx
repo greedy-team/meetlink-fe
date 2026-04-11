@@ -191,6 +191,8 @@ export default function MainPage() {
           url: shareUrl,
         }
       : {
+          title: `\u200B MeetLink 모임 초대 : ${meetingName}`,
+          text: '\u200B 우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
           url: shareUrl,
         };
 
