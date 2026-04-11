@@ -34,6 +34,7 @@ export default function SharePage() {
 
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/meeting/${code}`;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const shareData = {
       title: `MeetLink 모임 초대 : ${meetingName}`,
       text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
@@ -41,15 +42,14 @@ export default function SharePage() {
     };
 
     try {
-      // 1. 브라우저가 Web Share API를 지원하고, 데이터 공유가 가능한지 확인
-      if (navigator.share && navigator.canShare?.(shareData)) {
+      if (isMobile && navigator.share && navigator.canShare?.(shareData)) {
         await navigator.share(shareData);
       } else {
-        // 2. 지원하지 않는 브라우저(예: 일부 PC 브라우저)일 경우 클립보드 복사
-        await navigator.clipboard.writeText(shareData.url);
+        const clipboardText = `${shareData.text}\n\n${shareUrl}`;
+
+        await navigator.clipboard.writeText(clipboardText);
       }
     } catch (err) {
-      // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크
       if ((err as Error).name !== 'AbortError') {
         //console.error('공유 중 에러 발생:', err);
       }
