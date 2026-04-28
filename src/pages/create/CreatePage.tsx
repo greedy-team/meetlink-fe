@@ -114,7 +114,7 @@ export default function CreatePage() {
         isCreateButtonEnabled ? (
           <div className="flex flex-col items-center">
             <FixedBottomButton
-              className="bg-greedy hover:bg-greedy/50 border-greedy-strong border-2"
+              className="bg-greedy hover:bg-greedy/50"
               onClick={handleCreateClick}
               disabled={!isCreateButtonEnabled}
               loading={isPending}
