@@ -131,7 +131,7 @@ export default function CreatePage() {
           <MeetingNameInput value={meetingName} onChange={(e) => setMeetingName(e.target.value)} />
           {!meetingNameInputFinished && meetingName.trim().length > 0 && (
             <Button
-              className="bg-greedy hover:bg-greedy/50 border-greedy-strong h-12 w-full cursor-pointer rounded-xl border-2 text-base font-semibold"
+              className="bg-greedy hover:bg-greedy/50 h-12 w-full cursor-pointer rounded-xl text-base font-semibold"
               onClick={handleMeetingNameInput}
             >
               다음
