@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Clock, MapPin } from 'lucide-react';
+import { AlertCircle, Clock, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/common/layout/AppLayout';
 import { FixedBottomButton } from '@/components/common/layout/FixedBottomButton';
@@ -34,24 +35,37 @@ export default function SharePage() {
 
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/meeting/${code}`;
-    const shareData = {
-      title: `MeetLink 모임 초대 : ${meetingName}`,
-      text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!\n\u200B',
-      url: shareUrl,
-    };
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    const shareData = isMobile
+      ? {
+          title: `MeetLink 모임 초대 : ${meetingName}`,
+          text: '우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
+          url: shareUrl,
+        }
+      : {
+          title: `\u200B MeetLink 모임 초대 : ${meetingName}`,
+          text: '\u200B 우리 언제 만날까요? 가능한 시간과 출발 위치를 입력해주세요!',
+          url: shareUrl,
+        };
 
     try {
-      // 1. 브라우저가 Web Share API를 지원하고, 데이터 공유가 가능한지 확인
       if (navigator.share && navigator.canShare?.(shareData)) {
         await navigator.share(shareData);
       } else {
-        // 2. 지원하지 않는 브라우저(예: 일부 PC 브라우저)일 경우 클립보드 복사
-        await navigator.clipboard.writeText(shareData.url);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success('url 이 복사되었어요', {
+            description: '링크를 공유해보세요',
+          });
+        }
       }
     } catch (err) {
-      // 사용자가 공유를 취소했을 때는 에러가 발생하므로 체크
       if ((err as Error).name !== 'AbortError') {
-        //console.error('공유 중 에러 발생:', err);
+        toast.error('오류가 발생했어요', {
+          description: '잠시 후에 다시 시도해보세요',
+          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+        });
       }
     }
   };
